@@ -63,22 +63,39 @@ class User < FieldStruct::Mutable
   attribute :last_login_at, :time, :optional
 end
 
+# A first attempt 
 john = User.new 'john@company.com'
 # => #<User username="john@company.com" password=nil team=nil last_login_at=nil>
+
+# Is it valid? What errors do we have? 
 [john.valid?, john.errors]
 # => [false, [":password is required", ":team is required"]]
+
+# Let's fix the first error: missing password 
 john.password = 'some1234'
 # => "some1234"
+
+# Is it valid now? What errors do we still have? 
 [john.valid?, john.errors]
 # => [false, [":team is required"]]
+
+# Let's fix the team
 john.team = 'X'
 # => "X"
+
+# Are we valid now? Do we still have errors?
 [john.valid?, john.errors]
 # => [false, [":team is not included in list"]]
+
+# Let's fix the team for real now
 john.team = 'B'
 # => "B"
+
+# Are we finally valid now? Do we still have errors?
 [john.valid?, john.errors]
 # => [true, []]
+
+# The final, valid product
 john
 # => #<User username="john@company.com" password="some1234" team="B" last_login_at=nil> 
 ``` 
