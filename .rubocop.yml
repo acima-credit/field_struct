@@ -1,0 +1,48 @@
+AllCops:
+  TargetRubyVersion: 2.4
+  Include:
+    - '**/*.rake'
+    - '**/Rakefile'
+    - '**/Capfile'
+    - '**/lib/**/*.rb'
+    - '**/spec/**/*.rb'
+  Exclude:
+    - '**/*.gemspec'
+    - '**/Gemfile*'
+
+Security/Eval:
+  Enabled: false
+
+Metrics/LineLength:
+  Max: 120
+
+Metrics/MethodLength:
+  Max: 20
+
+Metrics/ClassLength:
+  Max: 120
+
+Style/RaiseArgs:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: true
+  Exclude:
+    - 'spec/**/*'
+
+Metrics/ModuleLength:
+  Enabled: true
+  Exclude:
+    - 'spec/**/*'
+
+Style/FormatStringToken:
+  Enabled: false
+
+Style/SignalException:
+  Enabled: false
+
+Naming/VariableName:
+  Enabled: false
