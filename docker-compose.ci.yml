@@ -1,0 +1,8 @@
+version: '3'
+services:
+  web:
+    image: field_struct
+    command: ls
+    environment:
+      CI:                     "true"
+      RAILS_ENV:              "test"
