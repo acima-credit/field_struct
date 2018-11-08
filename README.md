@@ -1,6 +1,6 @@
 # FieldStruct
 
-[![Build Status](https://jenkins.smpl.ch/job/github/job/field_struct/job/master/badge/icon)](https://jenkins.smpl.ch/job/github/job/field_struct/job/master/)
+[![Build Status](https://jenkins.smpl.ch/buildStatus/icon?job=github/field_struct/master)](https://jenkins.smpl.ch/job/github/job/field_struct/job/master/)
 
 `FieldStruct` provides a lightweight approach to having typed structs in two flavors: `Value` and `Mutable`. 
 Each attribute can:
