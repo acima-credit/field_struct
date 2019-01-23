@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class FieldStruct
+module FieldStruct
   class Base
     class << self
       def attributes

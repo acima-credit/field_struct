@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class FieldStruct
+module FieldStruct
   class Error < StandardError
   end
   class TypeError < Error

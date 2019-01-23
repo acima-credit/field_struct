@@ -2,9 +2,9 @@
 
 require 'spec_helper'
 
-class FieldStruct
+module FieldStruct
   module Examples
-    class UserMutable < FieldStruct::Mutable
+    class UserMutable < FieldStruct.mutable
       attribute :username, :string, format: /^[a-z]/i
       attribute :password, :string, :optional
       attribute :age, :integer

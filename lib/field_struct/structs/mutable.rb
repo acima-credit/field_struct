@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class FieldStruct
+module FieldStruct
   class Mutable < Base
     def set(key, value)
       set_by_key key, value, true
@@ -56,5 +56,9 @@ class FieldStruct
       errors << format(':%s %s', attr.name, check.errors.first)
       check
     end
+  end
+
+  def self.mutable
+    Mutable
   end
 end

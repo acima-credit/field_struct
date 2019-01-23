@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class FieldStruct
+module FieldStruct
   module Types
     module Type
       def self.included(base)
@@ -96,6 +96,7 @@ class FieldStruct
 
       def check_enum(check)
         return if options[:enum].nil?
+        return if blank?(check.value)
         return if options[:enum].include?(check.value)
 
         check << 'is not included in list'
