@@ -32,7 +32,7 @@ module FieldStruct
     include Comparable
 
     def initialize(*args)
-      attrs = args.last.is_a?(Hash) ? args.pop : self.class.default_attributes
+      attrs = args.last.is_a?(Hash) ? args.pop : {}
       assign_attrs_by_index args
       assign_attrs_by_key attrs
       assign_defaults
@@ -98,6 +98,11 @@ module FieldStruct
       @attributes ||= {}
       @attributes[key.to_sym] = value
       @validated = false if invalidate
+    end
+
+    def set_by_index(idx, value)
+      key = self.class.attribute_names[idx]
+      set_by_key key, value
     end
 
     def set_if_missing(key, value)

@@ -45,20 +45,33 @@ RSpec.describe FieldStruct::Examples::UserMutable do
   end
 
   context 'basic' do
-    let(:fields_str) do
-      'username="johnny" password="p0ssw3rd" age=3 owed=20.75 source="A" level=3 at=nil'
+    shared_examples 'a valid field struct' do
+      let(:fields_str) do
+        'username="johnny" password="p0ssw3rd" age=3 owed=20.75 source="A" level=3 at=nil'
+      end
+      let(:values) { [username, password, age, owed, source, level, at] }
+      it('to_s      ') { expect(subject.to_s).to eq str }
+      it('inspect   ') { expect(subject.inspect).to eq str }
+      it('username  ') { expect(subject.username).to eq username }
+      it('password  ') { expect(subject.password).to eq password }
+      it('age       ') { expect(subject.age).to eq age }
+      it('owed      ') { expect(subject.owed).to eq owed }
+      it('source    ') { expect(subject.source).to eq source }
+      it('level     ') { expect(subject.level).to eq level }
+      it('at        ') { expect(subject.at).to eq at }
+      it('values    ') { expect(subject.values).to eq values }
     end
-    let(:values) { [username, password, age, owed, source, level, at] }
-    it('to_s      ') { expect(subject.to_s).to eq str }
-    it('inspect   ') { expect(subject.inspect).to eq str }
-    it('username  ') { expect(subject.username).to eq username }
-    it('password  ') { expect(subject.password).to eq password }
-    it('age       ') { expect(subject.age).to eq age }
-    it('owed      ') { expect(subject.owed).to eq owed }
-    it('source    ') { expect(subject.source).to eq source }
-    it('level     ') { expect(subject.level).to eq level }
-    it('at        ') { expect(subject.at).to eq at }
-    it('values    ') { expect(subject.values).to eq values }
+    context 'instantiate by hash' do
+      it_behaves_like 'a valid field struct'
+    end
+    context 'instantiate by args' do
+      subject { described_class.new username, password, age, owed, source, level, at }
+      it_behaves_like 'a valid field struct'
+    end
+    context 'instantiate by args and hash' do
+      subject { described_class.new username, password, age, owed, source: source, level: level, at: at }
+      it_behaves_like 'a valid field struct'
+    end
   end
 
   context 'with' do
