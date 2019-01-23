@@ -22,11 +22,11 @@ class FieldStruct
       return type if type.is_a?(Types::Type)
 
       if type.is_a? Symbol
-        type = Types.registry.find { |x| x.short_name == type.to_s }
-        return type unless type.nil?
+        found = Types.registry.find { |x| x.short_name == type.to_s }
+        return found unless found.nil?
       end
 
-      raise "Unknown type [#{type.inspect}]"
+      raise TypeError, "Unknown type [#{type.inspect}]"
     end
 
     def parse_options(*args)
@@ -42,7 +42,7 @@ class FieldStruct
         when :optional
           options[:required] = false
         else
-          raise "Unknown option for attribute [#{arg}]"
+          raise AttributeOptionError, "Unknown option for attribute [#{arg.inspect}]"
         end
       end
       options

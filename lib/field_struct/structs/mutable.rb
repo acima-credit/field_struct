@@ -3,7 +3,7 @@
 class FieldStruct
   class Mutable < Base
     def set(key, value)
-      set_by_key key, value
+      set_by_key key, value, true
     end
 
     alias []= set
@@ -21,7 +21,7 @@ class FieldStruct
       attr_name = attr_writer?(meth)
       return super unless attr_name
 
-      set_by_key(attr_name, args.first).tap { @validated = false }
+      set_by_key attr_name, args.first, true
     end
 
     def respond_to_missing?(meth, priv = false)

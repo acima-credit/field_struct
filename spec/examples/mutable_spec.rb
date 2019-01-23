@@ -5,7 +5,7 @@ require 'spec_helper'
 class FieldStruct
   module Examples
     class UserMutable < FieldStruct::Mutable
-      attribute :username, :string
+      attribute :username, :string, format: /^[a-z]/i
       attribute :password, :string, :optional
       attribute :age, :integer
       attribute :owed, :float, :coercible
@@ -49,7 +49,7 @@ RSpec.describe FieldStruct::Examples::UserMutable do
       'username="johnny" password="p0ssw3rd" age=3 owed=20.75 source="A" level=3 at=nil'
     end
     let(:values) { [username, password, age, owed, source, level, at] }
-    it('to_s      ', :focus) { expect(subject.to_s).to eq str }
+    it('to_s      ') { expect(subject.to_s).to eq str }
     it('inspect   ') { expect(subject.inspect).to eq str }
     it('username  ') { expect(subject.username).to eq username }
     it('password  ') { expect(subject.password).to eq password }
@@ -405,12 +405,23 @@ RSpec.describe FieldStruct::Examples::UserMutable do
       end
       context 'changes invalid value' do
         let(:new_value) { 123 }
-        it 'changes value' do
-          expect { subject.at = new_value }.to_not raise_error
-          expect(subject.at).to eq new_value
-          expect(subject.errors).to eq([])
-          expect(subject.valid?).to eq false
-          expect(subject.errors).to eq([':at is invalid'])
+        context 'with custom writer' do
+          it 'changes value' do
+            expect { subject.at = new_value }.to_not raise_error
+            expect(subject.at).to eq new_value
+            expect(subject.errors).to eq([])
+            expect(subject.valid?).to eq false
+            expect(subject.errors).to eq([':at is invalid'])
+          end
+        end
+        context 'with generic writer' do
+          it 'changes value' do
+            expect { subject.set :at, new_value }.to_not raise_error
+            expect(subject.at).to eq new_value
+            expect(subject.errors).to eq([])
+            expect(subject.valid?).to eq false
+            expect(subject.errors).to eq([':at is invalid'])
+          end
         end
       end
     end

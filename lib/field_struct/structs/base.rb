@@ -63,10 +63,6 @@ class FieldStruct
       attr?(meth) ? true : super
     end
 
-    def <=>(other)
-      to_s <=> other.to_s
-    end
-
     def to_s
       "#<#{self.class.name} #{to_hash.map { |k, v| "#{k}=#{v.inspect}" }.join(' ')}>"
     end
@@ -98,20 +94,10 @@ class FieldStruct
       self.class.attributes.key? name.to_sym
     end
 
-    def attr(name)
-      raise "invalid attribute name: #{name}" unless attr?(name)
-
-      self.class.attributes[name.to_sym]
-    end
-
-    def set_by_key(key, value)
+    def set_by_key(key, value, invalidate = false)
       @attributes ||= {}
       @attributes[key.to_sym] = value
-    end
-
-    def set_by_index(idx, value)
-      key = self.class.attribute_names[idx]
-      set_by_key key, value
+      @validated = false if invalidate
     end
 
     def set_if_missing(key, value)

@@ -5,7 +5,7 @@ require 'spec_helper'
 class FieldStruct
   module Examples
     class UserValue < FieldStruct::Value
-      attribute :username, :string, :required, :strict
+      attribute :username, :string, :required, :strict, format: /^[a-z]/i
       attribute :password, :string, :optional, :strict
       attribute :age, :integer, :coercible
       attribute :owed, :float, :coercible
@@ -42,11 +42,12 @@ RSpec.describe FieldStruct::Examples::UserValue do
   context 'class' do
     let(:attr_names) { %i[username password age owed source level at] }
     it('attribute_names') { expect(described_class.attribute_names).to eq attr_names }
-    context 'attributes', :focus do
+    context 'attributes' do
       context 'username' do
         subject { described_class.attributes[:username] }
         let(:str) do
-          '#<FieldStruct::Attribute name=:username type="string" options={:required=>true, :coercible=>false}>'
+          '#<FieldStruct::Attribute name=:username type="string" ' \
+            'options={:required=>true, :coercible=>false, :format=>/^[a-z]/i}>'
         end
         it { expect(subject.name).to eq :username }
         it { expect(subject.type).to be_a FieldStruct::Types::String }
@@ -119,7 +120,9 @@ RSpec.describe FieldStruct::Examples::UserValue do
         it { expect(subject.to_s).to eq str }
       end
     end
+  end
 
+  context 'instance' do
     context 'basic' do
       let(:fields_str) do
         'username="johnny" password="p0ssw3rd" age=3 owed=20.75 source="A" level=3 at=nil'
@@ -156,6 +159,12 @@ RSpec.describe FieldStruct::Examples::UserValue do
           let(:username) { nil }
           it 'throws an exception' do
             expect { subject }.to raise_error error_class, ':username is required'
+          end
+        end
+        context 'wrong format' do
+          let(:username) { '123' }
+          it 'throws an exception' do
+            expect { subject }.to raise_error error_class, ':username is not in a valid format'
           end
         end
       end

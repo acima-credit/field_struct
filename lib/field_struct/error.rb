@@ -5,6 +5,8 @@ class FieldStruct
   end
   class TypeError < Error
   end
+  class AttributeOptionError < Error
+  end
   class BuildError < Error
   end
 end

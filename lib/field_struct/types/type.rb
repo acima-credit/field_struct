@@ -50,10 +50,6 @@ class FieldStruct
         options[:required]
       end
 
-      # def coerce(val)
-      #   val
-      # end
-
       def valid?(value)
         val = options[:coercible] ? coerce(value) : value
 
@@ -73,12 +69,6 @@ class FieldStruct
           coercible: false
         }
       end
-
-      def to_s
-        %(#<#{self.class.name} options=#{@options.inspect}>)
-      end
-
-      alias inspect to_s
 
       private
 

@@ -21,12 +21,6 @@ class FieldStruct
       def valid?
         @errors.empty?
       end
-
-      def to_s
-        %(#<#{self.class.name} value=#{value.inspect} errors=#{errors.size}>)
-      end
-
-      alias inspect to_s
     end
   end
 end
