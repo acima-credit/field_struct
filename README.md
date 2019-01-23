@@ -1,6 +1,6 @@
 # FieldStruct
 
-[![Build Status](https://jenkins.smpl.ch/job/github/job/field_struct/job/master/badge/icon)](https://jenkins.smpl.ch/job/github/job/field_struct/job/master/)
+[![Build Status](https://jenkins.smpl.ch/buildStatus/icon?job=github/field_struct/master)](https://jenkins.smpl.ch/job/github/field_struct/master)
 
 `FieldStruct` provides a lightweight approach to having typed structs in three flavors: `FlexibleValue`, `StrictValue` and `Mutable`.
 
@@ -42,22 +42,22 @@ eric = Friend.new name: "John", balance_owed: '$4.50'
 leslie = Friend.new "Leslie", 25, gamer_level: 2 
 # => #<Friend name="Leslie" age=25 balance_owed=0.0 gamer_level=2 zip_code=nil>
 
-# Missing required fields
+# Missing required fields - throws an exception
 rosie = Friend.new age: 26
 # => FieldStruct::BuildError: :name is required
 
-# Invalid gamer level
+# Invalid gamer level - throws an exception
 carl = Friend.new "Carl", gamer_level: 11
 # => FieldStruct::BuildError: :gamer_level is not included in list  
 
-# Invalid zip code
+# Invalid zip code - throws an exception
 melanie = Friend.new "Melanie", zip_code: '123'
 # => FieldStruct::BuildError: :zip_code is not in a valid format  
 ``` 
 
 ### `FieldStruct::FlexibleValue` 
 
-This class enforces validation on instantiation and provides values that cannot be mutated after creation.
+This class does NOT enforce validation on instantiation and provides values that cannot be mutated after creation.
 
 ```ruby
 class Friend < FieldStruct.flexible_value
@@ -86,19 +86,19 @@ leslie = Friend.new "Leslie", 25, gamer_level: 2
 leslie.valid?
 # => true
 
-# Missing required fields
+# Missing required fields - not valid
 rosie = Friend.new age: 26
 # => #<Friend name=nil age=26 balance_owed=0.0 gamer_level=1 zip_code=nil>
 rosie.valid?
 # => false
 
-# Invalid gamer level
+# Invalid gamer level - not valid
 carl = Friend.new "Carl", gamer_level: 11
 # => #<Friend name="Carl" age=nil balance_owed=0.0 gamer_level=11 zip_code=nil>  
 carl.valid?
 # => false
 
-# Invalid zip code
+# Invalid zip code - not valid
 melanie = Friend.new "Melanie", zip_code: '123'
 # => #<Friend name="Melanie" age=nil balance_owed=0.0 gamer_level=1 zip_code="123">
 melanie.valid?
