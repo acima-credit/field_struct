@@ -3,6 +3,10 @@
 require 'json'
 require 'forwardable'
 
+require 'active_support/core_ext/module/delegation'
+require 'active_support/core_ext/object/to_param'
+require 'active_support/core_ext/object/to_query'
+
 require_relative 'field_struct/version'
 require_relative 'field_struct/types'
 require_relative 'field_struct/attribute'

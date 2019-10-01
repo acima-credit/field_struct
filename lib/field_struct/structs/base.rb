@@ -60,11 +60,29 @@ module FieldStruct
       self.class.attribute_names.map { |name| send name }
     end
 
-    def to_hash
+    def to_hash(_options = {})
       self.class.attribute_names.each_with_object({}) { |x, h| h[x] = get x }
     end
 
     alias to_h to_hash
+
+    def to_json(options = {})
+      JSON.generate to_hash, options
+    end
+
+    # taken from AS - activesupport/lib/active_support/core_ext/object/to_query.rb
+    def to_query(namespace = nil)
+      query = to_hash.collect do |key, value|
+        unless (value.is_a?(Hash) || value.is_a?(Array)) && value.empty?
+          value.to_query(namespace ? "#{namespace}[#{key}]" : key)
+        end
+      end.compact
+
+      query.sort! unless namespace.to_s.include?('[]')
+      query.join('&')
+    end
+
+    alias to_param to_query
 
     def method_missing(meth, *args, &block)
       attr?(meth) ? get(meth) : super

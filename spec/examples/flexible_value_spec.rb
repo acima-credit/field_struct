@@ -128,6 +128,13 @@ RSpec.describe FieldStruct::Examples::UserValue do
         let(:fields_str) do
           'username="johnny" password="p0ssw3rd" age=3 owed=20.75 source="A" level=3 at=nil'
         end
+        let(:exp_hsh) do
+          { age: 3, at: nil, level: 3, owed: 20.75, password: 'p0ssw3rd', source: 'A', username: 'johnny' }
+        end
+        let(:exp_query) { 'age=3&at=&level=3&owed=20.75&password=p0ssw3rd&source=A&username=johnny' }
+        let(:exp_json) do
+          '{"username":"johnny","password":"p0ssw3rd","age":3,"owed":20.75,"source":"A","level":3,"at":null}'
+        end
         let(:values) { [username, password, age, owed, source, level, at] }
         it('to_s      ') { expect(subject.to_s).to eq str }
         it('inspect   ') { expect(subject.inspect).to eq str }
@@ -139,6 +146,10 @@ RSpec.describe FieldStruct::Examples::UserValue do
         it('level     ') { expect(subject.level).to eq level }
         it('at        ') { expect(subject.at).to eq at }
         it('values    ') { expect(subject.values).to eq values }
+        it('to_hash   ') { expect(subject.to_hash).to eq(exp_hsh) }
+        it('to_query  ') { expect(subject.to_query).to eq(exp_query) }
+        it('to_param  ') { expect(subject.to_param).to eq(exp_query) }
+        it('to_json   ') { expect(subject.to_json).to eq(exp_json) }
       end
       context 'instantiate by hash' do
         it_behaves_like 'a valid field struct'
