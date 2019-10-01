@@ -65,7 +65,7 @@ module FieldStruct
 
       def default_options
         {
-          required:  true,
+          required: true,
           coercible: false
         }
       end

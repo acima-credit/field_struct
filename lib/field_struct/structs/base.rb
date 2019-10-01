@@ -33,6 +33,7 @@ module FieldStruct
 
     def initialize(*args)
       attrs = args.last.is_a?(Hash) ? args.pop : {}
+      @attributes ||= {}
       assign_attrs_by_index args
       assign_attrs_by_key attrs
       assign_defaults
@@ -95,7 +96,6 @@ module FieldStruct
     end
 
     def set_by_key(key, value, invalidate = false)
-      @attributes ||= {}
       @attributes[key.to_sym] = value
       @validated = false if invalidate
     end

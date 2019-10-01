@@ -30,11 +30,11 @@ RSpec.describe FieldStruct::Examples::UserMutable do
     {
       username: username,
       password: password,
-      age:      age,
-      owed:     owed,
-      source:   source,
-      level:    level,
-      at:       at
+      age: age,
+      owed: owed,
+      source: source,
+      level: level,
+      at: at
     }
   end
   subject { described_class.new params }
@@ -281,6 +281,12 @@ RSpec.describe FieldStruct::Examples::UserMutable do
       context 'nil' do
         let(:at) { nil }
         it('uses the default') { expect(subject.at).to eq nil }
+      end
+    end
+    context 'no params' do
+      subject { described_class.new }
+      it 'does not raise any errors' do
+        expect { subject }.to_not raise_error
       end
     end
   end

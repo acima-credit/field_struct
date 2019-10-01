@@ -30,11 +30,11 @@ RSpec.describe FieldStruct::Examples::UserValue do
     {
       username: username,
       password: password,
-      age:      age,
-      owed:     owed,
-      source:   source,
-      level:    level,
-      at:       at
+      age: age,
+      owed: owed,
+      source: source,
+      level: level,
+      at: at
     }
   end
   subject { described_class.new params }
@@ -343,6 +343,12 @@ RSpec.describe FieldStruct::Examples::UserValue do
         context 'nil' do
           let(:level) { nil }
           it('has an error') { expect(subject.errors).to eq [':level is required'] }
+        end
+      end
+      context 'no params' do
+        subject { described_class.new }
+        it 'does not raise any errors' do
+          expect { subject }.to_not raise_error
         end
       end
     end

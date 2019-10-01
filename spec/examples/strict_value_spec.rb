@@ -30,11 +30,11 @@ RSpec.describe FieldStruct::Examples::UserStrictValue do
     {
       username: username,
       password: password,
-      age:      age,
-      owed:     owed,
-      source:   source,
-      level:    level,
-      at:       at
+      age: age,
+      owed: owed,
+      source: source,
+      level: level,
+      at: at
     }
   end
   subject { described_class.new params }
@@ -379,6 +379,12 @@ RSpec.describe FieldStruct::Examples::UserStrictValue do
           it 'throws an exception' do
             expect { subject }.to raise_error error_class, ':level is required'
           end
+        end
+      end
+      context 'no params' do
+        subject { described_class.new }
+        it 'does raise a build error' do
+          expect { subject }.to raise_error error_class, ':username is required'
         end
       end
     end

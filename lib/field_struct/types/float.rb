@@ -17,8 +17,8 @@ module FieldStruct
 
       private
 
-      INVALID_RX = /[^\d\$-\.\,]/
-      REMOVE_RX = /[\$\,]/
+      INVALID_RX = /[^\d\$-\.\,]/.freeze
+      REMOVE_RX = /[\$\,]/.freeze
 
       def coerce_string(str)
         return nil if str.strip.empty?
