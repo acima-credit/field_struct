@@ -5,13 +5,13 @@ require 'spec_helper'
 module FieldStruct
   module Examples
     class UserStrictValue < FieldStruct.strict_value
-      attribute :username, :string, :required, :strict, format: /^[a-z]/i
-      attribute :password, :string, :optional, :strict
-      attribute :age, :integer, :coercible
-      attribute :owed, :float, :coercible
-      attribute :source, :string, :coercible, enum: %w[A B C]
-      attribute :level, :integer, default: -> { 2 }
-      attribute :at, :time, :optional
+      required :username, :string, :strict, format: /^[a-z]/i
+      optional :password, :string, :strict
+      required :age, :integer, :coercible
+      required :owed, :float, :coercible
+      required :source, :string, :coercible, enum: %w[A B C]
+      required :level, :integer, default: -> { 2 }
+      optional :at, :time
     end
   end
 end

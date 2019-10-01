@@ -6,7 +6,7 @@
 
 ## Attributes   
 
-All structs can be defined with mutliple attributes. Each attribute can:
+All structs can be defined with multiple attributes. Each attribute can:
 
 * Have a type: `:string`, `:integer`, `:float`, `:time`
 * Be `:required` (default) or `:optional`
@@ -14,6 +14,8 @@ All structs can be defined with mutliple attributes. Each attribute can:
 * Have a `:default`
 * Have a `:format` that it must follow
 * Be one of many options (e.g. `:enum`)
+
+You can use the `required` and `optional` aliases to `attribute` to skip using the `:required` and `:optional` argument. 
 
 ## Usage
 
@@ -23,11 +25,11 @@ This class enforces validation on instantiation and provides values that cannot 
 
 ```ruby
 class Friend < FieldStruct.strict_value
-  attribute :name, :string, :required
-  attribute :age, :integer, :optional
-  attribute :balance_owed, :float, :optional, :coercible, default: 0.0
-  attribute :gamer_level, :integer, :optional, enum: [1,2,3], default: -> { 1 }  
-  attribute :zip_code, :string, :optional, format: /^[0-9]{5}?$/  
+  required :name, :string
+  optional :age, :integer
+  optional :balance_owed, :float, :coercible, default: 0.0
+  optional :gamer_level, :integer, enum: [1,2,3], default: -> { 1 }  
+  optional :zip_code, :string, format: /^[0-9]{5}?$/  
 end
 
 # Minimal
@@ -61,11 +63,11 @@ This class does NOT enforce validation on instantiation and provides values that
 
 ```ruby
 class Friend < FieldStruct.flexible_value
-  attribute :name, :string, :required
-  attribute :age, :integer, :optional
-  attribute :balance_owed, :float, :optional, :coercible, default: 0.0
-  attribute :gamer_level, :integer, :optional, enum: [1,2,3], default: -> { 1 }  
-  attribute :zip_code, :string, :optional, format: /^[0-9]{5}?$/  
+  required :name, :string
+  optional :age, :integer
+  optional :balance_owed, :float, :coercible, default: 0.0
+  optional :gamer_level, :integer, enum: [1,2,3], default: -> { 1 }  
+  optional :zip_code, :string, format: /^[0-9]{5}?$/  
 end
 
 # Minimal
@@ -112,10 +114,10 @@ but it allows to instantiate invalid objects and modify the attributes after cre
 
 ```ruby
 class User < FieldStruct.mutable
-  attribute :username, :string
-  attribute :password, :string
-  attribute :team, :string, enum: %w{ A B C }
-  attribute :last_login_at, :time, :optional
+  required :username, :string
+  required :password, :string
+  required :team, :string, enum: %w{ A B C }
+  optional :last_login_at, :time
 end
 
 # A first attempt 

@@ -11,6 +11,16 @@ module FieldStruct
         attributes.add name, type, *args
       end
 
+      def required(name, type, *args)
+        args.unshift :required
+        attribute name, type, *args
+      end
+
+      def optional(name, type, *args)
+        args.unshift :optional
+        attribute name, type, *args
+      end
+
       def attribute_names
         attributes.names
       end

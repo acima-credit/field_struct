@@ -5,13 +5,13 @@ require 'spec_helper'
 module FieldStruct
   module Examples
     class UserMutable < FieldStruct.mutable
-      attribute :username, :string, format: /^[a-z]/i
-      attribute :password, :string, :optional
-      attribute :age, :integer
-      attribute :owed, :float, :coercible
-      attribute :source, :string, :coercible, enum: %w[A B C]
-      attribute :level, :integer, default: -> { 2 }
-      attribute :at, :time, :coercible, :optional
+      required :username, :string, format: /^[a-z]/i
+      optional :password, :string
+      required :age, :integer
+      required :owed, :float, :coercible
+      required :source, :string, :coercible, enum: %w[A B C]
+      required :level, :integer, default: -> { 2 }
+      optional :at, :time, :coercible
     end
   end
 end
