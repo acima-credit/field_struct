@@ -21,6 +21,12 @@ module FieldStruct
     class Employee < Person
       optional :title, :string
     end
+    class Developer < Person
+      optional :language, :string
+    end
+    class Owner < Employee
+      optional :percentage, :float
+    end
   end
 end
 
@@ -591,6 +597,132 @@ RSpec.describe FieldStruct::Examples::Employee do
       context 'instantiate by args and hash' do
         subject do
           described_class.new first_name, last_name, title: title
+        end
+        it_behaves_like 'a valid field struct'
+      end
+    end
+  end
+end
+
+RSpec.describe FieldStruct::Examples::Developer do
+  let(:str) { "#<#{described_class.name} #{fields_str}>" }
+
+  let(:first_name) { 'John' }
+  let(:last_name) { 'Smith' }
+  let(:language) { 'Ruby' }
+  let(:params) do
+    {
+      first_name: first_name,
+      last_name: last_name,
+      language: language
+    }
+  end
+  subject { described_class.new params }
+
+  context 'class' do
+    let(:attr_names) { %i[first_name last_name language] }
+    it('attribute_names') { expect(described_class.attribute_names).to eq attr_names }
+  end
+
+  context 'instance' do
+    context 'basic' do
+      shared_examples 'a valid field struct' do
+        let(:fields_str) do
+          'first_name="John" last_name="Smith" language="Ruby"'
+        end
+        let(:exp_hsh) do
+          { first_name: 'John', last_name: 'Smith', language: 'Ruby' }
+        end
+        let(:exp_query) { 'first_name=John&language=Ruby&last_name=Smith' }
+        let(:exp_json) do
+          '{"first_name":"John","last_name":"Smith","language":"Ruby"}'
+        end
+        let(:values) { [first_name, last_name, language] }
+        it('to_s      ') { expect(subject.to_s).to eq str }
+        it('inspect   ') { expect(subject.inspect).to eq str }
+        it('first_name') { expect(subject.first_name).to eq first_name }
+        it('last_name ') { expect(subject.last_name).to eq last_name }
+        it('language  ') { expect(subject.language).to eq language }
+        it('values    ') { expect(subject.values).to eq values }
+        it('to_hash   ') { expect(subject.to_hash).to eq(exp_hsh) }
+        it('to_query  ') { expect(subject.to_query).to eq(exp_query) }
+        it('to_param  ') { expect(subject.to_param).to eq(exp_query) }
+        it('to_json   ') { expect(subject.to_json).to eq(exp_json) }
+      end
+      context 'instantiate by hash' do
+        it_behaves_like 'a valid field struct'
+      end
+      context 'instantiate by args' do
+        subject { described_class.new first_name, last_name, language }
+        it_behaves_like 'a valid field struct'
+      end
+      context 'instantiate by args and hash' do
+        subject do
+          described_class.new first_name, last_name, language: language
+        end
+        it_behaves_like 'a valid field struct'
+      end
+    end
+  end
+end
+
+RSpec.describe FieldStruct::Examples::Owner do
+  let(:str) { "#<#{described_class.name} #{fields_str}>" }
+
+  let(:first_name) { 'John' }
+  let(:last_name) { 'Smith' }
+  let(:title) { 'Owner' }
+  let(:percentage) { 25.0 }
+  let(:params) do
+    {
+      first_name: first_name,
+      last_name: last_name,
+      title: title,
+      percentage: percentage
+    }
+  end
+  subject { described_class.new params }
+
+  context 'class' do
+    let(:attr_names) { %i[first_name last_name title percentage] }
+    it('attribute_names') { expect(described_class.attribute_names).to eq attr_names }
+  end
+
+  context 'instance' do
+    context 'basic' do
+      shared_examples 'a valid field struct' do
+        let(:fields_str) do
+          'first_name="John" last_name="Smith" title="Owner" percentage=25.0'
+        end
+        let(:exp_hsh) do
+          { first_name: 'John', last_name: 'Smith', title: 'Owner', percentage: 25.0 }
+        end
+        let(:exp_query) { 'first_name=John&last_name=Smith&percentage=25.0&title=Owner' }
+        let(:exp_json) do
+          '{"first_name":"John","last_name":"Smith","title":"Owner","percentage":25.0}'
+        end
+        let(:values) { [first_name, last_name, title, percentage] }
+        it('to_s      ') { expect(subject.to_s).to eq str }
+        it('inspect   ') { expect(subject.inspect).to eq str }
+        it('first_name') { expect(subject.first_name).to eq first_name }
+        it('last_name ') { expect(subject.last_name).to eq last_name }
+        it('percentage') { expect(subject.percentage).to eq percentage }
+        it('values    ') { expect(subject.values).to eq values }
+        it('to_hash   ') { expect(subject.to_hash).to eq(exp_hsh) }
+        it('to_query  ') { expect(subject.to_query).to eq(exp_query) }
+        it('to_param  ') { expect(subject.to_param).to eq(exp_query) }
+        it('to_json   ') { expect(subject.to_json).to eq(exp_json) }
+      end
+      context 'instantiate by hash' do
+        it_behaves_like 'a valid field struct'
+      end
+      context 'instantiate by args' do
+        subject { described_class.new first_name, last_name, title, percentage }
+        it_behaves_like 'a valid field struct'
+      end
+      context 'instantiate by args and hash' do
+        subject do
+          described_class.new first_name, last_name, title: title, percentage: percentage
         end
         it_behaves_like 'a valid field struct'
       end
