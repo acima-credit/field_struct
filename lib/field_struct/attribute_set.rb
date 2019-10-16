@@ -4,11 +4,11 @@ module FieldStruct
   class AttributeSet
     extend Forwardable
 
-    def initialize
-      @all = {}
+    def initialize(klass)
+      @all = build_ancestor_attributes klass
     end
 
-    def_delegators :@all, :[], :values, :key?, :key?
+    def_delegators :@all, :[], :values, :key?, :key?, :to_hash
     def_delegator :@all, :keys, :names
     def_delegators :values, :select, :each, :each_with_object, :find
 
@@ -17,6 +17,14 @@ module FieldStruct
     end
 
     private
+
+    def build_ancestor_attributes(klass)
+      found = false
+      klass.ancestors[1..-1].reverse.each_with_object({}) do |ancestor, hsh|
+        hsh.update(ancestor.attributes.to_hash) if found
+        found = true if ancestor == FieldStruct::Base
+      end
+    end
 
     def find_type(type)
       return type if type.is_a?(Types::Type)

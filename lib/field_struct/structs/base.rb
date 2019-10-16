@@ -4,11 +4,25 @@ module FieldStruct
   class Base
     class << self
       def attributes
-        @attributes ||= AttributeSet.new
+        @attributes ||= AttributeSet.new self
       end
 
       def attribute(name, type, *args)
         attributes.add name, type, *args
+        define_getter_meth name
+        define_setter_meth name
+      end
+
+      def define_getter_meth(name)
+        class_eval <<-CODE, __FILE__, __LINE__ + 1
+          def #{name}
+            get :#{name}
+          end
+        CODE
+      end
+
+      def define_setter_meth(_name)
+        nil
       end
 
       def required(name, type, *args)
@@ -83,14 +97,6 @@ module FieldStruct
     end
 
     alias to_param to_query
-
-    def method_missing(meth, *args, &block)
-      attr?(meth) ? get(meth) : super
-    end
-
-    def respond_to_missing?(meth, priv = false)
-      attr?(meth) ? true : super
-    end
 
     def to_s
       "#<#{self.class.name} #{to_hash.map { |k, v| "#{k}=#{v.inspect}" }.join(' ')}>"

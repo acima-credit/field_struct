@@ -4,7 +4,7 @@ require 'spec_helper'
 
 module FieldStruct
   module Examples
-    class UserStrictValue < FieldStruct.strict_value
+    class UserValue < FieldStruct.flexible
       required :username, :string, :strict, format: /^[a-z]/i
       optional :password, :string, :strict
       required :age, :integer, :coercible
@@ -16,7 +16,7 @@ module FieldStruct
   end
 end
 
-RSpec.describe FieldStruct::Examples::UserStrictValue do
+RSpec.describe FieldStruct::Examples::UserValue do
   let(:str) { "#<#{described_class.name} #{fields_str}>" }
 
   let(:username) { 'johnny' }
@@ -169,27 +169,19 @@ RSpec.describe FieldStruct::Examples::UserStrictValue do
       context 'username' do
         context 'missing' do
           let(:params) { { password: password, age: age, owed: owed, source: source } }
-          it 'throws an exception' do
-            expect { subject }.to raise_error error_class, ':username is required'
-          end
+          it('has an error') { expect(subject.errors).to eq [':username is required'] }
         end
         context 'empty' do
           let(:username) { '' }
-          it 'throws an exception' do
-            expect { subject }.to raise_error error_class, ':username is required'
-          end
+          it('has an error') { expect(subject.errors).to eq [':username is required'] }
         end
         context 'nil' do
           let(:username) { nil }
-          it 'throws an exception' do
-            expect { subject }.to raise_error error_class, ':username is required'
-          end
+          it('has an error') { expect(subject.errors).to eq [':username is required'] }
         end
         context 'wrong format' do
           let(:username) { '123' }
-          it 'throws an exception' do
-            expect { subject }.to raise_error error_class, ':username is not in a valid format'
-          end
+          it('has an error') { expect(subject.errors).to eq [':username is not in a valid format'] }
         end
       end
       context 'password' do
@@ -209,21 +201,15 @@ RSpec.describe FieldStruct::Examples::UserStrictValue do
       context 'age' do
         context 'missing' do
           let(:params) { { username: username, password: password, owed: owed, source: source } }
-          it 'throws an exception' do
-            expect { subject }.to raise_error error_class, ':age is required'
-          end
+          it('has an error') { expect(subject.errors).to eq [':age is required'] }
         end
         context 'empty' do
           let(:age) { '' }
-          it 'throws an exception' do
-            expect { subject }.to raise_error error_class, ':age is required'
-          end
+          it('has an error') { expect(subject.errors).to eq [':age is required'] }
         end
         context 'nil' do
           let(:age) { nil }
-          it 'throws an exception' do
-            expect { subject }.to raise_error error_class, ':age is required'
-          end
+          it('has an error') { expect(subject.errors).to eq [':age is required'] }
         end
         context 'string' do
           let(:age) { '35' }
@@ -237,27 +223,19 @@ RSpec.describe FieldStruct::Examples::UserStrictValue do
       context 'owed' do
         context 'missing' do
           let(:params) { { username: username, password: password, age: age, source: source } }
-          it 'throws an exception' do
-            expect { subject }.to raise_error error_class, ':owed is required'
-          end
+          it('has an error') { expect(subject.errors).to eq [':owed is required'] }
         end
         context 'empty' do
           let(:owed) { '' }
-          it 'throws an exception' do
-            expect { subject }.to raise_error error_class, ':owed is required'
-          end
+          it('has an error') { expect(subject.errors).to eq [':owed is required'] }
         end
         context 'nil' do
           let(:owed) { nil }
-          it 'throws an exception' do
-            expect { subject }.to raise_error error_class, ':owed is required'
-          end
+          it('has an error') { expect(subject.errors).to eq [':owed is required'] }
         end
         context 'invalid' do
           let(:owed) { '$3.o1' }
-          it 'throws an exception' do
-            expect { subject }.to raise_error error_class, ':owed is required'
-          end
+          it('has an error') { expect(subject.errors).to eq [':owed is required'] }
         end
         context '0.0' do
           context 'as string' do
@@ -329,49 +307,39 @@ RSpec.describe FieldStruct::Examples::UserStrictValue do
           context 'as string' do
             let(:owed) { '$12,345.67' }
             let(:fields_str) { 'username="johnny" password="p0ssw3rd" age=3 owed=12345.67 source="A" level=3 at=nil' }
-            it('to_s      ') { expect(subject.to_s).to eq str }
-            it('owed    ') { expect(subject.owed).to eq owed.gsub(/\$|\,/, '').to_f }
+            it('to_s') { expect(subject.to_s).to eq str }
+            it('owed') { expect(subject.owed).to eq 12_345.67 }
           end
         end
         context '$-12,345.67' do
           context 'as string' do
             let(:owed) { '$-12,345.67' }
             let(:fields_str) { 'username="johnny" password="p0ssw3rd" age=3 owed=-12345.67 source="A" level=3 at=nil' }
-            it('to_s      ') { expect(subject.to_s).to eq str }
-            it('owed    ') { expect(subject.owed).to eq owed.gsub(/\$|\,/, '').to_f }
+            it('to_s') { expect(subject.to_s).to eq str }
+            it('owed') { expect(subject.owed).to eq(-12_345.67) }
           end
         end
       end
       context 'source' do
         context 'missing' do
           let(:params) { { username: username, password: password, age: age, owed: owed } }
-          it 'throws an exception' do
-            expect { subject }.to raise_error error_class, ':source is required'
-          end
+          it('has an error') { expect(subject.errors).to eq [':source is required'] }
         end
         context 'empty' do
           let(:source) { '' }
-          it 'throws an exception' do
-            expect { subject }.to raise_error error_class, ':source is required'
-          end
+          it('has an error') { expect(subject.errors).to eq [':source is required'] }
         end
         context 'nil' do
           let(:source) { nil }
-          it 'throws an exception' do
-            expect { subject }.to raise_error error_class, ':source is required'
-          end
+          it('has an error') { expect(subject.errors).to eq [':source is required'] }
         end
         context 'unknown' do
           let(:source) { 'unknown' }
-          it 'throws an exception' do
-            expect { subject }.to raise_error error_class, ':source is not included in list'
-          end
+          it('has an error') { expect(subject.errors).to eq [':source is not included in list'] }
         end
         context 'wrong case' do
           let(:source) { 'a' }
-          it 'throws an exception' do
-            expect { subject }.to raise_error error_class, ':source is not included in list'
-          end
+          it('has an error') { expect(subject.errors).to eq [':source is not included in list'] }
         end
       end
       context 'level' do
@@ -381,21 +349,17 @@ RSpec.describe FieldStruct::Examples::UserStrictValue do
         end
         context 'empty' do
           let(:level) { '' }
-          it 'throws an exception' do
-            expect { subject }.to raise_error error_class, ':level is required'
-          end
+          it('has an error') { expect(subject.errors).to eq [':level is required'] }
         end
         context 'nil' do
           let(:level) { nil }
-          it 'throws an exception' do
-            expect { subject }.to raise_error error_class, ':level is required'
-          end
+          it('has an error') { expect(subject.errors).to eq [':level is required'] }
         end
       end
       context 'no params' do
         subject { described_class.new }
-        it 'does raise a build error' do
-          expect { subject }.to raise_error error_class, ':username is required'
+        it 'does not raise any errors' do
+          expect { subject }.to_not raise_error
         end
       end
     end

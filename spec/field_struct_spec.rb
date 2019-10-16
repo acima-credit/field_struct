@@ -7,13 +7,13 @@ RSpec.describe FieldStruct do
   describe 'class definition' do
     context 'on invalid' do
       context 'attribute set' do
-        let(:klass) { Class.new(FieldStruct::StrictValue) { required :name, :dancing } }
+        let(:klass) { Class.new(FieldStruct::Strict) { required :name, :dancing } }
         it('raises error') do
           expect { klass }.to raise_error FieldStruct::TypeError, 'Unknown type [:dancing]'
         end
       end
       context 'attribute option' do
-        let(:klass) { Class.new(FieldStruct::StrictValue) { required :name, :string, :rocking } }
+        let(:klass) { Class.new(FieldStruct::Strict) { required :name, :string, :rocking } }
         it('raises error') do
           expect { klass }.to raise_error FieldStruct::AttributeOptionError, 'Unknown option for attribute [:rocking]'
         end

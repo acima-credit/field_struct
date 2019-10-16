@@ -4,7 +4,7 @@ require 'spec_helper'
 
 module FieldStruct
   module Examples
-    class UserValue < FieldStruct.flexible_value
+    class UserStrictValue < FieldStruct.strict
       required :username, :string, :strict, format: /^[a-z]/i
       optional :password, :string, :strict
       required :age, :integer, :coercible
@@ -12,11 +12,19 @@ module FieldStruct
       required :source, :string, :coercible, enum: %w[A B C]
       required :level, :integer, default: -> { 2 }
       optional :at, :time
+      optional :active, :boolean, :coercible, default: false
+    end
+    class Person < FieldStruct.strict
+      required :first_name, :string
+      required :last_name, :string
+    end
+    class Employee < Person
+      optional :title, :string
     end
   end
 end
 
-RSpec.describe FieldStruct::Examples::UserValue do
+RSpec.describe FieldStruct::Examples::UserStrictValue do
   let(:str) { "#<#{described_class.name} #{fields_str}>" }
 
   let(:username) { 'johnny' }
@@ -26,6 +34,7 @@ RSpec.describe FieldStruct::Examples::UserValue do
   let(:source) { 'A' }
   let(:level) { 3 }
   let(:at) { nil }
+  let(:active) { false }
   let(:params) do
     {
       username: username,
@@ -34,13 +43,14 @@ RSpec.describe FieldStruct::Examples::UserValue do
       owed: owed,
       source: source,
       level: level,
-      at: at
+      at: at,
+      active: active
     }
   end
   subject { described_class.new params }
 
   context 'class' do
-    let(:attr_names) { %i[username password age owed source level at] }
+    let(:attr_names) { %i[username password age owed source level at active] }
     it('attribute_names') { expect(described_class.attribute_names).to eq attr_names }
     context 'attributes' do
       context 'username' do
@@ -119,6 +129,19 @@ RSpec.describe FieldStruct::Examples::UserValue do
         it { expect(subject.default?).to eq false }
         it { expect(subject.to_s).to eq str }
       end
+      context 'active' do
+        subject { described_class.attributes[:active] }
+        let(:str) do
+          '#<FieldStruct::Attribute name=:active type="boolean" ' \
+            'options={:required=>false, :coercible=>true, :default=>false}>'
+        end
+        it { expect(subject.name).to eq :active }
+        it { expect(subject.type).to be_a FieldStruct::Types::Boolean }
+        it { expect(subject.required?).to eq false }
+        it { expect(subject.coercible?).to eq true }
+        it { expect(subject.default?).to eq true }
+        it { expect(subject.to_s).to eq str }
+      end
     end
   end
 
@@ -126,16 +149,18 @@ RSpec.describe FieldStruct::Examples::UserValue do
     context 'basic' do
       shared_examples 'a valid field struct' do
         let(:fields_str) do
-          'username="johnny" password="p0ssw3rd" age=3 owed=20.75 source="A" level=3 at=nil'
+          'username="johnny" password="p0ssw3rd" age=3 owed=20.75 source="A" level=3 at=nil active=false'
         end
         let(:exp_hsh) do
-          { age: 3, at: nil, level: 3, owed: 20.75, password: 'p0ssw3rd', source: 'A', username: 'johnny' }
+          { age: 3, at: nil, level: 3, owed: 20.75, password: 'p0ssw3rd', source: 'A', username: 'johnny',
+            active: false }
         end
-        let(:exp_query) { 'age=3&at=&level=3&owed=20.75&password=p0ssw3rd&source=A&username=johnny' }
+        let(:exp_query) { 'active=false&age=3&at=&level=3&owed=20.75&password=p0ssw3rd&source=A&username=johnny' }
         let(:exp_json) do
-          '{"username":"johnny","password":"p0ssw3rd","age":3,"owed":20.75,"source":"A","level":3,"at":null}'
+          '{"username":"johnny","password":"p0ssw3rd","age":3,"owed":20.75,"source":"A","level":3,"at":null,' \
+            '"active":false}'
         end
-        let(:values) { [username, password, age, owed, source, level, at] }
+        let(:values) { [username, password, age, owed, source, level, at, active] }
         it('to_s      ') { expect(subject.to_s).to eq str }
         it('inspect   ') { expect(subject.inspect).to eq str }
         it('username  ') { expect(subject.username).to eq username }
@@ -155,11 +180,13 @@ RSpec.describe FieldStruct::Examples::UserValue do
         it_behaves_like 'a valid field struct'
       end
       context 'instantiate by args' do
-        subject { described_class.new username, password, age, owed, source, level, at }
+        subject { described_class.new username, password, age, owed, source, level, at, active }
         it_behaves_like 'a valid field struct'
       end
       context 'instantiate by args and hash' do
-        subject { described_class.new username, password, age, owed, source: source, level: level, at: at }
+        subject do
+          described_class.new username, password, age, owed, source: source, level: level, at: at, active: active
+        end
         it_behaves_like 'a valid field struct'
       end
     end
@@ -169,19 +196,27 @@ RSpec.describe FieldStruct::Examples::UserValue do
       context 'username' do
         context 'missing' do
           let(:params) { { password: password, age: age, owed: owed, source: source } }
-          it('has an error') { expect(subject.errors).to eq [':username is required'] }
+          it 'throws an exception' do
+            expect { subject }.to raise_error error_class, ':username is required'
+          end
         end
         context 'empty' do
           let(:username) { '' }
-          it('has an error') { expect(subject.errors).to eq [':username is required'] }
+          it 'throws an exception' do
+            expect { subject }.to raise_error error_class, ':username is required'
+          end
         end
         context 'nil' do
           let(:username) { nil }
-          it('has an error') { expect(subject.errors).to eq [':username is required'] }
+          it 'throws an exception' do
+            expect { subject }.to raise_error error_class, ':username is required'
+          end
         end
         context 'wrong format' do
           let(:username) { '123' }
-          it('has an error') { expect(subject.errors).to eq [':username is not in a valid format'] }
+          it 'throws an exception' do
+            expect { subject }.to raise_error error_class, ':username is not in a valid format'
+          end
         end
       end
       context 'password' do
@@ -201,15 +236,21 @@ RSpec.describe FieldStruct::Examples::UserValue do
       context 'age' do
         context 'missing' do
           let(:params) { { username: username, password: password, owed: owed, source: source } }
-          it('has an error') { expect(subject.errors).to eq [':age is required'] }
+          it 'throws an exception' do
+            expect { subject }.to raise_error error_class, ':age is required'
+          end
         end
         context 'empty' do
           let(:age) { '' }
-          it('has an error') { expect(subject.errors).to eq [':age is required'] }
+          it 'throws an exception' do
+            expect { subject }.to raise_error error_class, ':age is required'
+          end
         end
         context 'nil' do
           let(:age) { nil }
-          it('has an error') { expect(subject.errors).to eq [':age is required'] }
+          it 'throws an exception' do
+            expect { subject }.to raise_error error_class, ':age is required'
+          end
         end
         context 'string' do
           let(:age) { '35' }
@@ -223,42 +264,58 @@ RSpec.describe FieldStruct::Examples::UserValue do
       context 'owed' do
         context 'missing' do
           let(:params) { { username: username, password: password, age: age, source: source } }
-          it('has an error') { expect(subject.errors).to eq [':owed is required'] }
+          it 'throws an exception' do
+            expect { subject }.to raise_error error_class, ':owed is required'
+          end
         end
         context 'empty' do
           let(:owed) { '' }
-          it('has an error') { expect(subject.errors).to eq [':owed is required'] }
+          it 'throws an exception' do
+            expect { subject }.to raise_error error_class, ':owed is required'
+          end
         end
         context 'nil' do
           let(:owed) { nil }
-          it('has an error') { expect(subject.errors).to eq [':owed is required'] }
+          it 'throws an exception' do
+            expect { subject }.to raise_error error_class, ':owed is required'
+          end
         end
         context 'invalid' do
           let(:owed) { '$3.o1' }
-          it('has an error') { expect(subject.errors).to eq [':owed is required'] }
+          it 'throws an exception' do
+            expect { subject }.to raise_error error_class, ':owed is required'
+          end
         end
         context '0.0' do
           context 'as string' do
             let(:owed) { '0.0' }
-            let(:fields_str) { 'username="johnny" password="p0ssw3rd" age=3 owed=0.0 source="A" level=3 at=nil' }
+            let(:fields_str) do
+              'username="johnny" password="p0ssw3rd" age=3 owed=0.0 source="A" level=3 at=nil active=false'
+            end
             it('to_s      ') { expect(subject.to_s).to eq str }
             it('owed    ') { expect(subject.owed).to eq owed.to_f }
           end
           context 'as float' do
             let(:owed) { 0.0 }
-            let(:fields_str) { 'username="johnny" password="p0ssw3rd" age=3 owed=0.0 source="A" level=3 at=nil' }
+            let(:fields_str) do
+              'username="johnny" password="p0ssw3rd" age=3 owed=0.0 source="A" level=3 at=nil active=false'
+            end
             it('to_s      ') { expect(subject.to_s).to eq str }
             it('owed    ') { expect(subject.owed).to eq owed.to_f }
           end
           context 'as integer' do
             let(:owed) { 0 }
-            let(:fields_str) { 'username="johnny" password="p0ssw3rd" age=3 owed=0.0 source="A" level=3 at=nil' }
+            let(:fields_str) do
+              'username="johnny" password="p0ssw3rd" age=3 owed=0.0 source="A" level=3 at=nil active=false'
+            end
             it('to_s      ') { expect(subject.to_s).to eq str }
             it('owed    ') { expect(subject.owed).to eq owed.to_f }
           end
           context 'as decimal' do
             let(:owed) { BigDecimal '0' }
-            let(:fields_str) { 'username="johnny" password="p0ssw3rd" age=3 owed=0.0 source="A" level=3 at=nil' }
+            let(:fields_str) do
+              'username="johnny" password="p0ssw3rd" age=3 owed=0.0 source="A" level=3 at=nil active=false'
+            end
             it('to_s      ') { expect(subject.to_s).to eq str }
             it('owed    ') { expect(subject.owed).to eq owed.to_f }
           end
@@ -266,19 +323,25 @@ RSpec.describe FieldStruct::Examples::UserValue do
         context '12.34' do
           context 'as string' do
             let(:owed) { '12.34' }
-            let(:fields_str) { 'username="johnny" password="p0ssw3rd" age=3 owed=12.34 source="A" level=3 at=nil' }
+            let(:fields_str) do
+              'username="johnny" password="p0ssw3rd" age=3 owed=12.34 source="A" level=3 at=nil active=false'
+            end
             it('to_s      ') { expect(subject.to_s).to eq str }
             it('owed    ') { expect(subject.owed).to eq owed.to_f }
           end
           context 'as float' do
             let(:owed) { 12.34 }
-            let(:fields_str) { 'username="johnny" password="p0ssw3rd" age=3 owed=12.34 source="A" level=3 at=nil' }
+            let(:fields_str) do
+              'username="johnny" password="p0ssw3rd" age=3 owed=12.34 source="A" level=3 at=nil active=false'
+            end
             it('to_s      ') { expect(subject.to_s).to eq str }
             it('owed    ') { expect(subject.owed).to eq owed.to_f }
           end
           context 'as decimal' do
             let(:owed) { BigDecimal '12.34' }
-            let(:fields_str) { 'username="johnny" password="p0ssw3rd" age=3 owed=12.34 source="A" level=3 at=nil' }
+            let(:fields_str) do
+              'username="johnny" password="p0ssw3rd" age=3 owed=12.34 source="A" level=3 at=nil active=false'
+            end
             it('to_s      ') { expect(subject.to_s).to eq str }
             it('owed    ') { expect(subject.owed).to eq owed.to_f }
           end
@@ -286,19 +349,25 @@ RSpec.describe FieldStruct::Examples::UserValue do
         context '-12.34' do
           context 'as string' do
             let(:owed) { '-12.34' }
-            let(:fields_str) { 'username="johnny" password="p0ssw3rd" age=3 owed=-12.34 source="A" level=3 at=nil' }
+            let(:fields_str) do
+              'username="johnny" password="p0ssw3rd" age=3 owed=-12.34 source="A" level=3 at=nil active=false'
+            end
             it('to_s      ') { expect(subject.to_s).to eq str }
             it('owed    ') { expect(subject.owed).to eq owed.to_f }
           end
           context 'as float' do
             let(:owed) { -12.34 }
-            let(:fields_str) { 'username="johnny" password="p0ssw3rd" age=3 owed=-12.34 source="A" level=3 at=nil' }
+            let(:fields_str) do
+              'username="johnny" password="p0ssw3rd" age=3 owed=-12.34 source="A" level=3 at=nil active=false'
+            end
             it('to_s      ') { expect(subject.to_s).to eq str }
             it('owed    ') { expect(subject.owed).to eq owed.to_f }
           end
           context 'as decimal' do
             let(:owed) { BigDecimal '-12.34' }
-            let(:fields_str) { 'username="johnny" password="p0ssw3rd" age=3 owed=-12.34 source="A" level=3 at=nil' }
+            let(:fields_str) do
+              'username="johnny" password="p0ssw3rd" age=3 owed=-12.34 source="A" level=3 at=nil active=false'
+            end
             it('to_s      ') { expect(subject.to_s).to eq str }
             it('owed    ') { expect(subject.owed).to eq owed.to_f }
           end
@@ -306,40 +375,54 @@ RSpec.describe FieldStruct::Examples::UserValue do
         context '$12,345.67' do
           context 'as string' do
             let(:owed) { '$12,345.67' }
-            let(:fields_str) { 'username="johnny" password="p0ssw3rd" age=3 owed=12345.67 source="A" level=3 at=nil' }
-            it('to_s') { expect(subject.to_s).to eq str }
-            it('owed') { expect(subject.owed).to eq 12_345.67 }
+            let(:fields_str) do
+              'username="johnny" password="p0ssw3rd" age=3 owed=12345.67 source="A" level=3 at=nil active=false'
+            end
+            it('to_s      ') { expect(subject.to_s).to eq str }
+            it('owed    ') { expect(subject.owed).to eq owed.gsub(/\$|\,/, '').to_f }
           end
         end
         context '$-12,345.67' do
           context 'as string' do
             let(:owed) { '$-12,345.67' }
-            let(:fields_str) { 'username="johnny" password="p0ssw3rd" age=3 owed=-12345.67 source="A" level=3 at=nil' }
-            it('to_s') { expect(subject.to_s).to eq str }
-            it('owed') { expect(subject.owed).to eq(-12_345.67) }
+            let(:fields_str) do
+              'username="johnny" password="p0ssw3rd" age=3 owed=-12345.67 source="A" level=3 at=nil active=false'
+            end
+            it('to_s      ') { expect(subject.to_s).to eq str }
+            it('owed    ') { expect(subject.owed).to eq owed.gsub(/\$|\,/, '').to_f }
           end
         end
       end
       context 'source' do
         context 'missing' do
           let(:params) { { username: username, password: password, age: age, owed: owed } }
-          it('has an error') { expect(subject.errors).to eq [':source is required'] }
+          it 'throws an exception' do
+            expect { subject }.to raise_error error_class, ':source is required'
+          end
         end
         context 'empty' do
           let(:source) { '' }
-          it('has an error') { expect(subject.errors).to eq [':source is required'] }
+          it 'throws an exception' do
+            expect { subject }.to raise_error error_class, ':source is required'
+          end
         end
         context 'nil' do
           let(:source) { nil }
-          it('has an error') { expect(subject.errors).to eq [':source is required'] }
+          it 'throws an exception' do
+            expect { subject }.to raise_error error_class, ':source is required'
+          end
         end
         context 'unknown' do
           let(:source) { 'unknown' }
-          it('has an error') { expect(subject.errors).to eq [':source is not included in list'] }
+          it 'throws an exception' do
+            expect { subject }.to raise_error error_class, ':source is not included in list'
+          end
         end
         context 'wrong case' do
           let(:source) { 'a' }
-          it('has an error') { expect(subject.errors).to eq [':source is not included in list'] }
+          it 'throws an exception' do
+            expect { subject }.to raise_error error_class, ':source is not included in list'
+          end
         end
       end
       context 'level' do
@@ -349,17 +432,21 @@ RSpec.describe FieldStruct::Examples::UserValue do
         end
         context 'empty' do
           let(:level) { '' }
-          it('has an error') { expect(subject.errors).to eq [':level is required'] }
+          it 'throws an exception' do
+            expect { subject }.to raise_error error_class, ':level is required'
+          end
         end
         context 'nil' do
           let(:level) { nil }
-          it('has an error') { expect(subject.errors).to eq [':level is required'] }
+          it 'throws an exception' do
+            expect { subject }.to raise_error error_class, ':level is required'
+          end
         end
       end
       context 'no params' do
         subject { described_class.new }
-        it 'does not raise any errors' do
-          expect { subject }.to_not raise_error
+        it 'does raise a build error' do
+          expect { subject }.to raise_error error_class, ':username is required'
         end
       end
     end
@@ -385,6 +472,127 @@ RSpec.describe FieldStruct::Examples::UserValue do
       context 'source' do
         it('responds_to') { expect(subject.respond_to?(:source=)).to eq false }
         it { expect { subject.source = 'other' }.to raise_error(error_class, /undefined method `source='/) }
+      end
+    end
+  end
+end
+
+RSpec.describe FieldStruct::Examples::Person do
+  let(:str) { "#<#{described_class.name} #{fields_str}>" }
+
+  let(:first_name) { 'John' }
+  let(:last_name) { 'Smith' }
+  let(:params) do
+    {
+      first_name: first_name,
+      last_name: last_name
+    }
+  end
+  subject { described_class.new params }
+
+  context 'class' do
+    let(:attr_names) { %i[first_name last_name] }
+    it('attribute_names') { expect(described_class.attribute_names).to eq attr_names }
+  end
+
+  context 'instance' do
+    context 'basic' do
+      shared_examples 'a valid field struct' do
+        let(:fields_str) do
+          'first_name="John" last_name="Smith"'
+        end
+        let(:exp_hsh) do
+          { first_name: 'John', last_name: 'Smith' }
+        end
+        let(:exp_query) { 'first_name=John&last_name=Smith' }
+        let(:exp_json) do
+          '{"first_name":"John","last_name":"Smith"}'
+        end
+        let(:values) { [first_name, last_name] }
+        it('to_s      ') { expect(subject.to_s).to eq str }
+        it('inspect   ') { expect(subject.inspect).to eq str }
+        it('first_name') { expect(subject.first_name).to eq first_name }
+        it('last_name ') { expect(subject.last_name).to eq last_name }
+        it('values    ') { expect(subject.values).to eq values }
+        it('to_hash   ') { expect(subject.to_hash).to eq(exp_hsh) }
+        it('to_query  ') { expect(subject.to_query).to eq(exp_query) }
+        it('to_param  ') { expect(subject.to_param).to eq(exp_query) }
+        it('to_json   ') { expect(subject.to_json).to eq(exp_json) }
+      end
+      context 'instantiate by hash' do
+        it_behaves_like 'a valid field struct'
+      end
+      context 'instantiate by args' do
+        subject { described_class.new first_name, last_name }
+        it_behaves_like 'a valid field struct'
+      end
+      context 'instantiate by args and hash' do
+        subject do
+          described_class.new first_name, last_name: last_name
+        end
+        it_behaves_like 'a valid field struct'
+      end
+    end
+  end
+end
+
+RSpec.describe FieldStruct::Examples::Employee do
+  let(:str) { "#<#{described_class.name} #{fields_str}>" }
+
+  let(:first_name) { 'John' }
+  let(:last_name) { 'Smith' }
+  let(:title) { 'Admin' }
+  let(:params) do
+    {
+      first_name: first_name,
+      last_name: last_name,
+      title: title
+    }
+  end
+  subject { described_class.new params }
+
+  context 'class' do
+    let(:attr_names) { %i[first_name last_name title] }
+    it('attribute_names') { expect(described_class.attribute_names).to eq attr_names }
+  end
+
+  context 'instance' do
+    context 'basic' do
+      shared_examples 'a valid field struct' do
+        let(:fields_str) do
+          'first_name="John" last_name="Smith" title="Admin"'
+        end
+        let(:exp_hsh) do
+          { first_name: 'John', last_name: 'Smith', title: 'Admin' }
+        end
+        let(:exp_query) { 'first_name=John&last_name=Smith&title=Admin' }
+        let(:exp_json) do
+          '{"first_name":"John","last_name":"Smith","title":"Admin"}'
+        end
+        let(:values) { [first_name, last_name, title] }
+        it('to_s      ') { expect(subject.to_s).to eq str }
+        it('inspect   ') { expect(subject.inspect).to eq str }
+        it('first_name') { expect(subject.first_name).to eq first_name }
+        it('last_name ') { expect(subject.last_name).to eq last_name }
+        it('title     ') { expect(subject.title).to eq title }
+        it('values    ') { expect(subject.values).to eq values }
+        it('to_hash   ') { expect(subject.to_hash).to eq(exp_hsh) }
+        it('to_query  ') { expect(subject.to_query).to eq(exp_query) }
+        it('to_param  ') { expect(subject.to_param).to eq(exp_query) }
+        it('to_json   ') { expect(subject.to_json).to eq(exp_json) }
+      end
+      context 'instantiate by hash' do
+        it_behaves_like 'a valid field struct'
+      end
+      context 'instantiate by args' do
+        subject { described_class.new first_name, last_name, title }
+        it_behaves_like 'a valid field struct'
+      end
+      context 'instantiate by args and hash' do
+        subject do
+          described_class.new first_name, last_name, title: title
+        end
+        it_behaves_like 'a valid field struct'
       end
     end
   end

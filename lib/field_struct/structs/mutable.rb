@@ -2,6 +2,16 @@
 
 module FieldStruct
   class Mutable < Base
+    class << self
+      def define_setter_meth(name)
+        class_eval <<-CODE, __FILE__, __LINE__ + 1
+          def #{name}=(value)
+            set :#{name}, value
+          end
+        CODE
+      end
+    end
+
     def set(key, value)
       set_by_key key, value, true
     end
@@ -15,17 +25,6 @@ module FieldStruct
 
     def errors
       @errors ||= []
-    end
-
-    def method_missing(meth, *args, &block)
-      attr_name = attr_writer?(meth)
-      return super unless attr_name
-
-      set_by_key attr_name, args.first, true
-    end
-
-    def respond_to_missing?(meth, priv = false)
-      attr_writer?(meth) ? true : super
     end
 
     private

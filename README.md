@@ -24,7 +24,7 @@ You can use the `required` and `optional` aliases to `attribute` to skip using t
 This class enforces validation on instantiation and provides values that cannot be mutated after creation.
 
 ```ruby
-class Friend < FieldStruct.strict_value
+class Friend < FieldStruct.strict
   required :name, :string
   optional :age, :integer
   optional :balance_owed, :float, :coercible, default: 0.0
@@ -62,7 +62,7 @@ melanie = Friend.new "Melanie", zip_code: '123'
 This class does NOT enforce validation on instantiation and provides values that cannot be mutated after creation.
 
 ```ruby
-class Friend < FieldStruct.flexible_value
+class Friend < FieldStruct.flexible
   required :name, :string
   optional :age, :integer
   optional :balance_owed, :float, :coercible, default: 0.0

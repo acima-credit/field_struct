@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module FieldStruct
-  class StrictValue < Base
+  class Strict < Base
     def initialize(*args)
       super
       validate
@@ -17,7 +17,7 @@ module FieldStruct
     end
   end
 
-  def self.strict_value
-    StrictValue
+  def self.strict
+    Strict
   end
 end

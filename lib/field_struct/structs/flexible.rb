@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module FieldStruct
-  class FlexibleValue < Base
+  class Flexible < Base
     attr_reader :errors
 
     def initialize(*args)
@@ -30,7 +30,7 @@ module FieldStruct
     end
   end
 
-  def self.flexible_value
-    FlexibleValue
+  def self.flexible
+    Flexible
   end
 end
