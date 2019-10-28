@@ -1,8 +1,6 @@
 # FieldStruct
 
-[![Build Status](https://jenkins.smpl.ch/buildStatus/icon?job=github/field_struct/master)](https://jenkins.smpl.ch/job/github/field_struct/master)
-
-`FieldStruct` provides a lightweight approach to having typed structs in three flavors: `FlexibleValue`, `StrictValue` 
+`FieldStruct` provides a lightweight approach to having typed structs in three flavors: `Flexible`, `Strict` 
 and `Mutable`.
 
 It is heavily based on [ActiveModel](https://edgeguides.rubyonrails.org/active_model_basics.html) and adds 
@@ -14,7 +12,7 @@ syntactic sugar to make the developer experience much more enjoyable.
 All structs can be defined with multiple attributes. Each attribute can:
 
 * Have a known type: `:string`, `:integer`, `:float`, `:date`,` :time`, `:boolean`, etc.
-* Have a new type like `:array`, `:currency` or a `FieldStruct` itself. 
+* Have a new type like `:array`, `:currency` or a nested `FieldStruct` itself. 
 * Be `:required` or `:optional` (default)
 * Have a `:default` value or proc.
 * Have a `:format` that it must follow.
