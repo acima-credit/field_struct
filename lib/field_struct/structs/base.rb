@@ -56,6 +56,7 @@ module FieldStruct
       # @param [Object] value
       # @return [Object]
       def cast(value)
+        return value if value.nil?
         return value if value.is_a?(self)
         return new(value) if value.is_a?(Hash)
 
