@@ -31,6 +31,7 @@ RUN mkdir -p /app
 WORKDIR /app
 
 ADD . /app
+RUN gem install bundler
 RUN bin/setup
 
 #ENTRYPOINT ["bundle", "exec"]
