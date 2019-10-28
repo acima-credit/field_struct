@@ -2,18 +2,24 @@
 
 [![Build Status](https://jenkins.smpl.ch/buildStatus/icon?job=github/field_struct/master)](https://jenkins.smpl.ch/job/github/field_struct/master)
 
-`FieldStruct` provides a lightweight approach to having typed structs in three flavors: `FlexibleValue`, `StrictValue` and `Mutable`.
+`FieldStruct` provides a lightweight approach to having typed structs in three flavors: `FlexibleValue`, `StrictValue` 
+and `Mutable`.
+
+It is heavily based on [ActiveModel](https://edgeguides.rubyonrails.org/active_model_basics.html) and adds 
+syntactic sugar to make the developer experience much more enjoyable. 
+
 
 ## Attributes   
 
 All structs can be defined with multiple attributes. Each attribute can:
 
-* Have a type: `:string`, `:integer`, `:float`, `:time`
-* Be `:required` (default) or `:optional`
-* Be `:strict` (default) or `:coercible`
-* Have a `:default`
-* Have a `:format` that it must follow
+* Have a known type: `:string`, `:integer`, `:float`, `:date`,` :time`, `:boolean`, etc.
+* Have a new type like `:array`, `:currency` or a `FieldStruct` itself. 
+* Be `:required` or `:optional` (default)
+* Have a `:default` value or proc.
+* Have a `:format` that it must follow.
 * Be one of many options (e.g. `:enum`)
+* Have Have any number of ActiveRecord-like validations.
 
 You can use the `required` and `optional` aliases to `attribute` to skip using the `:required` and `:optional` argument. 
 
@@ -27,34 +33,34 @@ This class enforces validation on instantiation and provides values that cannot 
 class Friend < FieldStruct.strict
   required :name, :string
   optional :age, :integer
-  optional :balance_owed, :float, :coercible, default: 0.0
+  optional :balance_owed, :currency, default: 0.0
   optional :gamer_level, :integer, enum: [1,2,3], default: -> { 1 }  
-  optional :zip_code, :string, format: /^[0-9]{5}?$/  
+  optional :zip_code, :string, format: /\A[0-9]{5}?\z/  
 end
 
 # Minimal
 john = Friend.new name: "John"
-# => #<Friend name="John" age=nil balance_owed=0.0 gamer_level=1 zip_code=nil>
+# => #<Friend name="John" balance_owed=0.0 gamer_level=1>
+
+# Can't modify once created 
+john.name = "Steven" 
+# FrozenError: can't modify frozen Hash
 
 # Coercing string amount
 eric = Friend.new name: "John", balance_owed: '$4.50'
-# => #<Friend name="John" age=nil balance_owed=4.5 gamer_level=1 zip_code=nil>
-
-# Ordered parameters 
-leslie = Friend.new "Leslie", 25, gamer_level: 2 
-# => #<Friend name="Leslie" age=25 balance_owed=0.0 gamer_level=2 zip_code=nil>
+# => #<Friend name="John" balance_owed=4.5 gamer_level=1>
 
 # Missing required fields - throws an exception
 rosie = Friend.new age: 26
-# => FieldStruct::BuildError: :name is required
+# => FieldStruct::BuildError: :name can't be blank
 
 # Invalid gamer level - throws an exception
-carl = Friend.new "Carl", gamer_level: 11
-# => FieldStruct::BuildError: :gamer_level is not included in list  
+carl = Friend.new name: "Carl", gamer_level: 11
+# => FieldStruct::BuildError: :gamer_level is not included in the list  
 
 # Invalid zip code - throws an exception
-melanie = Friend.new "Melanie", zip_code: '123'
-# => FieldStruct::BuildError: :zip_code is not in a valid format  
+melanie = Friend.new name: "Melanie", zip_code: '123'
+# => FieldStruct::BuildError: :zip_code is invalid  
 ``` 
 
 ### `FieldStruct::FlexibleValue` 
@@ -65,46 +71,44 @@ This class does NOT enforce validation on instantiation and provides values that
 class Friend < FieldStruct.flexible
   required :name, :string
   optional :age, :integer
-  optional :balance_owed, :float, :coercible, default: 0.0
+  optional :balance_owed, :currency, default: 0.0
   optional :gamer_level, :integer, enum: [1,2,3], default: -> { 1 }  
-  optional :zip_code, :string, format: /^[0-9]{5}?$/  
+  optional :zip_code, :string, format: /\A[0-9]{5}?\z/  
 end
 
 # Minimal
 john = Friend.new name: "John"
-# => #<Friend name="John" age=nil balance_owed=0.0 gamer_level=1 zip_code=nil>
+# => #<Friend name="John" balance_owed=0.0 gamer_level=1>
 john.valid?
-# => true 
-
-# Coercing string amount
-eric = Friend.new name: "John", balance_owed: '$4.50'
-# => #<Friend name="John" age=nil balance_owed=4.5 gamer_level=1 zip_code=nil>
-eric.valid?
 # => true
 
-# Ordered parameters 
-leslie = Friend.new "Leslie", 25, gamer_level: 2 
-# => #<Friend name="Leslie" age=25 balance_owed=0.0 gamer_level=2 zip_code=nil>
-leslie.valid?
-# => true
+# Can't modify once created 
+john.name = "Steven" 
+# FrozenError: can't modify frozen Hash
 
 # Missing required fields - not valid
 rosie = Friend.new age: 26
 # => #<Friend name=nil age=26 balance_owed=0.0 gamer_level=1 zip_code=nil>
 rosie.valid?
 # => false
-
+rosie.errors.to_hash
+# => {:name=>["can't be blank"]}
+ # 
 # Invalid gamer level - not valid
-carl = Friend.new "Carl", gamer_level: 11
-# => #<Friend name="Carl" age=nil balance_owed=0.0 gamer_level=11 zip_code=nil>  
+carl = Friend.new name: "Carl", gamer_level: 11
+# => #<Friend name="Carl" balance_owed=0.0 gamer_level=11>  
 carl.valid?
 # => false
-
+carl.errors.to_hash
+# => {:gamer_level=>["is not included in the list"]}
+ 
 # Invalid zip code - not valid
-melanie = Friend.new "Melanie", zip_code: '123'
-# => #<Friend name="Melanie" age=nil balance_owed=0.0 gamer_level=1 zip_code="123">
+melanie = Friend.new name: "Melanie", zip_code: '123'
+# => #<Friend name="Melanie" balance_owed=0.0 gamer_level=1 zip_code="123">
 melanie.valid?
-# => false  
+# => false
+melanie.errors.to_hash
+# => {:zip_code=>["is invalid"]}  
 ``` 
 
 ### `FieldStruct::Mutable`
@@ -121,41 +125,199 @@ class User < FieldStruct.mutable
 end
 
 # A first attempt 
-john = User.new 'john@company.com'
-# => #<User username="john@company.com" password=nil team=nil last_login_at=nil>
+john = User.new username: 'john@company.com'
+# => #<User username="john@company.com">
 
 # Is it valid? What errors do we have? 
-[john.valid?, john.errors]
-# => [false, [":password is required", ":team is required"]]
+[john.valid?, john.errors.to_hash]
+# => => [false, {:password=>["can't be blank"], :team=>["can't be blank", "is not included in the list"]}]
 
 # Let's fix the first error: missing password 
 john.password = 'some1234'
 # => "some1234"
 
 # Is it valid now? What errors do we still have? 
-[john.valid?, john.errors]
-# => [false, [":team is required"]]
+[john.valid?, john.errors.to_hash]
+# => [false, {:team=>["can't be blank", "is not included in the list"]}]
 
 # Let's fix the team
 john.team = 'X'
 # => "X"
 
 # Are we valid now? Do we still have errors?
-[john.valid?, john.errors]
-# => [false, [":team is not included in list"]]
+[john.valid?, john.errors.to_hash]
+# => [false, {:team=>["is not included in the list"]}]
 
 # Let's fix the team for real now
 john.team = 'B'
 # => "B"
 
 # Are we finally valid now? Do we still have errors?
-[john.valid?, john.errors]
-# => [true, []]
+[john.valid?, john.errors.to_hash]
+# => [true, {}]
 
 # The final, valid product
 john
-# => #<User username="john@company.com" password="some1234" team="B" last_login_at=nil> 
+# => #<User username="john@company.com" password="some1234" team="B"> 
 ``` 
+
+### FieldStructs as Class Parents
+
+You can user FieldStruct as parent classes:
+
+```ruby
+class Person < FieldStruct.mutable
+  required :first_name, :string
+  required :last_name, :string
+end
+
+class Employee < Person
+  required :title, :string
+end
+
+class Developer < Employee
+  required :language, :string, enum: %w[Ruby Javascript Elixir]
+end
+
+person = Person.new first_name: 'John', last_name: 'Doe'
+# => #<Person first_name="John" last_name="Doe">
+ 
+employee = Employee.new first_name: 'John', last_name: 'Doe', title: 'Secretary'
+# => #<Employee first_name="John" last_name="Doe" title="Secretary">
+
+developer = Developer.new first_name: 'John', last_name: 'Doe', title: 'Developer', language: 'Ruby'
+# #<Developer first_name="John" last_name="Doe" title="Developer" language="Ruby">
+```
+
+### FieldStructs as Types
+
+You can use your FieldStruct as a nested type definition:
+
+```ruby
+class Employee < FieldStruct.mutable
+  required :first_name, :string
+  required :last_name, :string
+  required :title, :string
+end
+
+class Team < FieldStruct.mutable
+  required :name, :string
+  optional :manager, Employee
+end
+
+manager = Employee.new first_name: 'Some', last_name: 'Leader', title: 'Manager'
+# => #<Employee first_name="Some" last_name="Leader" title="Manager">
+
+team = Team.new name: 'Great Team', manager: manager 
+# => #<Team name="Great Team" manager=#<Employee first_name="Some" last_name="Leader" title="Manager">>
+
+# Or use just hashes to build the whole thing:
+team = Team.new name: 'Great Team', manager: { first_name: 'Some', last_name: 'Leader', title: 'Manager' }
+# => #<Team name="Great Team" manager=#<Employee first_name="Some" last_name="Leader" title="Manager">>
+```
+
+### Array Type
+
+You can have attributes that are collections of a single type:
+
+```ruby
+class Employee < FieldStruct.mutable
+  required :first_name, :string
+  required :last_name, :string
+  optional :title, :string
+end
+
+class Team < FieldStruct.mutable
+  required :name, :string
+  optional :manager, Employee
+  required :members, :array, of: Employee
+end
+
+team = Team.new name: 'Great Team', 
+  manager: { first_name: 'Some', last_name: 'Leader' },
+  members: [
+    { first_name: 'Some', last_name: 'Employee' }, 
+    { first_name: 'Another', last_name: 'Employee' }
+  ]  
+# => #<Team name="Great Team" manager=#<Employee first_name="Some" last_name="Leader"> members=[#<Employee first_name="Some" last_name="Employee">, #<Employee first_name="Another" last_name="Employee">]> 
+```
+
+### JSON Conversion
+
+You can create structs from JSON and convert them back to JSON. 
+
+```ruby
+class Employee < FieldStruct.mutable
+  required :first_name, :string
+  required :last_name, :string
+  optional :title, :string
+end
+
+class Team < FieldStruct.mutable
+  required :name, :string
+  optional :manager, Employee
+  required :members, :array, of: Employee
+end
+
+class Company < FieldStruct.mutable
+  required :legal_name, :string
+  optional :development_team, Team
+  optional :marketing_team, Team
+end
+
+json = %|
+{
+  "legal_name": "My Company",
+  "development_team": {
+    "name": "Dev Team",
+    "manager": {
+      "first_name": "Some",
+      "last_name": "Dev",
+      "title": "Dev Leader"
+    },
+    "members": [
+      {
+        "first_name": "Other",
+        "last_name": "Dev",
+        "title": "Dev"
+      }
+    ]
+  },
+  "marketing_team": {
+    "name": "Marketing Team",
+    "manager": {
+      "first_name": "Some",
+      "last_name": "Mark",
+      "title": "Mark Leader"
+    },
+    "members": [
+      {
+        "first_name": "Another",
+        "last_name": "Dev",
+        "title": "Dev"
+      }
+    ]
+  }
+}
+|
+
+company = Company.from_json json
+# => #<Company legal_name="My Company" development_team=#<Team name="Dev Team" manager=#<Employee first_name="Some" last_name="Dev" title="Dev Leader"> members=[#<Employee first_name="Other" last_name="Dev" title="Dev">]> marketing_team=#<Team name="Marketing Team" manager=#<Employee first_name="Some" last_name="Mark" title="Mark Leader"> members=[#<Employee first_name="Another" last_name="Dev" title="Dev">]>>
+
+puts company.to_json
+# {"legal_name":"My Company","development_team":{"name":"Dev Team","manager":{"first_name":"Some","last_name":"Dev","title":"Dev Leader"},"members":[{"first_name":"Other","last_name":"Dev","title":"Dev"}]},"marketing_team":{"name":"Marketing Team","manager":{"first_name":"Some","last_name":"Mark","title":"Mark Leader"},"members":[{"first_name":"Another","last_name":"Dev","title":"Dev"}]}}
+```
+
+### Vaidations
+
+You can add AR-style validations to your struct.
+
+class Employee < FieldStruct.mutable
+  required :first_name, :string
+  required :last_name, :string
+  optional :title, :string
+end
+
 
 ## Installation
 

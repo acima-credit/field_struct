@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 require 'bundler/setup'
-require 'simplecov'
-SimpleCov.start
-
 require 'field_struct'
-require 'bigdecimal'
+
+require 'rspec/core/shared_context'
+require 'rspec/json_expectations'
+require 'hashdiff'
 
 RSpec.configure do |config|
   config.example_status_persistence_file_path = '.rspec_status'
@@ -14,4 +14,8 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+
+  ROOT_PATH = Pathname.new File.expand_path(File.dirname(File.dirname(__FILE__)))
+
+  Dir[ROOT_PATH.join('spec/support/*.rb')].each { |f| require f }
 end

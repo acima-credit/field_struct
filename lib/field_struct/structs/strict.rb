@@ -2,21 +2,27 @@
 
 module FieldStruct
   class Strict < Base
-    def initialize(*args)
-      super
-      validate
+    def self.inherited(child)
+      child.send :extend, ClassMethods
     end
 
-    private
+    module ClassMethods
+      def field_struct_type
+        :strict
+      end
+    end
 
-    def validate_attribute(attr)
-      check = attr.valid? get(attr.name)
-      return check if check.valid?
+    # @param [Hash] attributes
+    def initialize(attributes = {})
+      super(attributes)
+      @attributes.freeze
+      return if valid?
 
-      raise Error, format(':%s %s', attr.name, check.errors.first)
+      raise BuildError, errors.to_hash
     end
   end
 
+  # @return [Class]
   def self.strict
     Strict
   end
