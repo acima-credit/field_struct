@@ -1,4 +1,4 @@
-FROM ruby:2.5.1-alpine3.7
+FROM ruby:2.6.3-alpine as base
 
 RUN apk update && apk upgrade && apk --no-cache add \
   tzdata \
@@ -29,10 +29,13 @@ RUN echo -e "$PRIVATE" > /root/.ssh/id_rsa && \
 
 RUN mkdir -p /app
 WORKDIR /app
+ADD Gemfile /app/Gemfile
+
+RUN bundle config git.allow_insecure true
+RUN gem install bundler
+RUN bundle install --with test
 
 ADD . /app
-RUN gem install bundler
-RUN bundle install
 
 #ENTRYPOINT ["bundle", "exec"]
 #CMD ["rails", "server", "-b", "0.0.0.0"]
