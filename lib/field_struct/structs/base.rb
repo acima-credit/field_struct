@@ -112,12 +112,12 @@ module FieldStruct
 
       def add_format_validation(name, options)
         format = options.delete :format
-        validates_format_of name, with: format if format
+        validates_format_of name, allow_nil: true, with: format if format
       end
 
       def add_enum_validation(name, options)
         enum = options.delete :enum
-        validates_inclusion_of name, in: enum if enum
+        validates_inclusion_of name, allow_nil: true, in: enum if enum
       end
     end
 

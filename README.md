@@ -308,16 +308,54 @@ puts company.to_json
 # {"legal_name":"My Company","development_team":{"name":"Dev Team","manager":{"first_name":"Some","last_name":"Dev","title":"Dev Leader"},"members":[{"first_name":"Other","last_name":"Dev","title":"Dev"}]},"marketing_team":{"name":"Marketing Team","manager":{"first_name":"Some","last_name":"Mark","title":"Mark Leader"},"members":[{"first_name":"Another","last_name":"Dev","title":"Dev"}]}}
 ```
 
-### Vaidations
+### Validations
 
-You can add AR-style validations to your struct.
+You can add AR-style validations to your struct. We provide syntactic sugar to make it 
+easy to use common validations in the attribute definition.
 
+```ruby
+# We have syntactic sugar to turn this definition: 
 class Employee < FieldStruct.mutable
-  required :first_name, :string
-  required :last_name, :string
-  optional :title, :string
+  attribute :full_name, :string
+  attribute :email, :string
+  attribute :team, :string
+  
+  validates_presence_of :full_name
+  validates_format_of :email, allow_nil: true, with: /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
+  validates_inclusion_of :team, allow_nil: true, in: %w{ A B C }  
 end
 
+# Into this definition:
+class Employee < FieldStruct.mutable
+  required :full_name, :string
+  optional :email, :string, format: /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i 
+  optional :team, :string, enum: %w{ A B C }
+end
+
+# But you can also add more validations too:
+class Employee < FieldStruct.mutable
+  validates_length_of :email, allow_nil: true, within: 12...120
+
+  validates_each :full_name do |model, attr, value|
+    model.errors.add(attr, 'must start with upper case') if value =~ /\A[a-z]/
+  end
+
+  validate :check_company_email
+  def check_company_email
+    return if email.nil?
+    errors.add(:email, "has to be a company email") unless email.end_with?("@company.com")
+  end
+end
+
+bad_employee = Employee.new full_name: 'some name', email: 'bad@xyz', team: 'D'
+# => #<Employee full_name="some name" email="bad@xyz" team="D">
+bad_employee.errors.to_hash
+# => {
+#   :email=>["is invalid", "is too short (minimum is 12 characters)", "has to be a company email"], 
+#   :team=>["is not included in the list"], 
+#   :full_name=>["must start with upper case"]
+# } 
+```
 
 ## Installation
 
@@ -343,7 +381,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/field_struct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/acima-credit/field_struct.
 
 ## License
 
