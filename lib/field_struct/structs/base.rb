@@ -86,6 +86,7 @@ module FieldStruct
         add_required_validation name, options
         add_format_validation name, options
         add_enum_validation name, options
+        add_length_validation name, options
 
         options
       end
@@ -119,6 +120,17 @@ module FieldStruct
       def add_enum_validation(name, options)
         enum = options.delete :enum
         validates_inclusion_of name, allow_nil: true, in: enum if enum
+      end
+
+      def add_length_validation(name, options)
+        length = options.delete :length
+        validates_length_of name, allow_nil: true, in: length if length
+
+        min_length = options.delete :min_length
+        validates_length_of name, allow_nil: true, minimum: min_length if min_length
+
+        max_length = options.delete :max_length
+        validates_length_of name, allow_nil: true, maximum: max_length if max_length
       end
     end
 
