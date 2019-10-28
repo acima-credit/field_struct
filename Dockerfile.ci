@@ -30,6 +30,7 @@ RUN echo -e "$PRIVATE" > /root/.ssh/id_rsa && \
 RUN mkdir -p /app
 WORKDIR /app
 ADD Gemfile /app/Gemfile
+ADD field_struct.gemspec /app/field_struct.gemspec
 
 RUN bundle config git.allow_insecure true
 RUN gem install bundler
