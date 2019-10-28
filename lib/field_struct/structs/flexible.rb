@@ -2,34 +2,25 @@
 
 module FieldStruct
   class Flexible < Base
-    attr_reader :errors
+    def self.inherited(child)
+      child.send :extend, ClassMethods
+    end
 
-    def initialize(*args)
-      super
+    module ClassMethods
+      def field_struct_type
+        :flexible
+      end
+    end
+
+    # @param [Hash] attributes
+    def initialize(attributes = {})
+      super(attributes)
+      @attributes.freeze
       validate
-    end
-
-    def valid?
-      errors.empty?
-    end
-
-    private
-
-    def validate
-      @errors = []
-      super
-      valid?
-    end
-
-    def validate_attribute(attr)
-      check = attr.valid? get(attr.name)
-      return check if check.valid?
-
-      check.errors.each { |x| errors << format(':%s %s', attr.name, x) }
-      check
     end
   end
 
+  # @return [Class]
   def self.flexible
     Flexible
   end

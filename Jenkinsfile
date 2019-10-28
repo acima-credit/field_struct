@@ -34,6 +34,7 @@ pipeline {
             docker-compose -f docker-compose.ci.yml up -d
             sleep 5
             docker-compose -f docker-compose.ci.yml run web rake spec
+            docker-compose -f docker-compose.ci.yml run web rake rubocop
           '''
         }
       }
