@@ -108,7 +108,7 @@ RSpec.describe FieldStruct::StrictExamples::User do
     end
     context 'partial' do
       let(:params) { full_params.except :source, :level, :at, :active }
-      let(:errors) { [":source can't be blank", ':source is not included in the list'] }
+      let(:errors) { [":source can't be blank"] }
       it 'raises an error' do
         expect { subject }.to raise_error do |error|
           expect(error).to be_a FieldStruct::BuildError

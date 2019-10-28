@@ -219,8 +219,8 @@ RSpec.describe FieldStruct::MutableExamples::User do
     end
     context 'partial' do
       let(:params) { full_params.except :source, :level, :at, :active }
-      let(:errors) { { source: ["can't be blank", 'is not included in the list'] } }
-      let(:messages) { ["Source can't be blank", 'Source is not included in the list'] }
+      let(:errors) { { source: ["can't be blank"] } }
+      let(:messages) { ["Source can't be blank"] }
       it { expect(subject).to_not be_valid }
       it { expect(subject.username).to eq 'some_user' }
       it { expect(subject.password).to eq '123' }
