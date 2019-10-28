@@ -29,14 +29,9 @@ RUN echo -e "$PRIVATE" > /root/.ssh/id_rsa && \
 
 RUN mkdir -p /app
 WORKDIR /app
-ADD Gemfile /app/Gemfile
-ADD field_struct.gemspec /app/field_struct.gemspec
-
-RUN bundle config git.allow_insecure true
-RUN gem install bundler
-RUN bundle install --with test
 
 ADD . /app
+RUN bin/setup
 
 #ENTRYPOINT ["bundle", "exec"]
 #CMD ["rails", "server", "-b", "0.0.0.0"]
