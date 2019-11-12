@@ -25,6 +25,7 @@ module FieldStruct
     end
 
     class Employee < Person
+      extras :add
       optional :title, :string
     end
 
@@ -49,6 +50,7 @@ end
 RSpec.describe FieldStruct::MutableExamples::User do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :raise }
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -240,6 +242,7 @@ end
 RSpec.describe FieldStruct::MutableExamples::Person do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :raise }
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -279,6 +282,7 @@ end
 RSpec.describe FieldStruct::MutableExamples::Employee do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :add }
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -322,6 +326,7 @@ end
 RSpec.describe FieldStruct::MutableExamples::Developer do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :add }
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -370,6 +375,7 @@ RSpec.describe FieldStruct::MutableExamples::Team do
   let(:member_class) { leader_class }
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :raise }
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -436,6 +442,7 @@ end
 RSpec.describe FieldStruct::MutableExamples::Company do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :raise }
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
