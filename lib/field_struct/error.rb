@@ -7,6 +7,9 @@ module FieldStruct
   class TypeError < Error
   end
 
+  class UnknownAttributeError < ActiveModel::UnknownAttributeError
+  end
+
   class BuildError < Error
     # @return [Array<String>]
     attr_reader :errors

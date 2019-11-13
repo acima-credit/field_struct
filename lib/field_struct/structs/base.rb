@@ -18,11 +18,15 @@ module FieldStruct
     end
 
     module AttributeMethods
+      # Indicates this class is a FieldStruct class
+      #
       # @return [true]
       def field_struct?
         true
       end
 
+      # Add an attribute to the class
+      #
       # @param [Symbol] name
       # @param [Symbol, Type::Value, FieldStruct::Base] type
       # @param [Array] args
@@ -35,6 +39,8 @@ module FieldStruct
         super name, type, options
       end
 
+      # Add a required attribute to the class
+      #
       # @param [Symbol] name
       # @param [Symbol, Type::Value, FieldStruct::Base] type
       # @param [Array] args
@@ -43,12 +49,31 @@ module FieldStruct
         attribute name, type, *args.unshift(:required), **options
       end
 
+      # Add an optional attribute to the class
+      #
       # @param [Symbol] name
       # @param [Symbol, Type::Value, FieldStruct::Base] type
       # @param [Array] args
       # @param [Hash] options
       def optional(name, type = Type::Value.new, *args, **options)
         attribute name, type, *args.unshift(:optional), **options
+      end
+
+      # Allow the class to:
+      # :add unknown attributes to the extras hash
+      # :ignore unknown attributes
+      # :raise an UnknownAttributeError on the first unknown attribute
+      #
+      # @param [Symbol, nil] value
+      # @return [Symbol]
+      def extras(value = :no_value)
+        @extras = value if %i[add ignore raise].include?(value)
+        return @extras if instance_variable_defined?(:@extras)
+
+        ancestor = ancestors[1..-1].find { |x| x.respond_to? :extras }
+        return ancestor.extras if ancestor
+
+        :raise
       end
     end
 
@@ -154,6 +179,25 @@ module FieldStruct
       end
 
       alias inspect to_s
+
+      def extras
+        @extras ||= {}
+      end
+
+      private
+
+      def _assign_attribute(key, value)
+        setter = :"#{key}="
+        return public_send(setter, value) if respond_to?(setter)
+        return _add_extra(key, value) if self.class.extras == :add
+        return nil if self.class.extras == :ignore
+
+        raise UnknownAttributeError.new(self, key)
+      end
+
+      def _add_extra(key, value)
+        extras[key] = value
+      end
     end
   end
 end
