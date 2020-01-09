@@ -404,9 +404,9 @@ RSpec.describe FieldStruct::MutableExamples::Team do
       basic_hash name: 'My Team',
                  leader: { first_name: 'Some', last_name: 'Person', title: 'Leader' },
                  members: [
-                         { first_name: 'Other', last_name: 'Person', title: 'Developer' },
-                         { first_name: 'Another', last_name: 'Person', title: 'Developer' }
-                       ]
+                   { first_name: 'Other', last_name: 'Person', title: 'Developer' },
+                   { first_name: 'Another', last_name: 'Person', title: 'Developer' }
+                 ]
     end
     subject { described_class.new params }
     let(:leader) { leader_class.new full_params[:leader] }
@@ -457,116 +457,104 @@ RSpec.describe FieldStruct::MutableExamples::Company do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
     it { expect(described_class.extras).to eq :raise }
     it { expect(described_class.extras).to eq :raise }
-    context '.metadata' do
-      subject { described_class.metadata }
-      it { expect(subject.keys).to eq %i[username password age owed source level at active] }
-      it { expect(subject[:username]).to eq type: :string, required: true, format: /\A[a-z]/i }
-      it { expect(subject[:password]).to eq type: :string }
-      it { expect(subject[:age]).to eq type: :integer, required: true }
-      it { expect(subject[:owed]).to eq type: :currency, required: true }
-      it { expect(subject[:source]).to eq type: :string, required: true, enum: %w[A B C] }
-      it { expect(subject[:level]).to eq type: :integer, required: true }
-      it { expect(subject[:at]).to eq type: :time }
-      it { expect(subject[:active]).to eq type: :boolean }
-    end
     it { expect(described_class.extras).to eq :raise }
-    it { expect(described_class.extras).to eq :add }
-    it { expect(described_class.extras).to eq :add }
     it { expect(described_class.extras).to eq :raise }
-      context 'validations' do
     it { expect(described_class.extras).to eq :raise }
-    context '.attribute_types' do
-      subject { described_class.attribute_types }
-      it { expect(subject).to be_a Hash }
-      it { expect(subject.keys).to eq %w[legal_name development_team marketing_team] }
-      it { expect(subject['legal_name']).to be_a ActiveModel::Type::String }
-      it { expect(subject['development_team']).to eq FieldStruct::MutableExamples::Team }
-      it { expect(subject['marketing_team']).to eq FieldStruct::MutableExamples::Team }
+    context 'validations' do
+      it { expect(described_class.extras).to eq :raise }
+      context '.attribute_types' do
+        subject { described_class.attribute_types }
+        it { expect(subject).to be_a Hash }
+        it { expect(subject.keys).to eq %w[legal_name development_team marketing_team] }
+        it { expect(subject['legal_name']).to be_a ActiveModel::Type::String }
+        it { expect(subject['development_team']).to eq FieldStruct::MutableExamples::Team }
+        it { expect(subject['marketing_team']).to eq FieldStruct::MutableExamples::Team }
+      end
     end
-  end
-  describe 'instance' do
-    let(:full_params) do
-      basic_hash legal_name: 'My Company',
-                 development_team: {
-                   name: 'Dev Team',
-                   leader: { first_name: 'Some', last_name: 'Dev', title: 'Dev Leader' },
-                   members: [{ first_name: 'Other', last_name: 'Dev', title: 'Dev' }]
-                 },
-                 marketing_team: {
-                   name: 'Marketing Team',
-                   leader: { first_name: 'Some', last_name: 'Mark', title: 'Mark Leader' },
-                   members: [{ first_name: 'Another', last_name: 'Dev', title: 'Dev' }]
-                 }
-    end
-    subject { described_class.new params }
-    let(:leader_class) { FieldStruct::MutableExamples::Employee }
-    let(:team_class) { FieldStruct::MutableExamples::Team }
-    let(:dev_team) { team_class.new full_params[:development_team] }
-    let(:dev_team_leader) { leader_class.new full_params[:development_team][:leader] }
-    let(:mark_team) { team_class.new full_params[:marketing_team] }
-    let(:mark_team_leader) { leader_class.new full_params[:marketing_team][:leader] }
-    context 'full hash only' do
-      let(:params) { full_params }
-      it { expect(subject).to be_valid }
-      it { expect(subject.errors.to_hash).to eq({}) }
-      it { expect(subject.legal_name).to eq 'My Company' }
-      it { expect(subject.development_team).to be_a team_class }
-      it { expect(subject.development_team).to eq dev_team }
-      it { expect(subject.marketing_team).to be_a team_class }
-      it { expect(subject.marketing_team).to eq mark_team }
-      context 'conversion' do
-        let(:hsh) do
-          basic_hash legal_name: 'My Company',
-                     development_team: {
-                       name: 'Dev Team',
-                       leader: { first_name: 'Some', last_name: 'Dev', title: 'Dev Leader' },
-                       members: [{ first_name: 'Other', last_name: 'Dev', title: 'Dev' }]
-                     },
-                     marketing_team: {
-                       name: 'Marketing Team',
-                       leader: { first_name: 'Some', last_name: 'Mark', title: 'Mark Leader' },
-                       members: [{ first_name: 'Another', last_name: 'Dev', title: 'Dev' }]
-                     }
-        end
-        let(:json) do
-          '{"legal_name":"My Company",' \
+    describe 'instance' do
+      let(:full_params) do
+        basic_hash legal_name: 'My Company',
+                   development_team: {
+                     name: 'Dev Team',
+                     leader: { first_name: 'Some', last_name: 'Dev', title: 'Dev Leader' },
+                     members: [{ first_name: 'Other', last_name: 'Dev', title: 'Dev' }]
+                   },
+                   marketing_team: {
+                     name: 'Marketing Team',
+                     leader: { first_name: 'Some', last_name: 'Mark', title: 'Mark Leader' },
+                     members: [{ first_name: 'Another', last_name: 'Dev', title: 'Dev' }]
+                   }
+      end
+      subject { described_class.new params }
+      let(:leader_class) { FieldStruct::MutableExamples::Employee }
+      let(:team_class) { FieldStruct::MutableExamples::Team }
+      let(:dev_team) { team_class.new full_params[:development_team] }
+      let(:dev_team_leader) { leader_class.new full_params[:development_team][:leader] }
+      let(:mark_team) { team_class.new full_params[:marketing_team] }
+      let(:mark_team_leader) { leader_class.new full_params[:marketing_team][:leader] }
+      context 'full hash only' do
+        let(:params) { full_params }
+        it { expect(subject).to be_valid }
+        it { expect(subject.errors.to_hash).to eq({}) }
+        it { expect(subject.legal_name).to eq 'My Company' }
+        it { expect(subject.development_team).to be_a team_class }
+        it { expect(subject.development_team).to eq dev_team }
+        it { expect(subject.marketing_team).to be_a team_class }
+        it { expect(subject.marketing_team).to eq mark_team }
+        context 'conversion' do
+          let(:hsh) do
+            basic_hash legal_name: 'My Company',
+                       development_team: {
+                         name: 'Dev Team',
+                         leader: { first_name: 'Some', last_name: 'Dev', title: 'Dev Leader' },
+                         members: [{ first_name: 'Other', last_name: 'Dev', title: 'Dev' }]
+                       },
+                       marketing_team: {
+                         name: 'Marketing Team',
+                         leader: { first_name: 'Some', last_name: 'Mark', title: 'Mark Leader' },
+                         members: [{ first_name: 'Another', last_name: 'Dev', title: 'Dev' }]
+                       }
+          end
+          let(:json) do
+            '{"legal_name":"My Company",' \
             '"development_team":{"name":"Dev Team",' \
             '"leader":{"first_name":"Some","last_name":"Dev","title":"Dev Leader"},' \
             '"members":[{"first_name":"Other","last_name":"Dev","title":"Dev"}]},' \
             '"marketing_team":{"name":"Marketing Team",' \
             '"leader":{"first_name":"Some","last_name":"Mark","title":"Mark Leader"},' \
             '"members":[{"first_name":"Another","last_name":"Dev","title":"Dev"}]}}'
+          end
+          it('to_hash  ') { expect_same_hash hsh, subject.to_hash }
+          it('as_json  ') { expect_same_hash hsh, subject.as_json }
+          it('to_json  ') { expect(subject.to_json).to eq(json) }
+          it('from hash') { expect(subject).to eq(described_class.new(subject.to_hash)) }
+          it('from json') { expect(subject).to eq(described_class.from_json(subject.to_json)) }
         end
-        it('to_hash  ') { expect_same_hash hsh, subject.to_hash }
-        it('as_json  ') { expect_same_hash hsh, subject.as_json }
-        it('to_json  ') { expect(subject.to_json).to eq(json) }
-        it('from hash') { expect(subject).to eq(described_class.new(subject.to_hash)) }
-        it('from json') { expect(subject).to eq(described_class.from_json(subject.to_json)) }
       end
-    end
-    context 'hash with struct' do
-      let(:params) { full_params.merge development_team: dev_team, marketing_team: mark_team }
-      it { expect(subject).to be_valid }
-      it { expect(subject.errors.to_hash).to eq({}) }
-      it { expect(subject.legal_name).to eq 'My Company' }
-      it { expect(subject.development_team).to be_a team_class }
-      it { expect(subject.development_team).to eq dev_team }
-      it { expect(subject.marketing_team).to be_a team_class }
-      it { expect(subject.marketing_team).to eq mark_team }
-    end
-    context 'partial' do
-      let(:params) { full_params.except :legal_name }
-      let(:errors) { { legal_name: ["can't be blank"] } }
-      let(:messages) { ["Legal name can't be blank"] }
-      it { expect(subject).to_not be_valid }
-      it { expect(subject.legal_name).to eq nil }
-      it { expect(subject.development_team).to be_a team_class }
-      it { expect(subject.development_team).to eq dev_team }
-      it { expect(subject.marketing_team).to be_a team_class }
-      it { expect(subject.marketing_team).to eq mark_team }
-      it { expect(subject.errors).to be_a ActiveModel::Errors }
-      it { expect(subject.errors.to_hash).to eq errors }
-      it { expect(subject.errors.full_messages).to eq messages }
+      context 'hash with struct' do
+        let(:params) { full_params.merge development_team: dev_team, marketing_team: mark_team }
+        it { expect(subject).to be_valid }
+        it { expect(subject.errors.to_hash).to eq({}) }
+        it { expect(subject.legal_name).to eq 'My Company' }
+        it { expect(subject.development_team).to be_a team_class }
+        it { expect(subject.development_team).to eq dev_team }
+        it { expect(subject.marketing_team).to be_a team_class }
+        it { expect(subject.marketing_team).to eq mark_team }
+      end
+      context 'partial' do
+        let(:params) { full_params.except :legal_name }
+        let(:errors) { { legal_name: ["can't be blank"] } }
+        let(:messages) { ["Legal name can't be blank"] }
+        it { expect(subject).to_not be_valid }
+        it { expect(subject.legal_name).to eq nil }
+        it { expect(subject.development_team).to be_a team_class }
+        it { expect(subject.development_team).to eq dev_team }
+        it { expect(subject.marketing_team).to be_a team_class }
+        it { expect(subject.marketing_team).to eq mark_team }
+        it { expect(subject.errors).to be_a ActiveModel::Errors }
+        it { expect(subject.errors.to_hash).to eq errors }
+        it { expect(subject.errors.full_messages).to eq messages }
+      end
     end
   end
 end
