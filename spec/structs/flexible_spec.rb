@@ -25,6 +25,7 @@ module FieldStruct
     end
 
     class Employee < Person
+      extras :add
       optional :title, :string
     end
 
@@ -33,6 +34,7 @@ module FieldStruct
     end
 
     class Team < FieldStruct.flexible
+      extras :ignore
       required :name, :string
       required :leader, Employee
       required :members, :array, of: Employee
@@ -49,6 +51,19 @@ end
 RSpec.describe FieldStruct::FlexibleExamples::User do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :raise }
+    context '.metadata' do
+      subject { described_class.metadata }
+      it { expect(subject.keys).to eq %i[username password age owed source level at active] }
+      it { expect(subject[:username]).to eq type: :string, required: true, format: /\A[a-z]/i }
+      it { expect(subject[:password]).to eq type: :string }
+      it { expect(subject[:age]).to eq type: :integer, required: true }
+      it { expect(subject[:owed]).to eq type: :float, required: true }
+      it { expect(subject[:source]).to eq type: :string, required: true, enum: %w[A B C] }
+      it { expect(subject[:level]).to eq type: :integer, required: true }
+      it { expect(subject[:at]).to eq type: :time }
+      it { expect(subject[:active]).to eq type: :boolean }
+    end
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -95,6 +110,7 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
         it { expect(subject.level).to eq 3 }
         it { expect(subject.at).to eq Time.parse('2018-03-24') }
         it { expect(subject.active).to eq true }
+        it { expect(subject.extras).to eq({}) }
       end
       context 'immutability' do
         it { expect { subject.username = 'x' }.to raise_error FrozenError, "can't modify frozen Hash" }
@@ -106,6 +122,12 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
         it { expect { subject.at = 'x' }.to raise_error FrozenError, "can't modify frozen Hash" }
         it { expect { subject.active = 'x' }.to raise_error FrozenError, "can't modify frozen Hash" }
       end
+    end
+    context 'full + extras' do
+      let(:params) { full_params.merge(a: 1, b: [2]) }
+      let(:error_class) { FieldStruct::UnknownAttributeError }
+      let(:message) { "unknown attribute 'a' for #{described_class}." }
+      it { expect { subject }.to raise_error error_class, message }
     end
     context 'partial' do
       let(:params) { full_params.except :source, :level, :at, :active }
@@ -130,6 +152,7 @@ end
 RSpec.describe FieldStruct::FlexibleExamples::Person do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :raise }
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -150,6 +173,13 @@ RSpec.describe FieldStruct::FlexibleExamples::Person do
       it { expect(subject.first_name).to eq 'Some' }
       it { expect(subject.last_name).to eq 'Person' }
       it { expect(subject.full_name).to eq 'Some Person' }
+      it { expect(subject.extras).to eq({}) }
+    end
+    context 'full + extras' do
+      let(:params) { full_params.merge(a: 1, b: [2]) }
+      let(:error_class) { FieldStruct::UnknownAttributeError }
+      let(:message) { "unknown attribute 'a' for #{described_class}." }
+      it { expect { subject }.to raise_error error_class, message }
     end
     context 'partial' do
       let(:params) { full_params.except :last_name }
@@ -169,6 +199,7 @@ end
 RSpec.describe FieldStruct::FlexibleExamples::Employee do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :add }
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -193,6 +224,15 @@ RSpec.describe FieldStruct::FlexibleExamples::Employee do
       it { expect(subject.title).to eq 'Leader' }
       it { expect(subject.full_name).to eq 'Some Person' }
     end
+    context 'full + extras' do
+      let(:params) { full_params.merge(a: 1, b: [2]) }
+      it { expect(subject).to be_valid }
+      it { expect(subject.first_name).to eq 'Some' }
+      it { expect(subject.last_name).to eq 'Person' }
+      it { expect(subject.title).to eq 'Leader' }
+      it { expect(subject.full_name).to eq 'Some Person' }
+      it { expect(subject.extras).to eq('a' => 1, 'b' => [2]) }
+    end
     context 'partial' do
       let(:params) { full_params.except :last_name }
       let(:errors) { { last_name: ["can't be blank"] } }
@@ -212,6 +252,7 @@ end
 RSpec.describe FieldStruct::FlexibleExamples::Developer do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :add }
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -238,6 +279,16 @@ RSpec.describe FieldStruct::FlexibleExamples::Developer do
       it { expect(subject.title).to eq 'Leader' }
       it { expect(subject.language).to eq 'Ruby' }
       it { expect(subject.full_name).to eq 'Some Person' }
+      it { expect(subject.extras).to eq({}) }
+    end
+    context 'full + extras' do
+      let(:params) { full_params.merge(a: 1, b: [2]) }
+      it { expect(subject).to be_valid }
+      it { expect(subject.first_name).to eq 'Some' }
+      it { expect(subject.last_name).to eq 'Person' }
+      it { expect(subject.title).to eq 'Leader' }
+      it { expect(subject.full_name).to eq 'Some Person' }
+      it { expect(subject.extras).to eq('a' => 1, 'b' => [2]) }
     end
     context 'partial' do
       let(:params) { full_params.except :last_name }
@@ -260,6 +311,7 @@ RSpec.describe FieldStruct::FlexibleExamples::Team do
   let(:member_class) { leader_class }
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :ignore }
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -291,6 +343,7 @@ RSpec.describe FieldStruct::FlexibleExamples::Team do
       it { expect(subject.leader.to_hash).to eq params[:leader] }
       it { expect(subject.leader).to eq leader }
       it('members') { expect(subject.members).to eq [dev1, dev2] }
+      it { expect(subject.extras).to eq({}) }
     end
     context 'hash with struct' do
       let(:params) { full_params.merge leader: leader }
@@ -299,6 +352,18 @@ RSpec.describe FieldStruct::FlexibleExamples::Team do
       it { expect(subject.leader).to be_a leader_class }
       it { expect(subject.leader).to eq leader }
       it { expect(subject.members).to eq [dev1, dev2] }
+      it { expect(subject.extras).to eq({}) }
+      it { expect(subject.extras).to eq({}) }
+    end
+    context 'full + extras' do
+      let(:params) { full_params.merge(a: 1, b: [2]) }
+      it { expect(subject).to be_valid }
+      it { expect(subject.name).to eq 'My Team' }
+      it { expect(subject.leader).to be_a leader_class }
+      it { expect(subject.leader.to_hash).to eq params[:leader] }
+      it { expect(subject.leader).to eq leader }
+      it('members') { expect(subject.members).to eq [dev1, dev2] }
+      it { expect(subject.extras).to eq({}) }
     end
     context 'partial' do
       let(:params) { full_params.except :leader }
@@ -317,6 +382,7 @@ end
 RSpec.describe FieldStruct::FlexibleExamples::Company do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :raise }
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -356,6 +422,7 @@ RSpec.describe FieldStruct::FlexibleExamples::Company do
       it { expect(subject.development_team).to eq dev_team }
       it { expect(subject.marketing_team).to be_a team_class }
       it { expect(subject.marketing_team).to eq mark_team }
+      it { expect(subject.extras).to eq({}) }
       context 'conversion' do
         let(:hsh) do
           basic_hash legal_name: 'My Company',
@@ -395,6 +462,7 @@ RSpec.describe FieldStruct::FlexibleExamples::Company do
       it { expect(subject.development_team).to eq dev_team }
       it { expect(subject.marketing_team).to be_a team_class }
       it { expect(subject.marketing_team).to eq mark_team }
+      it { expect(subject.extras).to eq({}) }
       context 'conversion' do
         let(:hsh) do
           basic_hash legal_name: 'My Company',

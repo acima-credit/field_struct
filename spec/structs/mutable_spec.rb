@@ -25,6 +25,7 @@ module FieldStruct
     end
 
     class Employee < Person
+      extras :add
       optional :title, :string
     end
 
@@ -49,6 +50,19 @@ end
 RSpec.describe FieldStruct::MutableExamples::User do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :raise }
+    context '.metadata' do
+      subject { described_class.metadata }
+      it { expect(subject.keys).to eq %i[username password age owed source level at active] }
+      it { expect(subject[:username]).to eq type: :string, required: true, format: /\A[a-z]/i }
+      it { expect(subject[:password]).to eq type: :string }
+      it { expect(subject[:age]).to eq type: :integer, required: true }
+      it { expect(subject[:owed]).to eq type: :currency, required: true }
+      it { expect(subject[:source]).to eq type: :string, required: true, enum: %w[A B C] }
+      it { expect(subject[:level]).to eq type: :integer, required: true }
+      it { expect(subject[:at]).to eq type: :time }
+      it { expect(subject[:active]).to eq type: :boolean }
+    end
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -240,6 +254,7 @@ end
 RSpec.describe FieldStruct::MutableExamples::Person do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :raise }
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -279,6 +294,7 @@ end
 RSpec.describe FieldStruct::MutableExamples::Employee do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :add }
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -322,6 +338,7 @@ end
 RSpec.describe FieldStruct::MutableExamples::Developer do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :add }
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -370,6 +387,7 @@ RSpec.describe FieldStruct::MutableExamples::Team do
   let(:member_class) { leader_class }
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :raise }
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -421,7 +439,7 @@ RSpec.describe FieldStruct::MutableExamples::Team do
       it { expect(subject.errors).to be_a ActiveModel::Errors }
       it { expect(subject.errors.to_hash).to eq errors }
       it { expect(subject.errors.full_messages).to eq messages }
-      context 'validations', :focus do
+      context 'validations' do
         context 'with invalid leader' do
           let(:params) { full_params.tap { |x| x[:leader].delete :first_name } }
           it { expect(subject).to_not be_valid }
@@ -436,6 +454,7 @@ end
 RSpec.describe FieldStruct::MutableExamples::Company do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :raise }
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }

@@ -25,6 +25,7 @@ module FieldStruct
     end
 
     class Employee < Person
+      extras :add
       optional :title, :string
     end
 
@@ -48,6 +49,19 @@ end
 RSpec.describe FieldStruct::StrictExamples::User do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :raise }
+    context '.metadata' do
+      subject { described_class.metadata }
+      it { expect(subject.keys).to eq %i[username password age owed source level at active] }
+      it { expect(subject[:username]).to eq type: :string, required: true, format: /\A[a-z]/i }
+      it { expect(subject[:password]).to eq type: :string }
+      it { expect(subject[:age]).to eq type: :integer, required: true }
+      it { expect(subject[:owed]).to eq type: :float, required: true }
+      it { expect(subject[:source]).to eq type: :string, required: true, enum: %w[A B C] }
+      it { expect(subject[:level]).to eq type: :integer, required: true }
+      it { expect(subject[:at]).to eq type: :time }
+      it { expect(subject[:active]).to eq type: :boolean }
+    end
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -123,6 +137,7 @@ end
 RSpec.describe FieldStruct::StrictExamples::Person do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :raise }
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -161,6 +176,7 @@ end
 RSpec.describe FieldStruct::StrictExamples::Employee do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :add }
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -202,6 +218,7 @@ end
 RSpec.describe FieldStruct::StrictExamples::Developer do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :add }
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -246,6 +263,7 @@ end
 RSpec.describe FieldStruct::StrictExamples::Team do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :raise }
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -294,6 +312,7 @@ end
 RSpec.describe FieldStruct::StrictExamples::Company do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :raise }
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
