@@ -26,6 +26,7 @@ module FieldStruct
 
     class Employee < Person
       extras :add
+      extras :add
       optional :title, :string
     end
 
@@ -403,9 +404,9 @@ RSpec.describe FieldStruct::MutableExamples::Team do
       basic_hash name: 'My Team',
                  leader: { first_name: 'Some', last_name: 'Person', title: 'Leader' },
                  members: [
-                   { first_name: 'Other', last_name: 'Person', title: 'Developer' },
-                   { first_name: 'Another', last_name: 'Person', title: 'Developer' }
-                 ]
+                         { first_name: 'Other', last_name: 'Person', title: 'Developer' },
+                         { first_name: 'Another', last_name: 'Person', title: 'Developer' }
+                       ]
     end
     subject { described_class.new params }
     let(:leader) { leader_class.new full_params[:leader] }
@@ -454,6 +455,25 @@ end
 RSpec.describe FieldStruct::MutableExamples::Company do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
+    it { expect(described_class.extras).to eq :raise }
+    it { expect(described_class.extras).to eq :raise }
+    context '.metadata' do
+      subject { described_class.metadata }
+      it { expect(subject.keys).to eq %i[username password age owed source level at active] }
+      it { expect(subject[:username]).to eq type: :string, required: true, format: /\A[a-z]/i }
+      it { expect(subject[:password]).to eq type: :string }
+      it { expect(subject[:age]).to eq type: :integer, required: true }
+      it { expect(subject[:owed]).to eq type: :currency, required: true }
+      it { expect(subject[:source]).to eq type: :string, required: true, enum: %w[A B C] }
+      it { expect(subject[:level]).to eq type: :integer, required: true }
+      it { expect(subject[:at]).to eq type: :time }
+      it { expect(subject[:active]).to eq type: :boolean }
+    end
+    it { expect(described_class.extras).to eq :raise }
+    it { expect(described_class.extras).to eq :add }
+    it { expect(described_class.extras).to eq :add }
+    it { expect(described_class.extras).to eq :raise }
+      context 'validations' do
     it { expect(described_class.extras).to eq :raise }
     context '.attribute_types' do
       subject { described_class.attribute_types }
