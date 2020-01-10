@@ -25,7 +25,7 @@ module FieldStruct
       #
       # @return [Object, nil]
       def field_ancestor
-        ancestors[1..-1].find { |x| x.respond_to?(:field_struct?) && x.field_struct? }
+        ancestors[1..-1].find(&:field_struct?)
       end
 
       # Keeps information about the columns
@@ -46,8 +46,12 @@ module FieldStruct
       #
       # @return [String]
       def schema_name
-        name.underscore.gsub '/', '.'
+        return @schema_name if instance_variable_defined?(:@schema_name)
+
+        name.to_s.underscore.gsub '/', '.'
       end
+
+      attr_writer :schema_name
 
       # Add an attribute to the class
       #
@@ -96,8 +100,7 @@ module FieldStruct
         @extras = value if %i[add ignore raise].include?(value)
         return @extras if instance_variable_defined?(:@extras)
 
-        ancestor = ancestors[1..-1].find { |x| x.respond_to? :extras }
-        return ancestor.extras if ancestor
+        return field_ancestor.extras if field_ancestor
 
         :raise
       end
