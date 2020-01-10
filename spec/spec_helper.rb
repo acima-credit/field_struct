@@ -17,5 +17,5 @@ RSpec.configure do |config|
 
   ROOT_PATH = Pathname.new File.expand_path(File.dirname(File.dirname(__FILE__)))
 
-  Dir[ROOT_PATH.join('spec/support/*.rb')].each { |f| require f }
+  Dir[ROOT_PATH.join('spec/support/*.rb')].sort.each { |f| require f }
 end
