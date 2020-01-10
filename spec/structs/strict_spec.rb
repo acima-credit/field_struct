@@ -62,6 +62,32 @@ RSpec.describe FieldStruct::StrictExamples::User do
       it { expect(subject[:at]).to eq type: :time }
       it { expect(subject[:active]).to eq type: :boolean }
     end
+    context '.json_schema' do
+      let(:exp_hsh) do
+        {
+          '$id' => 'https://schema-store.example.com/field_struct.strict_examples.user/2359756858.json',
+          '$schema' => 'http://json-schema.org/draft-07/schema#',
+          'description' => 'JSON Schema for FieldStruct::StrictExamples::User version 2359756858',
+          'type' => 'object',
+          'properties' => {
+            'username' => { 'type' => 'string', 'pattern' => '/^[a-z]/i' },
+            'password' => { 'type' => 'string' },
+            'age' => { 'type' => 'number' },
+            'owed' => { 'type' => 'number' },
+            'source' => { 'type' => 'string', 'enum' => %w[A B C] },
+            'level' => { 'type' => 'number' },
+            'at' => { 'type' => 'string' },
+            'active' => { 'type' => 'boolean' }
+          },
+          'required' => %w[username age owed source level]
+        }
+      end
+      subject { described_class.json_schema }
+      it { expect(subject.name).to eq 'field_struct.strict_examples.user' }
+      it { expect(subject.hash).to include_json exp_hsh }
+      it { expect(subject.hash).to eq exp_hsh }
+      it { expect(subject.version).to eq '2359756858' }
+    end
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }

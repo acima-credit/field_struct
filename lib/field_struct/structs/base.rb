@@ -15,14 +15,24 @@ module FieldStruct
       child.send :extend, ConversionMethods
       child.send :extend, TypeValidationMethods
       child.send :include, InstanceMethods
+
+      child.send :extend, JsonSchemaSupport::ClassMethods
+      child.send :include, JsonSchemaSupport::InstanceMethods
     end
 
     module AttributeMethods
+      # Get the field struct parent
+      #
+      # @return [Object, nil]
+      def field_ancestor
+        ancestors[1..-1].find { |x| x.respond_to?(:field_struct?) && x.field_struct? }
+      end
+
       # Keeps information about the columns
       #
-      # @return [Hash]
+      # @return [FieldStruct::Metadata]
       def metadata
-        @metadata ||= {}
+        @metadata ||= Metadata.new self
       end
 
       # Indicates this class is a FieldStruct class
@@ -30,6 +40,13 @@ module FieldStruct
       # @return [true]
       def field_struct?
         true
+      end
+
+      # Indicates the class schema name
+      #
+      # @return [String]
+      def schema_name
+        name.underscore.gsub '/', '.'
       end
 
       # Add an attribute to the class
@@ -40,7 +57,8 @@ module FieldStruct
       # @param [Hash] options
       def attribute(name, type = Type::Value.new, *args, **options)
         arg_options = args.each_with_object({}) { |arg, hsh| hsh[arg.to_sym] = true }
-        metadata[name] = { type: type }
+        metadata.set name, :type, type
+        metadata.set(name, :of, options[:of]) if options[:of]
         options = arg_options.merge(options)
         options = add_validations name, type, options
 
@@ -147,7 +165,7 @@ module FieldStruct
         return unless required == 'true' || optional == 'false'
 
         validates_presence_of name
-        metadata[name][:required] = true
+        metadata.set name, :required, true
       end
 
       def add_format_validation(name, options)
@@ -155,7 +173,7 @@ module FieldStruct
         return unless format
 
         validates_format_of name, allow_nil: true, with: format
-        metadata[name][:format] = format
+        metadata.set name, :format, format
       end
 
       def add_enum_validation(name, options)
@@ -163,7 +181,7 @@ module FieldStruct
         return unless enum
 
         validates_inclusion_of name, allow_nil: true, in: enum
-        metadata[name][:enum] = enum
+        metadata.set name, :enum, enum
       end
 
       def add_length_in_validation(name, options)
@@ -171,7 +189,8 @@ module FieldStruct
         return unless length
 
         validates_length_of name, allow_nil: true, in: length
-        metadata[name][:in] = enum
+        metadata.set name, :min_length, length.min
+        metadata.set name, :max_length, length.max
       end
 
       def add_length_min_validation(name, options)
@@ -179,7 +198,7 @@ module FieldStruct
         return unless min_length
 
         validates_length_of name, allow_nil: true, minimum: min_length
-        metadata[name][:min] = min_length
+        metadata.set name, :min_length, min_length
       end
 
       def add_length_max_validation(name, options)
@@ -187,7 +206,7 @@ module FieldStruct
         return unless max_length
 
         validates_length_of name, allow_nil: true, maximum: max_length
-        metadata[name][:max] = max_length
+        metadata.set name, :max_length, max_length
       end
     end
 

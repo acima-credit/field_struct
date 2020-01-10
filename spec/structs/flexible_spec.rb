@@ -16,7 +16,7 @@ module FieldStruct
     end
 
     class Person < FieldStruct.flexible
-      required :first_name, :string
+      required :first_name, :string, length: 3..20
       required :last_name, :string
 
       def full_name
@@ -54,6 +54,9 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
     it { expect(described_class.extras).to eq :raise }
     context '.metadata' do
       subject { described_class.metadata }
+      it { expect(subject.name).to eq 'FieldStruct::FlexibleExamples::User' }
+      it { expect(subject.schema_name).to eq 'field_struct.flexible_examples.user' }
+      it { expect(subject.version).to eq '1325415271' }
       it { expect(subject.keys).to eq %i[username password age owed source level at active] }
       it { expect(subject[:username]).to eq type: :string, required: true, format: /\A[a-z]/i }
       it { expect(subject[:password]).to eq type: :string }
@@ -63,6 +66,47 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
       it { expect(subject[:level]).to eq type: :integer, required: true }
       it { expect(subject[:at]).to eq type: :time }
       it { expect(subject[:active]).to eq type: :boolean }
+      it do
+        expect(subject.to_hash).to eq name: 'FieldStruct::FlexibleExamples::User',
+                                      schema_name: 'field_struct.flexible_examples.user',
+                                      attributes: {
+                                        username: { type: :string, required: true, format: /\A[a-z]/i },
+                                        password: { type: :string },
+                                        age: { type: :integer, required: true },
+                                        owed: { type: :float, required: true },
+                                        source: { type: :string, required: true, enum: %w[A B C] },
+                                        level: { type: :integer, required: true },
+                                        at: { type: :time },
+                                        active: { type: :boolean }
+                                      },
+                                      version: '1325415271'
+      end
+    end
+    context '.json_schema' do
+      let(:exp_hsh) do
+        {
+          '$id' => 'https://schema-store.example.com/field_struct.flexible_examples.user/2359756858.json',
+          '$schema' => 'http://json-schema.org/draft-07/schema#',
+          'description' => 'JSON Schema for FieldStruct::FlexibleExamples::User version 2359756858',
+          'type' => 'object',
+          'properties' => {
+            'username' => { 'type' => 'string', 'pattern' => '/^[a-z]/i' },
+            'password' => { 'type' => 'string' },
+            'age' => { 'type' => 'number' },
+            'owed' => { 'type' => 'number' },
+            'source' => { 'type' => 'string', 'enum' => %w[A B C] },
+            'level' => { 'type' => 'number' },
+            'at' => { 'type' => 'string' },
+            'active' => { 'type' => 'boolean' }
+          },
+          'required' => %w[username age owed source level]
+        }
+      end
+      subject { described_class.json_schema }
+      it { expect(subject.name).to eq 'field_struct.flexible_examples.user' }
+      it { expect(subject.hash).to include_json exp_hsh }
+      it { expect(subject.hash).to eq exp_hsh }
+      it { expect(subject.version).to eq '2359756858' }
     end
     context '.attribute_types' do
       subject { described_class.attribute_types }
@@ -153,6 +197,32 @@ RSpec.describe FieldStruct::FlexibleExamples::Person do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
     it { expect(described_class.extras).to eq :raise }
+    context '.metadata' do
+      subject { described_class.metadata }
+      it { expect(subject.keys).to eq %i[first_name last_name] }
+      it { expect(subject[:first_name]).to eq type: :string, required: true, min_length: 3, max_length: 20 }
+      it { expect(subject[:last_name]).to eq type: :string, required: true }
+    end
+    context '.json_schema' do
+      let(:exp_hsh) do
+        {
+          '$id' => 'https://schema-store.example.com/field_struct.flexible_examples.person/2394769259.json',
+          '$schema' => 'http://json-schema.org/draft-07/schema#',
+          'description' => 'JSON Schema for FieldStruct::FlexibleExamples::Person version 2394769259',
+          'type' => 'object',
+          'properties' => {
+            'first_name' => { 'type' => 'string', 'minLength' => 3, 'maxLength' => 20 },
+            'last_name' => { 'type' => 'string' }
+          },
+          'required' => %w[first_name last_name]
+        }
+      end
+      subject { described_class.json_schema }
+      it { expect(subject.name).to eq 'field_struct.flexible_examples.person' }
+      it { expect(subject.hash).to include_json exp_hsh }
+      it { expect(subject.hash).to eq exp_hsh }
+      it { expect(subject.version).to eq '2394769259' }
+    end
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -200,6 +270,34 @@ RSpec.describe FieldStruct::FlexibleExamples::Employee do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
     it { expect(described_class.extras).to eq :add }
+    context '.metadata' do
+      subject { described_class.metadata }
+      it { expect(subject.keys).to eq %i[first_name last_name title] }
+      it { expect(subject[:first_name]).to eq type: :string, required: true, min_length: 3, max_length: 20 }
+      it { expect(subject[:last_name]).to eq type: :string, required: true }
+      it { expect(subject[:title]).to eq type: :string }
+    end
+    context '.json_schema' do
+      let(:exp_hsh) do
+        {
+          '$id' => 'https://schema-store.example.com/field_struct.flexible_examples.employee/2135193296.json',
+          '$schema' => 'http://json-schema.org/draft-07/schema#',
+          'description' => 'JSON Schema for FieldStruct::FlexibleExamples::Employee version 2135193296',
+          'type' => 'object',
+          'properties' => {
+            'first_name' => { 'type' => 'string', 'minLength' => 3, 'maxLength' => 20 },
+            'last_name' => { 'type' => 'string' },
+            'title' => { 'type' => 'string' }
+          },
+          'required' => %w[first_name last_name]
+        }
+      end
+      subject { described_class.json_schema }
+      it { expect(subject.name).to eq 'field_struct.flexible_examples.employee' }
+      it { expect(subject.hash).to include_json exp_hsh }
+      it { expect(subject.hash).to eq exp_hsh }
+      it { expect(subject.version).to eq '2135193296' }
+    end
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -253,6 +351,36 @@ RSpec.describe FieldStruct::FlexibleExamples::Developer do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
     it { expect(described_class.extras).to eq :add }
+    context '.metadata' do
+      subject { described_class.metadata }
+      it { expect(subject.keys).to eq %i[first_name last_name title language] }
+      it { expect(subject[:first_name]).to eq type: :string, required: true, min_length: 3, max_length: 20 }
+      it { expect(subject[:last_name]).to eq type: :string, required: true }
+      it { expect(subject[:title]).to eq type: :string }
+      it { expect(subject[:language]).to eq type: :string, required: true }
+    end
+    context '.json_schema' do
+      let(:exp_hsh) do
+        {
+          '$id' => 'https://schema-store.example.com/field_struct.flexible_examples.developer/49041963.json',
+          '$schema' => 'http://json-schema.org/draft-07/schema#',
+          'description' => 'JSON Schema for FieldStruct::FlexibleExamples::Developer version 49041963',
+          'type' => 'object',
+          'properties' => {
+            'first_name' => { 'type' => 'string', 'minLength' => 3, 'maxLength' => 20 },
+            'last_name' => { 'type' => 'string' },
+            'title' => { 'type' => 'string' },
+            'language' => { 'type' => 'string' }
+          },
+          'required' => %w[first_name last_name language]
+        }
+      end
+      subject { described_class.json_schema }
+      it { expect(subject.name).to eq 'field_struct.flexible_examples.developer' }
+      it { expect(subject.hash).to include_json exp_hsh }
+      it { expect(subject.hash).to eq exp_hsh }
+      it { expect(subject.version).to eq '49041963' }
+    end
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -312,6 +440,41 @@ RSpec.describe FieldStruct::FlexibleExamples::Team do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
     it { expect(described_class.extras).to eq :ignore }
+    context '.metadata' do
+      subject { described_class.metadata }
+      it { expect(subject.keys).to eq %i[name leader members] }
+      it { expect(subject[:name]).to eq type: :string, required: true }
+      it { expect(subject[:leader]).to eq type: FieldStruct::FlexibleExamples::Employee, required: true }
+      it { expect(subject[:members]).to eq type: :array, of: FieldStruct::FlexibleExamples::Employee, required: true }
+    end
+    context '.json_schema' do
+      let(:exp_hsh) do
+        {
+          '$id' => 'https://schema-store.example.com/field_struct.flexible_examples.team/3931647962.json',
+          '$schema' => 'http://json-schema.org/draft-07/schema#',
+          'description' => 'JSON Schema for FieldStruct::FlexibleExamples::Team version 3931647962',
+          'type' => 'object',
+          'properties' => {
+            'name' => { 'type' => 'string' },
+            'leader' => {
+              'type' => 'object',
+              'properties' => {
+                'first_name' => { 'type' => 'string', 'minLength' => 3, 'maxLength' => 20 },
+                'last_name' => { 'type' => 'string' },
+                'title' => { 'type' => 'string' }
+              },
+              'required' => %w[first_name last_name]
+            },
+            'members' => { 'type' => 'array' }
+          }, 'required' => %w[name leader members]
+        }
+      end
+      subject { described_class.json_schema }
+      it { expect(subject.name).to eq 'field_struct.flexible_examples.team' }
+      it { expect(subject.hash).to include_json exp_hsh }
+      it { expect(subject.hash).to eq exp_hsh }
+      it { expect(subject.version).to eq '3931647962' }
+    end
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
@@ -383,6 +546,70 @@ RSpec.describe FieldStruct::FlexibleExamples::Company do
   describe 'class' do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
     it { expect(described_class.extras).to eq :raise }
+    context '.metadata' do
+      subject { described_class.metadata }
+      it { expect(subject.keys).to eq %i[legal_name development_team marketing_team] }
+      it { expect(subject[:legal_name]).to eq type: :string, required: true }
+      it { expect(subject[:development_team]).to eq type: FieldStruct::FlexibleExamples::Team }
+      it { expect(subject[:marketing_team]).to eq type: FieldStruct::FlexibleExamples::Team }
+    end
+    context '.json_schema' do
+      let(:exp_hsh) do
+        {
+          '$id' => 'https://schema-store.example.com/field_struct.flexible_examples.company/35659901.json',
+          '$schema' => 'http://json-schema.org/draft-07/schema#',
+          'description' => 'JSON Schema for FieldStruct::FlexibleExamples::Company version 35659901',
+          'type' => 'object',
+          'properties' => {
+            'legal_name' => { 'type' => 'string' },
+            'development_team' => {
+              'type' => 'object',
+              'properties' => {
+                'name' => { 'type' => 'string' },
+                'leader' => {
+                  'type' => 'object',
+                  'properties' => {
+                    'first_name' => { 'type' => 'string', 'minLength' => 3, 'maxLength' => 20 },
+                    'last_name' => { 'type' => 'string' },
+                    'title' => { 'type' => 'string' }
+                  },
+                  'required' => %w[first_name last_name]
+                },
+                'members' => { 'type' => 'array' }
+              },
+              'required' => %w[name leader members]
+            },
+            'marketing_team' => {
+              'type' => 'object',
+              'properties' => {
+                'name' => { 'type' => 'string' },
+                'leader' => {
+                  'type' => 'object',
+                  'properties' => {
+                    'first_name' => { 'type' => 'string', 'minLength' => 3, 'maxLength' => 20 },
+                    'last_name' => { 'type' => 'string' },
+                    'title' => { 'type' => 'string' }
+                  },
+                  'required' => %w[first_name last_name]
+                },
+                'members' => { 'type' => 'array' }
+              },
+              'required' => %w[name leader members]
+            }
+          },
+          'required' => ['legal_name']
+        }
+      end
+      subject { described_class.json_schema }
+      it { expect(subject.name).to eq 'field_struct.flexible_examples.company' }
+      it { expect(subject.hash).to include_json exp_hsh }
+      it { expect(subject.hash).to eq exp_hsh }
+      # it do
+      #  puts "> subject.hash | #{subject.hash.inspect}"
+      #  expect(subject.hash).to include_json exp_hsh
+      # end
+      it { expect(subject.version).to eq '35659901' }
+    end
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
