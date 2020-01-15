@@ -52,41 +52,19 @@ RSpec.describe FieldStruct::StrictExamples::User do
     it { expect(described_class.extras).to eq :raise }
     context '.metadata' do
       subject { described_class.metadata }
+      it { expect(subject.name).to eq 'FieldStruct::StrictExamples::User' }
+      it { expect(subject.schema_name).to eq 'field_struct.strict_examples.user' }
+      it { expect(subject.type).to eq :strict }
+      it { expect(subject.version).to eq '64c696a7' }
       it { expect(subject.keys).to eq %i[username password age owed source level at active] }
       it { expect(subject[:username]).to eq type: :string, required: true, format: /\A[a-z]/i }
       it { expect(subject[:password]).to eq type: :string }
       it { expect(subject[:age]).to eq type: :integer, required: true }
       it { expect(subject[:owed]).to eq type: :float, required: true }
       it { expect(subject[:source]).to eq type: :string, required: true, enum: %w[A B C] }
-      it { expect(subject[:level]).to eq type: :integer, required: true }
+      it { expect(subject[:level]).to eq type: :integer, required: true, default: 'proc' }
       it { expect(subject[:at]).to eq type: :time }
-      it { expect(subject[:active]).to eq type: :boolean }
-    end
-    context '.json_schema' do
-      let(:exp_hsh) do
-        {
-          '$id' => 'https://schema-store.example.com/field_struct.strict_examples.user/2359756858.json',
-          '$schema' => 'http://json-schema.org/draft-07/schema#',
-          'description' => 'JSON Schema for FieldStruct::StrictExamples::User version 2359756858',
-          'type' => 'object',
-          'properties' => {
-            'username' => { 'type' => 'string', 'pattern' => '/^[a-z]/i' },
-            'password' => { 'type' => 'string' },
-            'age' => { 'type' => 'number' },
-            'owed' => { 'type' => 'number' },
-            'source' => { 'type' => 'string', 'enum' => %w[A B C] },
-            'level' => { 'type' => 'number' },
-            'at' => { 'type' => 'string' },
-            'active' => { 'type' => 'boolean' }
-          },
-          'required' => %w[username age owed source level]
-        }
-      end
-      subject { described_class.json_schema }
-      it { expect(subject.name).to eq 'field_struct.strict_examples.user' }
-      it { expect(subject.hash).to include_json exp_hsh }
-      it { expect(subject.hash).to eq exp_hsh }
-      it { expect(subject.version).to eq '2359756858' }
+      it { expect(subject[:active]).to eq type: :boolean, default: false }
     end
     context '.attribute_types' do
       subject { described_class.attribute_types }

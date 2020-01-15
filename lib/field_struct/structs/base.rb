@@ -13,14 +13,17 @@ module FieldStruct
 
       child.send :extend, AttributeMethods
       child.send :extend, ConversionMethods
-      child.send :extend, TypeValidationMethods
       child.send :include, InstanceMethods
-
-      child.send :extend, JsonSchemaSupport::ClassMethods
-      child.send :include, JsonSchemaSupport::InstanceMethods
     end
 
     module AttributeMethods
+      # Override class name from metadata if available
+      #
+      # @return [String]
+      def name
+        @metadata ? @metadata.name : super
+      end
+
       # Get the field struct parent
       #
       # @return [Object, nil]
@@ -32,7 +35,9 @@ module FieldStruct
       #
       # @return [FieldStruct::Metadata]
       def metadata
-        @metadata ||= Metadata.new self
+        return @metadata if instance_variable_defined?(:@metadata)
+
+        @metadata = Metadata.from self
       end
 
       # Indicates this class is a FieldStruct class
@@ -42,17 +47,6 @@ module FieldStruct
         true
       end
 
-      # Indicates the class schema name
-      #
-      # @return [String]
-      def schema_name
-        return @schema_name if instance_variable_defined?(:@schema_name)
-
-        name.to_s.underscore.gsub '/', '.'
-      end
-
-      attr_writer :schema_name
-
       # Add an attribute to the class
       #
       # @param [Symbol] name
@@ -61,10 +55,10 @@ module FieldStruct
       # @param [Hash] options
       def attribute(name, type = Type::Value.new, *args, **options)
         arg_options = args.each_with_object({}) { |arg, hsh| hsh[arg.to_sym] = true }
-        metadata.set name, :type, type
-        metadata.set(name, :of, options[:of]) if options[:of]
-        options = arg_options.merge(options)
-        options = add_validations name, type, options
+        options = arg_options.merge options
+        attribute_metadata name, type, options
+
+        options = Validations.build_for(self, name)
 
         super name, type, options
       end
@@ -104,6 +98,15 @@ module FieldStruct
 
         :raise
       end
+
+      private
+
+      def attribute_metadata(name, type, options)
+        metadata[name].type = type
+        metadata[name].version = type.metadata.version if type.respond_to?(:metadata)
+        metadata[name].version = options[:of].metadata.version if options[:of].respond_to?(:metadata)
+        metadata.update name, options
+      end
     end
 
     module ConversionMethods
@@ -129,91 +132,11 @@ module FieldStruct
       end
     end
 
-    module TypeValidationMethods
-      private
-
-      # @param [Symbol] name
-      # @param [Symbol, Type::Value, FieldStruct::Base] type
-      # @param [Hash] options
-      def add_validations(name, type, options)
-        add_field_struct_validation name, type
-        add_required_validation name, options
-        add_format_validation name, options
-        add_enum_validation name, options
-        add_length_in_validation name, options
-        add_length_min_validation name, options
-        add_length_max_validation name, options
-
-        options
-      end
-
-      # @param [Symbol] name
-      # @param [Symbol, Type::Value, FieldStruct::Base] type
-      def add_field_struct_validation(name, type)
-        return unless type.respond_to?(:field_struct?) && type.field_struct?
-
-        validates_each name, allow_nil: true do |record, attr, _value|
-          nested_attr = record.send(attr)
-          unless nested_attr.valid?
-            nested_attr.errors.to_hash.each do |field, labels|
-              labels.each { |label| record.errors.add attr, "#{field} #{label}" }
-            end
-          end
-        end
-      end
-
-      def add_required_validation(name, options)
-        optional = options.delete(:optional).to_s
-        required = options.delete(:required).to_s
-        return unless required == 'true' || optional == 'false'
-
-        validates_presence_of name
-        metadata.set name, :required, true
-      end
-
-      def add_format_validation(name, options)
-        format = options.delete :format
-        return unless format
-
-        validates_format_of name, allow_nil: true, with: format
-        metadata.set name, :format, format
-      end
-
-      def add_enum_validation(name, options)
-        enum = options.delete :enum
-        return unless enum
-
-        validates_inclusion_of name, allow_nil: true, in: enum
-        metadata.set name, :enum, enum
-      end
-
-      def add_length_in_validation(name, options)
-        length = options.delete :length
-        return unless length
-
-        validates_length_of name, allow_nil: true, in: length
-        metadata.set name, :min_length, length.min
-        metadata.set name, :max_length, length.max
-      end
-
-      def add_length_min_validation(name, options)
-        min_length = options.delete :min_length
-        return unless min_length
-
-        validates_length_of name, allow_nil: true, minimum: min_length
-        metadata.set name, :min_length, min_length
-      end
-
-      def add_length_max_validation(name, options)
-        max_length = options.delete :max_length
-        return unless max_length
-
-        validates_length_of name, allow_nil: true, maximum: max_length
-        metadata.set name, :max_length, max_length
-      end
-    end
-
     module InstanceMethods
+      def initialize(attrs = {})
+        super attrs
+      end
+
       # @param [Hash] options
       # @return [Hash]
       def to_hash(options = {})
@@ -253,5 +176,9 @@ module FieldStruct
         extras[key] = value
       end
     end
+  end
+
+  def self.types
+    @types ||= {}
   end
 end

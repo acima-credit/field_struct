@@ -26,4 +26,6 @@ module FieldStruct
   def self.strict
     Strict
   end
+
+  types[:strict] = Strict
 end

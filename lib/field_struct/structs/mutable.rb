@@ -23,4 +23,6 @@ module FieldStruct
   def self.mutable
     Mutable
   end
+
+  types[:mutable] = Mutable
 end

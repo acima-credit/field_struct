@@ -50,4 +50,5 @@ Naming/VariableName:
 Metrics/AbcSize:
   Enabled: true
   Exclude:
+    - 'lib/field_struct/structs/base.rb'
     - 'spec/support/**'

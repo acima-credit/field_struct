@@ -24,4 +24,6 @@ module FieldStruct
   def self.flexible
     Flexible
   end
+
+  types[:flexible] = Flexible
 end
