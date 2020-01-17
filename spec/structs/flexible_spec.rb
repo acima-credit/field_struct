@@ -57,7 +57,7 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
       it { expect(subject.name).to eq 'FieldStruct::FlexibleExamples::User' }
       it { expect(subject.schema_name).to eq 'field_struct.flexible_examples.user' }
       it { expect(subject.type).to eq :flexible }
-      it { expect(subject.version).to eq 'a356739f' }
+      it { expect(subject.version).to eq '245178bc' }
       it('full hash') do
         expect(subject.to_hash).to eq name: 'FieldStruct::FlexibleExamples::User',
                                       schema_name: 'field_struct.flexible_examples.user',
@@ -76,11 +76,11 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
                                           description: 'amount owed to the company'
                                         },
                                         source: { type: :string, required: true, enum: %w[A B C] },
-                                        level: { type: :integer, required: true, default: 'proc' },
+                                        level: { type: :integer, required: true, default: '<proc>' },
                                         at: { type: :time },
                                         active: { type: :boolean, default: false }
                                       },
-                                      version: 'a356739f'
+                                      version: '245178bc'
       end
       it 'filtered hash' do
         options = { attributes: { attribute: { only_keys: %i[type of required default enum] } } }
@@ -92,11 +92,26 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
                                                  age: { type: :integer, required: true },
                                                  owed: { type: :float, required: true },
                                                  source: { type: :string, required: true, enum: %w[A B C] },
-                                                 level: { type: :integer, required: true, default: 'proc' },
+                                                 level: { type: :integer, required: true, default: '<proc>' },
                                                  at: { type: :time },
                                                  active: { type: :boolean, default: false }
                                                },
-                                               version: 'a356739f'
+                                               version: '245178bc'
+      end
+      it '#as_avro_schema' do
+        expect(subject.as_avro_schema).to eq name: 'user',
+                                             namespace: 'field_struct.flexible_examples',
+                                             type: 'record',
+                                             fields: [
+                                               { name: :username, type: 'string', doc: 'login' },
+                                               { name: :password, type: %w[null string] },
+                                               { name: :age, type: 'int' },
+                                               { name: :owed, type: 'number', doc: 'amount owed to the company' },
+                                               { name: :source, type: 'string' },
+                                               { name: :level, type: 'int' },
+                                               { name: :at, type: %w[null string] },
+                                               { name: :active, type: %w[boolean null], default: false }
+                                             ]
       end
     end
     context '.attribute_types' do
@@ -203,6 +218,15 @@ RSpec.describe FieldStruct::FlexibleExamples::Person do
                                       },
                                       version: '75b71433'
       end
+      it '#as_avro_schema' do
+        expect(subject.as_avro_schema).to eq name: 'person',
+                                             namespace: 'field_struct.flexible_examples',
+                                             type: 'record',
+                                             fields: [
+                                               { name: :first_name, type: 'string' },
+                                               { name: :last_name, type: 'string' }
+                                             ]
+      end
     end
     context '.attribute_types' do
       subject { described_class.attribute_types }
@@ -261,6 +285,16 @@ RSpec.describe FieldStruct::FlexibleExamples::Employee do
       it { expect(subject[:first_name]).to eq type: :string, required: true, min_length: 3, max_length: 20 }
       it { expect(subject[:last_name]).to eq type: :string, required: true }
       it { expect(subject[:title]).to eq type: :string }
+      it '#as_avro_schema' do
+        expect(subject.as_avro_schema).to eq name: 'employee',
+                                             namespace: 'field_struct.flexible_examples',
+                                             type: 'record',
+                                             fields: [
+                                               { name: :first_name, type: 'string' },
+                                               { name: :last_name, type: 'string' },
+                                               { name: :title, type: %w[null string] }
+                                             ]
+      end
     end
     context '.attribute_types' do
       subject { described_class.attribute_types }
@@ -326,6 +360,17 @@ RSpec.describe FieldStruct::FlexibleExamples::Developer do
       it { expect(subject[:last_name]).to eq type: :string, required: true }
       it { expect(subject[:title]).to eq type: :string }
       it { expect(subject[:language]).to eq type: :string, required: true }
+      it '#as_avro_schema' do
+        expect(subject.as_avro_schema).to eq name: 'developer',
+                                             namespace: 'field_struct.flexible_examples',
+                                             type: 'record',
+                                             fields: [
+                                               { name: :first_name, type: 'string' },
+                                               { name: :last_name, type: 'string' },
+                                               { name: :title, type: %w[null string] },
+                                               { name: :language, type: 'string' }
+                                             ]
+      end
     end
     context '.attribute_types' do
       subject { described_class.attribute_types }
@@ -404,6 +449,30 @@ RSpec.describe FieldStruct::FlexibleExamples::Team do
                                         of: FieldStruct::FlexibleExamples::Employee,
                                         version: 'c4c4ab50',
                                         required: true
+      end
+      it '#as_avro_schema' do
+        expect(subject.as_avro_schema).to eq [
+          {
+            name: 'employee',
+            namespace: 'field_struct.flexible_examples',
+            type: 'record',
+            fields: [
+              { name: :first_name, type: 'string' },
+              { name: :last_name, type: 'string' },
+              { name: :title, type: %w[null string] }
+            ]
+          },
+          {
+            name: 'team',
+            namespace: 'field_struct.flexible_examples',
+            type: 'record',
+            fields: [
+              { name: :name, type: 'string' },
+              { name: :leader, type: 'field_struct.flexible_examples.employee' },
+              { name: :members, type: 'array', items: 'field_struct.flexible_examples.employee' }
+            ]
+          }
+        ]
       end
     end
     context '.attribute_types' do
@@ -487,6 +556,40 @@ RSpec.describe FieldStruct::FlexibleExamples::Company do
       it { expect(subject[:legal_name]).to eq type: :string, required: true }
       it { expect(subject[:development_team]).to eq type: FieldStruct::FlexibleExamples::Team, version: 'd968225d' }
       it { expect(subject[:marketing_team]).to eq type: FieldStruct::FlexibleExamples::Team, version: 'd968225d' }
+      it '#as_avro_schema', :focus do
+        expect(subject.as_avro_schema).to eq [
+          {
+            name: 'employee',
+            namespace: 'field_struct.flexible_examples',
+            type: 'record',
+            fields: [
+              { name: :first_name, type: 'string' },
+              { name: :last_name, type: 'string' },
+              { name: :title, type: %w[null string] }
+            ]
+          },
+          {
+            name: 'team',
+            namespace: 'field_struct.flexible_examples',
+            type: 'record',
+            fields: [
+              { name: :name, type: 'string' },
+              { name: :leader, type: 'field_struct.flexible_examples.employee' },
+              { name: :members, type: 'array', items: 'field_struct.flexible_examples.employee' }
+            ]
+          },
+          {
+            name: 'company',
+            namespace: 'field_struct.flexible_examples',
+            type: 'record',
+            fields: [
+              { name: :legal_name, type: 'string' },
+              { name: :development_team, type: ['null', 'field_struct.flexible_examples.team'] },
+              { name: :marketing_team, type: ['null', 'field_struct.flexible_examples.team'] }
+            ]
+          }
+        ]
+      end
     end
     context '.attribute_types' do
       subject { described_class.attribute_types }

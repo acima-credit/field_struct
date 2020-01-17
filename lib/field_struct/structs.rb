@@ -2,6 +2,7 @@
 
 require_relative 'structs/ext'
 require_relative 'structs/metadata'
+require_relative 'structs/avro'
 
 require_relative 'structs/validations'
 require_relative 'structs/base'

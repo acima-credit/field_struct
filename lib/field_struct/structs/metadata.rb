@@ -90,6 +90,10 @@ module FieldStruct
         set :required, !value unless value
       end
 
+      def optional?
+        !required?
+      end
+
       delegate :inspect, :to_s, :keys, :delete, to: :@values
 
       def <=>(other)
@@ -121,7 +125,7 @@ module FieldStruct
         @values.each_with_object({}) do |(k, v), hsh|
           next if options && options[:only_keys] && !options[:only_keys].include?(k)
 
-          hsh[k] = k == :default && v.is_a?(Proc) ? 'proc' : v
+          hsh[k] = k == :default && v.is_a?(Proc) ? '<proc>' : v
         end
       end
 
@@ -166,7 +170,7 @@ module FieldStruct
         end
       end
 
-      delegate :each, :keys, :inspect, :to_s, to: :@values
+      delegate :map, :each, :keys, :inspect, :to_s, to: :@values
 
       def <=>(other)
         to_hash <=> other.to_hash

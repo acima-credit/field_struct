@@ -55,14 +55,14 @@ RSpec.describe FieldStruct::StrictExamples::User do
       it { expect(subject.name).to eq 'FieldStruct::StrictExamples::User' }
       it { expect(subject.schema_name).to eq 'field_struct.strict_examples.user' }
       it { expect(subject.type).to eq :strict }
-      it { expect(subject.version).to eq '64c696a7' }
+      it { expect(subject.version).to eq '7d1bd1cb' }
       it { expect(subject.keys).to eq %i[username password age owed source level at active] }
       it { expect(subject[:username]).to eq type: :string, required: true, format: /\A[a-z]/i }
       it { expect(subject[:password]).to eq type: :string }
       it { expect(subject[:age]).to eq type: :integer, required: true }
       it { expect(subject[:owed]).to eq type: :float, required: true }
       it { expect(subject[:source]).to eq type: :string, required: true, enum: %w[A B C] }
-      it { expect(subject[:level]).to eq type: :integer, required: true, default: 'proc' }
+      it { expect(subject[:level]).to eq type: :integer, required: true, default: '<proc>' }
       it { expect(subject[:at]).to eq type: :time }
       it { expect(subject[:active]).to eq type: :boolean, default: false }
     end
