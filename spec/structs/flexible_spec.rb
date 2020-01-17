@@ -37,7 +37,7 @@ module FieldStruct
       extras :ignore
       required :name, :string
       required :leader, Employee
-      required :members, :array, of: Employee
+      required :members, :array, of: Employee, description: 'Team members'
     end
 
     class Company < FieldStruct.flexible
@@ -436,7 +436,7 @@ RSpec.describe FieldStruct::FlexibleExamples::Team do
       it { expect(subject.name).to eq 'FieldStruct::FlexibleExamples::Team' }
       it { expect(subject.schema_name).to eq 'field_struct.flexible_examples.team' }
       it { expect(subject.type).to eq :flexible }
-      it { expect(subject.version).to eq 'd968225d' }
+      it { expect(subject.version).to eq '5a034ba' }
       it { expect(subject.keys).to eq %i[name leader members] }
       it { expect(subject[:name]).to eq type: :string, required: true }
       it do
@@ -446,9 +446,10 @@ RSpec.describe FieldStruct::FlexibleExamples::Team do
       end
       it do
         expect(subject[:members]).to eq type: :array,
-                                        of: FieldStruct::FlexibleExamples::Employee,
                                         version: 'c4c4ab50',
-                                        required: true
+                                        required: true,
+                                        of: FieldStruct::FlexibleExamples::Employee,
+                                        description: 'Team members'
       end
       it '#as_avro_schema' do
         expect(subject.as_avro_schema).to eq [
@@ -469,7 +470,11 @@ RSpec.describe FieldStruct::FlexibleExamples::Team do
             fields: [
               { name: :name, type: 'string' },
               { name: :leader, type: 'field_struct.flexible_examples.employee' },
-              { name: :members, type: 'array', items: 'field_struct.flexible_examples.employee' }
+              {
+                name: :members,
+                type: { type: 'array', items: 'field_struct.flexible_examples.employee' },
+                doc: 'Team members'
+              }
             ]
           }
         ]
@@ -551,12 +556,12 @@ RSpec.describe FieldStruct::FlexibleExamples::Company do
       it { expect(subject.name).to eq 'FieldStruct::FlexibleExamples::Company' }
       it { expect(subject.schema_name).to eq 'field_struct.flexible_examples.company' }
       it { expect(subject.type).to eq :flexible }
-      it { expect(subject.version).to eq '2ce9b5f7' }
+      it { expect(subject.version).to eq '21b9bca5' }
       it { expect(subject.keys).to eq %i[legal_name development_team marketing_team] }
       it { expect(subject[:legal_name]).to eq type: :string, required: true }
-      it { expect(subject[:development_team]).to eq type: FieldStruct::FlexibleExamples::Team, version: 'd968225d' }
-      it { expect(subject[:marketing_team]).to eq type: FieldStruct::FlexibleExamples::Team, version: 'd968225d' }
-      it '#as_avro_schema', :focus do
+      it { expect(subject[:development_team]).to eq type: FieldStruct::FlexibleExamples::Team, version: '5a034ba' }
+      it { expect(subject[:marketing_team]).to eq type: FieldStruct::FlexibleExamples::Team, version: '5a034ba' }
+      it '#as_avro_schema' do
         expect(subject.as_avro_schema).to eq [
           {
             name: 'employee',
@@ -575,7 +580,11 @@ RSpec.describe FieldStruct::FlexibleExamples::Company do
             fields: [
               { name: :name, type: 'string' },
               { name: :leader, type: 'field_struct.flexible_examples.employee' },
-              { name: :members, type: 'array', items: 'field_struct.flexible_examples.employee' }
+              {
+                name: :members,
+                type: { type: 'array', items: 'field_struct.flexible_examples.employee' },
+                doc: 'Team members'
+              }
             ]
           },
           {

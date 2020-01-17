@@ -51,11 +51,11 @@ module FieldStruct
       end
 
       def build_schema_for(meta)
-        names           = meta.schema_name.split('.')
-        hsh             = { name: names.last }
+        names = meta.schema_name.split('.')
+        hsh = { name: names.last }
         hsh[:namespace] = names[0..-2].join('.')
-        hsh[:type]      = 'record'
-        hsh[:fields]    = meta.attributes.map { |name, attr| build_field_for name, attr }
+        hsh[:type] = 'record'
+        hsh[:fields] = meta.attributes.map { |name, attr| build_field_for name, attr }
         hsh
       end
 
@@ -68,12 +68,11 @@ module FieldStruct
       end
 
       def add_field_type_for(attr, hsh)
-        hsh[:type] = basic_type_for attr.type
-        hsh[:items] = basic_type_for attr.of if attr.type == :array
+        hsh[:type] = basic_type_for attr.type, attr
         hsh[:type] = ['null', hsh[:type]] unless attr.required?
       end
 
-      def basic_type_for(type)
+      def basic_type_for(type, attr)
         case type
         when :big_integer, :decimal, :float, :currency
           'number'
@@ -86,7 +85,7 @@ module FieldStruct
         when :boolean
           'boolean'
         when :array
-          'array'
+          { type: 'array', items: basic_type_for(attr.of, attr) }
         else
           type.field_struct? ? type.metadata.schema_name : nil
         end
