@@ -9,7 +9,7 @@ require 'zlib'
 require 'active_model'
 require 'active_support/core_ext/hash/indifferent_access'
 require 'active_support/hash_with_indifferent_access'
-require 'js_regex'
+require 'avro'
 
 require_relative 'field_struct/version'
 require_relative 'field_struct/types'

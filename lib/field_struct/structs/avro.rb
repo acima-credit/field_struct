@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module FieldStruct
-  module Avro
-    class SchemaBuilder
+  module AvroSchema
+    class Builder
       def self.build(metadata)
         new(metadata).build
       end
@@ -52,9 +52,11 @@ module FieldStruct
 
       def build_schema_for(meta)
         names = meta.schema_name.split('.')
-        hsh = { name: names.last, doc: "version #{meta.version}" }
-        hsh[:namespace] = names[0..-2].join('.')
+        hsh = {}
         hsh[:type] = 'record'
+        hsh[:name] = names.last
+        hsh[:namespace] = names[0..-2].join('.')
+        hsh[:doc] = "version #{meta.version}"
         hsh[:fields] = meta.attributes.map { |name, attr| build_field_for name, attr }
         hsh
       end
@@ -75,7 +77,7 @@ module FieldStruct
       def basic_type_for(type, attr)
         case type
         when :big_integer, :decimal, :float, :currency
-          'number'
+          'float'
         when :integer
           'int'
         when :binary
@@ -107,7 +109,15 @@ module FieldStruct
 
   class Metadata
     def as_avro_schema
-      Avro::SchemaBuilder.build self
+      AvroSchema::Builder.build self
+    end
+
+    def to_avro_json
+      as_avro_schema.to_json
+    end
+
+    def to_avro_schema
+      Avro::Schema.parse to_avro_json
     end
   end
 end

@@ -65,6 +65,32 @@ RSpec.describe FieldStruct::StrictExamples::User do
       it { expect(subject[:level]).to eq type: :integer, required: true, default: '<proc>' }
       it { expect(subject[:at]).to eq type: :time }
       it { expect(subject[:active]).to eq type: :boolean, default: false }
+      let(:exp_hsh) do
+        {
+          type: 'record',
+          name: 'user',
+          namespace: 'field_struct.strict_examples',
+          doc: 'version 7d1bd1cb',
+          fields: [
+            { name: :username, type: 'string' },
+            { name: :password, type: %w[null string] },
+            { name: :age, type: 'int' },
+            { name: :owed, type: 'float' },
+            { name: :source, type: 'string' },
+            { name: :level, type: 'int' },
+            { name: :at, type: %w[null string] },
+            { name: :active, type: %w[boolean null], default: false }
+          ]
+        }
+      end
+      let(:exp_json) { exp_hsh.to_json }
+      it('#as_avro_schema') { expect(subject.as_avro_schema).to eq exp_hsh }
+      it('#to_avro_json') { expect(subject.to_avro_json).to eq exp_json }
+      context '#to_avro_schema' do
+        let(:result) { subject.to_avro_schema }
+        it('type') { expect(result).to be_a Avro::Schema }
+        it('to_s') { expect(result.to_s).to eq exp_json }
+      end
     end
     context '.attribute_types' do
       subject { described_class.attribute_types }
@@ -149,6 +175,29 @@ RSpec.describe FieldStruct::StrictExamples::Person do
       it { expect(subject['first_name']).to be_a ActiveModel::Type::String }
       it { expect(subject['last_name']).to be_a ActiveModel::Type::String }
     end
+    context '.metadata' do
+      subject { described_class.metadata }
+      let(:exp_hsh) do
+        {
+          type: 'record',
+          name: 'person',
+          namespace: 'field_struct.strict_examples',
+          doc: 'version 8e0963f3',
+          fields: [
+            { name: :first_name, type: 'string' },
+            { name: :last_name, type: 'string' }
+          ]
+        }
+      end
+      let(:exp_json) { exp_hsh.to_json }
+      it('#as_avro_schema') { expect(subject.as_avro_schema).to eq exp_hsh }
+      it('#to_avro_json') { expect(subject.to_avro_json).to eq exp_json }
+      context '#to_avro_schema' do
+        let(:result) { subject.to_avro_schema }
+        it('type') { expect(result).to be_a Avro::Schema }
+        it('to_s') { expect(result.to_s).to eq exp_json }
+      end
+    end
   end
   describe 'instance' do
     let(:full_params) do
@@ -188,6 +237,30 @@ RSpec.describe FieldStruct::StrictExamples::Employee do
       it { expect(subject['first_name']).to be_a ActiveModel::Type::String }
       it { expect(subject['last_name']).to be_a ActiveModel::Type::String }
       it { expect(subject['title']).to be_a ActiveModel::Type::String }
+    end
+    context '.metadata' do
+      subject { described_class.metadata }
+      let(:exp_hsh) do
+        {
+          type: 'record',
+          name: 'employee',
+          namespace: 'field_struct.strict_examples',
+          doc: 'version 1a3ecbcb',
+          fields: [
+            { name: :first_name, type: 'string' },
+            { name: :last_name, type: 'string' },
+            { name: :title, type: %w[null string] }
+          ]
+        }
+      end
+      let(:exp_json) { exp_hsh.to_json }
+      it('#as_avro_schema') { expect(subject.as_avro_schema).to eq exp_hsh }
+      it('#to_avro_json') { expect(subject.to_avro_json).to eq exp_json }
+      context '#to_avro_schema' do
+        let(:result) { subject.to_avro_schema }
+        it('type') { expect(result).to be_a Avro::Schema }
+        it('to_s') { expect(result.to_s).to eq exp_json }
+      end
     end
   end
   describe 'instance' do
@@ -232,6 +305,31 @@ RSpec.describe FieldStruct::StrictExamples::Developer do
       it { expect(subject['title']).to be_a ActiveModel::Type::String }
       it { expect(subject['language']).to be_a ActiveModel::Type::String }
     end
+    context '.metadata' do
+      subject { described_class.metadata }
+      let(:exp_hsh) do
+        {
+          type: 'record',
+          name: 'developer',
+          namespace: 'field_struct.strict_examples',
+          doc: 'version a4cf4b53',
+          fields: [
+            { name: :first_name, type: 'string' },
+            { name: :last_name, type: 'string' },
+            { name: :title, type: %w[null string] },
+            { name: :language, type: 'string' }
+          ]
+        }
+      end
+      let(:exp_json) { exp_hsh.to_json }
+      it('#as_avro_schema') { expect(subject.as_avro_schema).to eq exp_hsh }
+      it('#to_avro_json') { expect(subject.to_avro_json).to eq exp_json }
+      context '#to_avro_schema' do
+        let(:result) { subject.to_avro_schema }
+        it('type') { expect(result).to be_a Avro::Schema }
+        it('to_s') { expect(result.to_s).to eq exp_json }
+      end
+    end
   end
   describe 'instance' do
     let(:full_params) do
@@ -274,6 +372,42 @@ RSpec.describe FieldStruct::StrictExamples::Team do
       it { expect(subject.keys).to eq %w[name leader] }
       it { expect(subject['name']).to be_a ActiveModel::Type::String }
       it { expect(subject['leader']).to eq FieldStruct::StrictExamples::Employee }
+    end
+    context '.metadata' do
+      subject { described_class.metadata }
+      let(:exp_hsh) do
+        [
+          {
+            type: 'record',
+            name: 'employee',
+            namespace: 'field_struct.strict_examples',
+            doc: 'version 1a3ecbcb',
+            fields: [
+              { name: :first_name, type: 'string' },
+              { name: :last_name, type: 'string' },
+              { name: :title, type: %w[null string] }
+            ]
+          },
+          {
+            type: 'record',
+            name: 'team',
+            namespace: 'field_struct.strict_examples',
+            doc: 'version d43ed3c5',
+            fields: [
+              { name: :name, type: 'string' },
+              { name: :leader, type: 'field_struct.strict_examples.employee' }
+            ]
+          }
+        ]
+      end
+      let(:exp_json) { exp_hsh.to_json }
+      it('#as_avro_schema') { expect(subject.as_avro_schema).to eq exp_hsh }
+      it('#to_avro_json') { expect(subject.to_avro_json).to eq exp_json }
+      context '#to_avro_schema' do
+        let(:result) { subject.to_avro_schema }
+        it('type') { expect(result).to be_a Avro::Schema }
+        it('to_s') { expect(result.to_s).to eq exp_json }
+      end
     end
   end
   describe 'instance' do
@@ -324,6 +458,53 @@ RSpec.describe FieldStruct::StrictExamples::Company do
       it { expect(subject['legal_name']).to be_a ActiveModel::Type::String }
       it { expect(subject['development_team']).to eq FieldStruct::StrictExamples::Team }
       it { expect(subject['marketing_team']).to eq FieldStruct::StrictExamples::Team }
+    end
+    context '.metadata' do
+      subject { described_class.metadata }
+      let(:exp_hsh) do
+        [
+          {
+            type: 'record',
+            name: 'employee',
+            namespace: 'field_struct.strict_examples',
+            doc: 'version 1a3ecbcb',
+            fields: [
+              { name: :first_name, type: 'string' },
+              { name: :last_name, type: 'string' },
+              { name: :title, type: %w[null string] }
+            ]
+          },
+          {
+            type: 'record',
+            name: 'team',
+            namespace: 'field_struct.strict_examples',
+            doc: 'version d43ed3c5',
+            fields: [
+              { name: :name, type: 'string' },
+              { name: :leader, type: 'field_struct.strict_examples.employee' }
+            ]
+          },
+          {
+            type: 'record',
+            name: 'company',
+            namespace: 'field_struct.strict_examples',
+            doc: 'version c54d9aa0',
+            fields: [
+              { name: :legal_name, type: 'string' },
+              { name: :development_team, type: %w[null field_struct.strict_examples.team] },
+              { name: :marketing_team, type: %w[null field_struct.strict_examples.team] }
+            ]
+          }
+        ]
+      end
+      let(:exp_json) { exp_hsh.to_json }
+      it('#as_avro_schema') { expect(subject.as_avro_schema).to eq exp_hsh }
+      it('#to_avro_json') { expect(subject.to_avro_json).to eq exp_json }
+      context '#to_avro_schema' do
+        let(:result) { subject.to_avro_schema }
+        it('type') { expect(result).to be_a Avro::Schema }
+        it('to_s') { expect(result.to_s).to eq exp_json }
+      end
     end
   end
   describe 'instance' do
