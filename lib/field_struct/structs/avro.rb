@@ -52,7 +52,7 @@ module FieldStruct
 
       def build_schema_for(meta)
         names = meta.schema_name.split('.')
-        hsh = { name: names.last }
+        hsh = { name: names.last, doc: "version #{meta.version}" }
         hsh[:namespace] = names[0..-2].join('.')
         hsh[:type] = 'record'
         hsh[:fields] = meta.attributes.map { |name, attr| build_field_for name, attr }

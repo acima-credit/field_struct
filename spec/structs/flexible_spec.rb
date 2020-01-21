@@ -111,7 +111,8 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
                                                { name: :level, type: 'int' },
                                                { name: :at, type: %w[null string] },
                                                { name: :active, type: %w[boolean null], default: false }
-                                             ]
+                                             ],
+                                             doc: 'version 245178bc'
       end
     end
     context '.attribute_types' do
@@ -225,7 +226,8 @@ RSpec.describe FieldStruct::FlexibleExamples::Person do
                                              fields: [
                                                { name: :first_name, type: 'string' },
                                                { name: :last_name, type: 'string' }
-                                             ]
+                                             ],
+                                             doc: 'version 75b71433'
       end
     end
     context '.attribute_types' do
@@ -293,7 +295,8 @@ RSpec.describe FieldStruct::FlexibleExamples::Employee do
                                                { name: :first_name, type: 'string' },
                                                { name: :last_name, type: 'string' },
                                                { name: :title, type: %w[null string] }
-                                             ]
+                                             ],
+                                             doc: 'version c4c4ab50'
       end
     end
     context '.attribute_types' do
@@ -369,7 +372,8 @@ RSpec.describe FieldStruct::FlexibleExamples::Developer do
                                                { name: :last_name, type: 'string' },
                                                { name: :title, type: %w[null string] },
                                                { name: :language, type: 'string' }
-                                             ]
+                                             ],
+                                             doc: 'version b061a6fa'
       end
     end
     context '.attribute_types' do
@@ -461,7 +465,8 @@ RSpec.describe FieldStruct::FlexibleExamples::Team do
               { name: :first_name, type: 'string' },
               { name: :last_name, type: 'string' },
               { name: :title, type: %w[null string] }
-            ]
+            ],
+            doc: 'version c4c4ab50'
           },
           {
             name: 'team',
@@ -475,7 +480,8 @@ RSpec.describe FieldStruct::FlexibleExamples::Team do
                 type: { type: 'array', items: 'field_struct.flexible_examples.employee' },
                 doc: 'Team members'
               }
-            ]
+            ],
+            doc: 'version 5a034ba'
           }
         ]
       end
@@ -571,7 +577,8 @@ RSpec.describe FieldStruct::FlexibleExamples::Company do
               { name: :first_name, type: 'string' },
               { name: :last_name, type: 'string' },
               { name: :title, type: %w[null string] }
-            ]
+            ],
+            doc: 'version c4c4ab50'
           },
           {
             name: 'team',
@@ -585,7 +592,8 @@ RSpec.describe FieldStruct::FlexibleExamples::Company do
                 type: { type: 'array', items: 'field_struct.flexible_examples.employee' },
                 doc: 'Team members'
               }
-            ]
+            ],
+            doc: 'version 5a034ba'
           },
           {
             name: 'company',
@@ -595,7 +603,8 @@ RSpec.describe FieldStruct::FlexibleExamples::Company do
               { name: :legal_name, type: 'string' },
               { name: :development_team, type: ['null', 'field_struct.flexible_examples.team'] },
               { name: :marketing_team, type: ['null', 'field_struct.flexible_examples.team'] }
-            ]
+            ],
+            doc: 'version 21b9bca5'
           }
         ]
       end
