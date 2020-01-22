@@ -84,13 +84,6 @@ RSpec.describe FieldStruct::StrictExamples::User do
         }
       end
       let(:exp_json) { exp_hsh.to_json }
-      it('#as_avro_schema') { expect(subject.as_avro_schema).to eq exp_hsh }
-      it('#to_avro_json') { expect(subject.to_avro_json).to eq exp_json }
-      context '#to_avro_schema' do
-        let(:result) { subject.to_avro_schema }
-        it('type') { expect(result).to be_a Avro::Schema }
-        it('to_s') { expect(result.to_s).to eq exp_json }
-      end
     end
     context '.attribute_types' do
       subject { described_class.attribute_types }
@@ -189,14 +182,6 @@ RSpec.describe FieldStruct::StrictExamples::Person do
           ]
         }
       end
-      let(:exp_json) { exp_hsh.to_json }
-      it('#as_avro_schema') { expect(subject.as_avro_schema).to eq exp_hsh }
-      it('#to_avro_json') { expect(subject.to_avro_json).to eq exp_json }
-      context '#to_avro_schema' do
-        let(:result) { subject.to_avro_schema }
-        it('type') { expect(result).to be_a Avro::Schema }
-        it('to_s') { expect(result.to_s).to eq exp_json }
-      end
     end
   end
   describe 'instance' do
@@ -252,14 +237,6 @@ RSpec.describe FieldStruct::StrictExamples::Employee do
             { name: :title, type: %w[null string] }
           ]
         }
-      end
-      let(:exp_json) { exp_hsh.to_json }
-      it('#as_avro_schema') { expect(subject.as_avro_schema).to eq exp_hsh }
-      it('#to_avro_json') { expect(subject.to_avro_json).to eq exp_json }
-      context '#to_avro_schema' do
-        let(:result) { subject.to_avro_schema }
-        it('type') { expect(result).to be_a Avro::Schema }
-        it('to_s') { expect(result.to_s).to eq exp_json }
       end
     end
   end
@@ -320,14 +297,6 @@ RSpec.describe FieldStruct::StrictExamples::Developer do
             { name: :language, type: 'string' }
           ]
         }
-      end
-      let(:exp_json) { exp_hsh.to_json }
-      it('#as_avro_schema') { expect(subject.as_avro_schema).to eq exp_hsh }
-      it('#to_avro_json') { expect(subject.to_avro_json).to eq exp_json }
-      context '#to_avro_schema' do
-        let(:result) { subject.to_avro_schema }
-        it('type') { expect(result).to be_a Avro::Schema }
-        it('to_s') { expect(result.to_s).to eq exp_json }
       end
     end
   end
@@ -399,14 +368,6 @@ RSpec.describe FieldStruct::StrictExamples::Team do
             ]
           }
         ]
-      end
-      let(:exp_json) { exp_hsh.to_json }
-      it('#as_avro_schema') { expect(subject.as_avro_schema).to eq exp_hsh }
-      it('#to_avro_json') { expect(subject.to_avro_json).to eq exp_json }
-      context '#to_avro_schema' do
-        let(:result) { subject.to_avro_schema }
-        it('type') { expect(result).to be_a Avro::Schema }
-        it('to_s') { expect(result.to_s).to eq exp_json }
       end
     end
   end
@@ -496,14 +457,6 @@ RSpec.describe FieldStruct::StrictExamples::Company do
             ]
           }
         ]
-      end
-      let(:exp_json) { exp_hsh.to_json }
-      it('#as_avro_schema') { expect(subject.as_avro_schema).to eq exp_hsh }
-      it('#to_avro_json') { expect(subject.to_avro_json).to eq exp_json }
-      context '#to_avro_schema' do
-        let(:result) { subject.to_avro_schema }
-        it('type') { expect(result).to be_a Avro::Schema }
-        it('to_s') { expect(result.to_s).to eq exp_json }
       end
     end
   end

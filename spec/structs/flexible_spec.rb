@@ -117,13 +117,6 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
                                                },
                                                version: '245178bc'
       end
-      it('#as_avro_schema') { expect(subject.as_avro_schema).to eq exp_hsh }
-      it('#to_avro_json') { expect(subject.to_avro_json).to eq exp_json }
-      context '#to_avro_schema' do
-        let(:result) { subject.to_avro_schema }
-        it('type') { expect(result).to be_a Avro::Schema }
-        it('to_s') { expect(result.to_s).to eq exp_json }
-      end
     end
     context '.attribute_types' do
       subject { described_class.attribute_types }
@@ -242,13 +235,6 @@ RSpec.describe FieldStruct::FlexibleExamples::Person do
         }
       end
       let(:exp_json) { exp_hsh.to_json }
-      it('#as_avro_schema') { expect(subject.as_avro_schema).to eq exp_hsh }
-      it('#to_avro_json') { expect(subject.to_avro_json).to eq exp_json }
-      context '#to_avro_schema' do
-        let(:result) { subject.to_avro_schema }
-        it('type') { expect(result).to be_a Avro::Schema }
-        it('to_s') { expect(result.to_s).to eq exp_json }
-      end
     end
     context '.attribute_types' do
       subject { described_class.attribute_types }
@@ -307,17 +293,6 @@ RSpec.describe FieldStruct::FlexibleExamples::Employee do
       it { expect(subject[:first_name]).to eq type: :string, required: true, min_length: 3, max_length: 20 }
       it { expect(subject[:last_name]).to eq type: :string, required: true }
       it { expect(subject[:title]).to eq type: :string }
-      it '#as_avro_schema' do
-        expect(subject.as_avro_schema).to eq name: 'employee',
-                                             namespace: 'field_struct.flexible_examples',
-                                             type: 'record',
-                                             fields: [
-                                               { name: :first_name, type: 'string' },
-                                               { name: :last_name, type: 'string' },
-                                               { name: :title, type: %w[null string] }
-                                             ],
-                                             doc: 'version c4c4ab50'
-      end
     end
     context '.attribute_types' do
       subject { described_class.attribute_types }
@@ -383,18 +358,6 @@ RSpec.describe FieldStruct::FlexibleExamples::Developer do
       it { expect(subject[:last_name]).to eq type: :string, required: true }
       it { expect(subject[:title]).to eq type: :string }
       it { expect(subject[:language]).to eq type: :string, required: true }
-      it '#as_avro_schema' do
-        expect(subject.as_avro_schema).to eq name: 'developer',
-                                             namespace: 'field_struct.flexible_examples',
-                                             type: 'record',
-                                             fields: [
-                                               { name: :first_name, type: 'string' },
-                                               { name: :last_name, type: 'string' },
-                                               { name: :title, type: %w[null string] },
-                                               { name: :language, type: 'string' }
-                                             ],
-                                             doc: 'version b061a6fa'
-      end
     end
     context '.attribute_types' do
       subject { described_class.attribute_types }
@@ -474,36 +437,6 @@ RSpec.describe FieldStruct::FlexibleExamples::Team do
                                         required: true,
                                         of: FieldStruct::FlexibleExamples::Employee,
                                         description: 'Team members'
-      end
-      it '#as_avro_schema' do
-        expect(subject.as_avro_schema).to eq [
-          {
-            name: 'employee',
-            namespace: 'field_struct.flexible_examples',
-            type: 'record',
-            fields: [
-              { name: :first_name, type: 'string' },
-              { name: :last_name, type: 'string' },
-              { name: :title, type: %w[null string] }
-            ],
-            doc: 'version c4c4ab50'
-          },
-          {
-            name: 'team',
-            namespace: 'field_struct.flexible_examples',
-            type: 'record',
-            fields: [
-              { name: :name, type: 'string' },
-              { name: :leader, type: 'field_struct.flexible_examples.employee' },
-              {
-                name: :members,
-                type: { type: 'array', items: 'field_struct.flexible_examples.employee' },
-                doc: 'Team members'
-              }
-            ],
-            doc: 'version 5a034ba'
-          }
-        ]
       end
     end
     context '.attribute_types' do
@@ -587,47 +520,6 @@ RSpec.describe FieldStruct::FlexibleExamples::Company do
       it { expect(subject[:legal_name]).to eq type: :string, required: true }
       it { expect(subject[:development_team]).to eq type: FieldStruct::FlexibleExamples::Team, version: '5a034ba' }
       it { expect(subject[:marketing_team]).to eq type: FieldStruct::FlexibleExamples::Team, version: '5a034ba' }
-      it '#as_avro_schema' do
-        expect(subject.as_avro_schema).to eq [
-          {
-            name: 'employee',
-            namespace: 'field_struct.flexible_examples',
-            type: 'record',
-            fields: [
-              { name: :first_name, type: 'string' },
-              { name: :last_name, type: 'string' },
-              { name: :title, type: %w[null string] }
-            ],
-            doc: 'version c4c4ab50'
-          },
-          {
-            name: 'team',
-            namespace: 'field_struct.flexible_examples',
-            type: 'record',
-            fields: [
-              { name: :name, type: 'string' },
-              { name: :leader, type: 'field_struct.flexible_examples.employee' },
-              {
-                name: :members,
-                type: { type: 'array', items: 'field_struct.flexible_examples.employee' },
-                doc: 'Team members'
-              }
-            ],
-            doc: 'version 5a034ba'
-          },
-          {
-            name: 'company',
-            namespace: 'field_struct.flexible_examples',
-            type: 'record',
-            fields: [
-              { name: :legal_name, type: 'string' },
-              { name: :development_team, type: ['null', 'field_struct.flexible_examples.team'] },
-              { name: :marketing_team, type: ['null', 'field_struct.flexible_examples.team'] }
-            ],
-            doc: 'version 21b9bca5'
-          }
-        ]
-      end
     end
     context '.attribute_types' do
       subject { described_class.attribute_types }

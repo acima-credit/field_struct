@@ -52,8 +52,3 @@ Metrics/AbcSize:
   Exclude:
     - 'lib/field_struct/structs/base.rb'
     - 'spec/support/**'
-
-Metrics/CyclomaticComplexity:
-  Enabled: true
-  Exclude:
-    - 'lib/field_struct/structs/avro.rb'
