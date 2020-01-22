@@ -53,25 +53,6 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
     it { expect(described_class.extras).to eq :raise }
     context '.metadata' do
-      let(:exp_hsh) do
-        {
-          type: 'record',
-          name: 'user',
-          namespace: 'field_struct.flexible_examples',
-          doc: 'version 245178bc',
-          fields: [
-            { name: :username, type: 'string', doc: 'login' },
-            { name: :password, type: %w[null string] },
-            { name: :age, type: 'int' },
-            { name: :owed, type: 'float', doc: 'amount owed to the company' },
-            { name: :source, type: 'string' },
-            { name: :level, type: 'int' },
-            { name: :at, type: %w[null string] },
-            { name: :active, type: %w[boolean null], default: false }
-          ]
-        }
-      end
-      let(:exp_json) { exp_hsh.to_json }
       subject { described_class.metadata }
       it { expect(subject.name).to eq 'FieldStruct::FlexibleExamples::User' }
       it { expect(subject.schema_name).to eq 'field_struct.flexible_examples.user' }
@@ -222,19 +203,6 @@ RSpec.describe FieldStruct::FlexibleExamples::Person do
                                       },
                                       version: '75b71433'
       end
-      let(:exp_hsh) do
-        {
-          type: 'record',
-          name: 'person',
-          namespace: 'field_struct.flexible_examples',
-          doc: 'version 75b71433',
-          fields: [
-            { name: :first_name, type: 'string' },
-            { name: :last_name, type: 'string' }
-          ]
-        }
-      end
-      let(:exp_json) { exp_hsh.to_json }
     end
     context '.attribute_types' do
       subject { described_class.attribute_types }

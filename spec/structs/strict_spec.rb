@@ -65,25 +65,6 @@ RSpec.describe FieldStruct::StrictExamples::User do
       it { expect(subject[:level]).to eq type: :integer, required: true, default: '<proc>' }
       it { expect(subject[:at]).to eq type: :time }
       it { expect(subject[:active]).to eq type: :boolean, default: false }
-      let(:exp_hsh) do
-        {
-          type: 'record',
-          name: 'user',
-          namespace: 'field_struct.strict_examples',
-          doc: 'version 7d1bd1cb',
-          fields: [
-            { name: :username, type: 'string' },
-            { name: :password, type: %w[null string] },
-            { name: :age, type: 'int' },
-            { name: :owed, type: 'float' },
-            { name: :source, type: 'string' },
-            { name: :level, type: 'int' },
-            { name: :at, type: %w[null string] },
-            { name: :active, type: %w[boolean null], default: false }
-          ]
-        }
-      end
-      let(:exp_json) { exp_hsh.to_json }
     end
     context '.attribute_types' do
       subject { described_class.attribute_types }
