@@ -50,10 +50,11 @@ module FieldStruct
       # Add an attribute to the class
       #
       # @param [Symbol] name
-      # @param [Symbol, Type::Value, FieldStruct::Base] type
+      # @param [Symbol, ActiveModel::Type::Value, #field_struct?, String] type
       # @param [Array] args
       # @param [Hash] options
       def attribute(name, type = Type::Value.new, *args, **options)
+        type = check_allowed_type type
         arg_options = args.each_with_object({}) { |arg, hsh| hsh[arg.to_sym] = true }
         options = arg_options.merge options
         attribute_metadata name, type, options
@@ -66,7 +67,7 @@ module FieldStruct
       # Add a required attribute to the class
       #
       # @param [Symbol] name
-      # @param [Symbol, Type::Value, FieldStruct::Base] type
+      # @param [Symbol, ActiveModel::Type::Value, #field_struct?, String] type
       # @param [Array] args
       # @param [Hash] options
       def required(name, type = Type::Value.new, *args, **options)
@@ -76,7 +77,7 @@ module FieldStruct
       # Add an optional attribute to the class
       #
       # @param [Symbol] name
-      # @param [Symbol, Type::Value, FieldStruct::Base] type
+      # @param [Symbol, ActiveModel::Type::Value, #field_struct?, String] type
       # @param [Array] args
       # @param [Hash] options
       def optional(name, type = Type::Value.new, *args, **options)
@@ -100,6 +101,21 @@ module FieldStruct
       end
 
       private
+
+      # @param [Symbol, ActiveModel::Type::Value, #field_struct?, String] type
+      # @return [Symbol, ActiveModel::Type::Value, #field_struct?]
+      def check_allowed_type(type)
+        type = Kernel.const_get(type) if type.is_a?(String) && Kernel.const_defined?(type)
+
+        return type if type.is_a?(Symbol) && known_basic_types.include?(type)
+        return type if type.is_a?(::ActiveModel::Type::Value) || type.field_struct?
+
+        raise "Unknown type [#{type.inspect}] (#{type.class.name})"
+      end
+
+      def known_basic_types
+        ::ActiveModel::Type.registry.send(:registrations).map { |x| x.send :name }
+      end
 
       def attribute_metadata(name, type, options)
         metadata[name].type = type
