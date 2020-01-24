@@ -54,9 +54,12 @@ module FieldStruct
       # @param [Array] args
       # @param [Hash] options
       def attribute(name, type = Type::Value.new, *args, **options)
-        type = check_allowed_type type
         arg_options = args.each_with_object({}) { |arg, hsh| hsh[arg.to_sym] = true }
         options = arg_options.merge options
+
+        type = check_allowed_type type
+        options[:of] = check_allowed_type(options[:of]) if options.key?(:of)
+
         attribute_metadata name, type, options
 
         options = Validations.build_for(self, name)

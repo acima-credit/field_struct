@@ -37,7 +37,10 @@ module FieldStruct
       extras :ignore
       required :name, :string
       required :leader, 'FieldStruct::FlexibleExamples::Employee'
-      required :members, :array, of: Employee, description: 'Team members'
+      required :members,
+               :array,
+               of: 'FieldStruct::FlexibleExamples::Employee',
+               description: 'Team members'
     end
 
     class Company < FieldStruct.flexible
