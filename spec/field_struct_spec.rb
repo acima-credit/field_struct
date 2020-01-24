@@ -52,7 +52,7 @@ RSpec.describe FieldStruct do
         expect(klass.new).to_not be_valid
       end
     end
-    context 'for an example class', :focus do
+    context 'for an example class' do
       let(:meta_hsh) do
         {
           name: meta_name,
@@ -95,7 +95,7 @@ RSpec.describe FieldStruct do
         let(:prefix) { 'My::Own' }
         let(:meta_name) { 'Examples::User::V5cf8302f' }
         let(:meta_name2) { 'examples.user.v5cf8302f' }
-        it 'builds a new class', :focus do
+        it 'builds a new class' do
           expect { klass }.to_not raise_error
           expect(klass.name).to eq 'My::Own::Examples::User::V5cf8302f'
           expect(klass.metadata.name).to eq 'My::Own::Examples::User::V5cf8302f'

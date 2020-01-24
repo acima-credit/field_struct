@@ -38,20 +38,16 @@ module FieldStruct
         full_name = root ? (root.to_s + '::' + name) : name
         parts     = full_name.split('::')
         base_root = Object
+
         parts[0..-2].each do |part|
-          base_root = build_constant base_root, part
+          base_root = if base_root.const_defined?(part, false)
+                        base_root.const_get part, false
+                      else
+                        base_root.const_set part, Module.new
+                      end
         end
+
         [base_root, full_name, parts.last]
-      end
-
-      def build_constant(base_root, part)
-        current = format '%s::%s', base_root.name, part
-
-        if base_root.constants(false).include?(part)
-          Object.const_get current
-        else
-          base_root.const_set part, Module.new
-        end
       end
 
       def apply_metadata(klass, metadata, full_name)
