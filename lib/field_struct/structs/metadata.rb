@@ -24,22 +24,34 @@ module FieldStruct
       private
 
       def make_class(metadata, root)
-        base                            = FieldStruct.send metadata.type
+        base = FieldStruct.send metadata.type
         base_root, full_name, last_name = build_constants metadata.name, root
+        return base_root.const_get(last_name) if base_root.const_defined?(last_name)
+
         base_root.const_set(last_name, Class.new(base)).tap do |klass|
           apply_metadata(klass, metadata, full_name)
         end
+        base_root.const_get(last_name)
       end
 
-      def build_constants(name, root)
+      def build_constants(name, root = nil)
         full_name = root ? (root.to_s + '::' + name) : name
         parts     = full_name.split('::')
         base_root = Object
         parts[0..-2].each do |part|
-          base_root.const_set(part, Module.new) unless base_root.const_defined?(part)
-          base_root = base_root.const_get part
+          base_root = build_constant base_root, part
         end
         [base_root, full_name, parts.last]
+      end
+
+      def build_constant(base_root, part)
+        current = format '%s::%s', base_root.name, part
+
+        if base_root.constants(false).include?(part)
+          Object.const_get current
+        else
+          base_root.const_set part, Module.new
+        end
       end
 
       def apply_metadata(klass, metadata, full_name)
@@ -183,6 +195,13 @@ module FieldStruct
       end
     end
 
+    def self.default_options
+      {
+        type: :flexible,
+        extras: :ignore
+      }
+    end
+
     include Comparable
 
     class << self
@@ -190,18 +209,10 @@ module FieldStruct
       # @param [FieldStruct::Metadata, String, Hash, Array, Object] value
       # @return [FieldStruct::Metadata]
       def build(value)
-        case value
-        when Metadata
-          value
-        when String
-          YAML.safe_load value, permitted_classes: Metadata
-        when Hash
-          new value[:name], value[:schema_name], value[:type], value[:extras], value[:attributes]
-        when Array
-          new(*value)
-        else
-          raise "unknown value [#{value.class.name}]"
-        end
+        built = build_self(value) || build_string(value) || build_hash(value) || build_array(value)
+        raise "unknown value [#{value.class.name}]" unless built
+
+        built
       end
 
       # Builds a Metadata instance from a FieldStruct class
@@ -217,6 +228,32 @@ module FieldStruct
       end
 
       private
+
+      def build_self(value)
+        return false unless value.is_a? Metadata
+
+        value
+      end
+
+      def build_string(value)
+        return false unless value.is_a? String
+
+        YAML.safe_load value, permitted_classes: Metadata
+      end
+
+      def build_hash(value)
+        return false unless value.is_a? Hash
+
+        new(value[:name], value[:schema_name], value[:type], value[:extras], value[:attributes]).tap do |built|
+          built.version = value[:version] if value.key?(:version)
+        end
+      end
+
+      def build_array(value)
+        return false unless value.is_a? Array
+
+        new(*value)
+      end
 
       def build_type(klass)
         klass.respond_to?(:field_struct_type) ? klass.field_struct_type : :missing
@@ -237,8 +274,8 @@ module FieldStruct
     def initialize(name, schema_name, type, extras, attributes)
       @name        = name
       @schema_name = schema_name || build_schema_name(name)
-      @type        = type
-      @extras      = extras
+      @type        = type || self.class.default_options[:type]
+      @extras      = extras || self.class.default_options[:extras]
       @attributes  = Attributes.new attributes
       reset_version
     end
@@ -250,8 +287,6 @@ module FieldStruct
         @schema_name ||= build_schema_name name
       end
     end
-
-    delegate :get, :[], to: :attributes
 
     def get(name)
       @attributes.get name
