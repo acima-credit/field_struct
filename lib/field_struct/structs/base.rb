@@ -13,10 +13,18 @@ module FieldStruct
 
       child.send :extend, AttributeMethods
       child.send :extend, ConversionMethods
+
       child.send :include, InstanceMethods
     end
 
     module AttributeMethods
+      # Initialize an instance
+      #
+      # @param [Hash] attrs
+      def from(attrs = {})
+        new attrs
+      end
+
       # Override class name from metadata if available
       #
       # @return [String]

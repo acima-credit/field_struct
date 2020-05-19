@@ -63,7 +63,9 @@ module FieldStruct
     class Attribute
       include Comparable
 
-      ATTRIBUTE_NAMES   = %i[type of version required default format enum min_length max_length description].freeze
+      ATTRIBUTE_NAMES = %i[
+        type of version required default format enum min_length max_length description array range
+      ].freeze
       ATTRIBUTE_METH_RX = /\A(#{ATTRIBUTE_NAMES.map(&:to_s).join('|')})(\?|\=)?\z/.freeze
 
       def initialize(values = {})

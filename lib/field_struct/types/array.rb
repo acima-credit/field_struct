@@ -6,7 +6,7 @@ module FieldStruct
       attr_reader :of
       def initialize(options = {})
         super()
-        @of = options.delete :of
+        @of = find_type options
         raise TypeError, 'must provider :of option' unless @of
       end
 
@@ -16,10 +16,22 @@ module FieldStruct
 
       private
 
-      def cast_value(value)
-        return value unless value.is_a? ::Array
+      def find_type(options)
+        type = options.delete :of
+        return type unless type.is_a?(Symbol)
 
-        value.map { |x| @of.cast x }
+        ::ActiveModel::Type.registry.lookup type
+      end
+
+      def cast_value(value)
+        case value
+        when nil
+          value
+        when Enumerable
+          value.map { |x| @of.cast x }
+        else
+          ::Array[@of.cast(value)]
+        end
       end
     end
   end
