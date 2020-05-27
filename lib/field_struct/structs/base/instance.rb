@@ -7,7 +7,7 @@ module FieldStruct
         super attrs
       end
 
-      def after_attributes_initialize
+      def after_attributes_initialize(_attrs)
         # nothing here yet ...
       end
 

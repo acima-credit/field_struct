@@ -15,7 +15,7 @@ module FieldStruct
     # @param [Hash] attributes
     def initialize(attributes = {})
       super(attributes)
-      after_attributes_initialize
+      after_attributes_initialize attributes
       @attributes.freeze
       validate
     end
