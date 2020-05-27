@@ -15,6 +15,7 @@ module FieldStruct
     # @param [Hash] attributes
     def initialize(attributes = {})
       super(attributes)
+      after_attributes_initialize
       validate
     end
   end

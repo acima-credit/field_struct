@@ -7,6 +7,10 @@ module FieldStruct
         super attrs
       end
 
+      def after_attributes_initialize
+        # nothing here yet ...
+      end
+
       def attr_name(name)
         if self.class.attribute_alias?(name)
           self.class.attribute_alias(name).to_s
