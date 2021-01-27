@@ -7,6 +7,10 @@ module FieldStruct
         super attrs
       end
 
+      def before_attributes_initialize(_attrs)
+        # nothing here yet ...
+      end
+
       def after_attributes_initialize(_attrs)
         # nothing here yet ...
       end
@@ -62,8 +66,16 @@ module FieldStruct
 
       # @param [Hash] options
       # @return [Hash]
-      def to_hash(options = {})
-        as_json options
+      def to_hash(_options = {})
+        attributes.each_with_object({}) do |(key, value), hsh|
+          hsh[key.to_s] = if value.field_struct?
+                            value.to_hash
+                          elsif value.is_a?(Array)
+                            value.map { |x| x.field_struct? ? x.to_hash : x }
+                          else
+                            value
+                          end
+        end
       end
 
       # @param [Object] other
