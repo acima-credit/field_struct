@@ -8,6 +8,7 @@ module FieldStruct
   class Base
     # @param [Class] child
     def self.inherited(child)
+      super
       child.send :include, Comparable
       child.send :include, ActiveModel::Model
       child.send :include, ActiveModel::Attributes

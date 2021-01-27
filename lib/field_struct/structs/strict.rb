@@ -3,6 +3,7 @@
 module FieldStruct
   class Strict < Base
     def self.inherited(child)
+      super
       child.send :extend, ClassMethods
     end
 
