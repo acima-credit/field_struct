@@ -4,6 +4,7 @@ module FieldStruct
   module Type
     class Array < ActiveModel::Type::Value
       attr_reader :of
+
       def initialize(options = {})
         super()
         @of = find_type options

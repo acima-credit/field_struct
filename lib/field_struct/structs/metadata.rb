@@ -35,7 +35,7 @@ module FieldStruct
       end
 
       def build_constants(name, root = nil)
-        full_name = root ? (root.to_s + '::' + name) : name
+        full_name = root ? "#{root}::#{name}" : name
         parts     = full_name.split('::')
         base_root = Object
 
@@ -66,7 +66,7 @@ module FieldStruct
       ATTRIBUTE_NAMES = %i[
         type of version required default format enum min_length max_length description array range
       ].freeze
-      ATTRIBUTE_METH_RX = /\A(#{ATTRIBUTE_NAMES.map(&:to_s).join('|')})(\?|\=)?\z/.freeze
+      ATTRIBUTE_METH_RX = /\A(#{ATTRIBUTE_NAMES.map(&:to_s).join('|')})(\?|=)?\z/.freeze
 
       def initialize(values = {})
         @values = {}
@@ -175,8 +175,8 @@ module FieldStruct
       alias []= set
 
       def to_hash(options = {})
-        @values.each_with_object({}) do |(k, v), hsh|
-          hsh[k] = v.to_hash options&.dig(:attribute)
+        @values.transform_values do |v|
+          v.to_hash options&.dig(:attribute)
         end
       end
 
@@ -262,12 +262,8 @@ module FieldStruct
       end
     end
 
-    attr_reader :name
-    attr_accessor :schema_name
-    attr_reader :type
-    attr_reader :attributes
-    attr_accessor :extras
-    attr_accessor :version
+    attr_reader :name, :type, :attributes
+    attr_accessor :schema_name, :extras, :version
 
     def initialize(name, schema_name, type, extras, attributes)
       @name        = name

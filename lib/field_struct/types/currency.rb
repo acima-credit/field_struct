@@ -17,8 +17,8 @@ module FieldStruct
         value.respond_to?(:round) ? value.round(2) : value
       end
 
-      INVALID_RX = /[^\d\$-\.\,]/.freeze
-      REMOVE_RX = /[\$\,]/.freeze
+      INVALID_RX = /[^\d$-.,]/.freeze
+      REMOVE_RX = /[$,]/.freeze
 
       # @param [String] str
       def cast_string(str)
