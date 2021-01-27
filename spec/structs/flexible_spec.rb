@@ -151,14 +151,15 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
         it { expect(subject.extras).to eq({}) }
       end
       context 'immutability' do
-        it { expect { subject.username = 'x' }.to raise_error FrozenError, "can't modify frozen Hash" }
-        it { expect { subject.password = 'x' }.to raise_error FrozenError, "can't modify frozen Hash" }
-        it { expect { subject.age = 'x' }.to raise_error FrozenError, "can't modify frozen Hash" }
-        it { expect { subject.owed = 'x' }.to raise_error FrozenError, "can't modify frozen Hash" }
-        it { expect { subject.source = 'x' }.to raise_error FrozenError, "can't modify frozen Hash" }
-        it { expect { subject.level = 'x' }.to raise_error FrozenError, "can't modify frozen Hash" }
-        it { expect { subject.at = 'x' }.to raise_error FrozenError, "can't modify frozen Hash" }
-        it { expect { subject.active = 'x' }.to raise_error FrozenError, "can't modify frozen Hash" }
+        let(:error_msg) { "can't modify frozen attributes" }
+        it { expect { subject.username = 'x' }.to raise_error FrozenError, error_msg }
+        it { expect { subject.password = 'x' }.to raise_error FrozenError, error_msg }
+        it { expect { subject.age = 'x' }.to raise_error FrozenError, error_msg }
+        it { expect { subject.owed = 'x' }.to raise_error FrozenError, error_msg }
+        it { expect { subject.source = 'x' }.to raise_error FrozenError, error_msg }
+        it { expect { subject.level = 'x' }.to raise_error FrozenError, error_msg }
+        it { expect { subject.at = 'x' }.to raise_error FrozenError, error_msg }
+        it { expect { subject.active = 'x' }.to raise_error FrozenError, error_msg }
       end
     end
     context 'full + extras' do
