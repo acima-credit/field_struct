@@ -7,6 +7,10 @@ module FieldStruct
         super attrs
       end
 
+      def before_attributes_initialize(_attrs)
+        # nothing here yet ...
+      end
+
       def after_attributes_initialize(_attrs)
         # nothing here yet ...
       end
@@ -59,6 +63,17 @@ module FieldStruct
       end
 
       alias attributes= assign_attributes
+
+      # @param [Hash] options
+      # @return [Hash]
+      def as_json(options = {})
+        self.class.metadata.keys.each_with_object({}) do |key, hsh|
+          value = get_attribute key.to_s
+          next if value.nil?
+
+          hsh[key.to_s] = value.as_json(options)
+        end
+      end
 
       # @param [Hash] options
       # @return [Hash]
