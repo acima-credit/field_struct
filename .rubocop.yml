@@ -1,5 +1,6 @@
 AllCops:
-  TargetRubyVersion: 2.4
+  TargetRubyVersion: 2.6
+  NewCops: enable
   Include:
     - '**/*.rake'
     - '**/Rakefile'
@@ -13,7 +14,7 @@ AllCops:
 Security/Eval:
   Enabled: false
 
-Metrics/LineLength:
+Layout/LineLength:
   Max: 120
 
 Metrics/MethodLength:
