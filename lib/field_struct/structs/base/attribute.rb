@@ -21,7 +21,7 @@ module FieldStruct
       #
       # @return [Object, nil]
       def field_ancestor
-        ancestors[1..-1].find(&:field_struct?)
+        ancestors[1..].find(&:field_struct?)
       end
 
       # Keeps information about the columns
