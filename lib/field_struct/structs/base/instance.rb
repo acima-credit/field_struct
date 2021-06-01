@@ -30,7 +30,7 @@ module FieldStruct
       alias attr get_attribute
 
       def assign_attribute(name, value)
-        write_attribute name, value
+        _write_attribute name, value
       end
       alias []= assign_attribute
       alias set_attr assign_attribute
