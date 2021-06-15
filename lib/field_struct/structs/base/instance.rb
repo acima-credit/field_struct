@@ -24,13 +24,13 @@ module FieldStruct
       end
 
       def get_attribute(name)
-        attribute name
+        attribute name.to_s
       end
       alias [] get_attribute
       alias attr get_attribute
 
       def assign_attribute(name, value)
-        _write_attribute name, value
+        _write_attribute name.to_s, value
       end
       alias []= assign_attribute
       alias set_attr assign_attribute

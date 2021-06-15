@@ -29,7 +29,7 @@ RSpec.describe FieldStruct do
           expect(subject.errors.full_messages).to eq ["Username can't be blank"]
           expect(subject.username).to be_nil
           expect(subject.meta).to be_nil
-          expect(subject.to_hash).to eq({ 'meta' => nil, 'username' => nil })
+          expect(subject.to_hash).to eq('meta' => nil, 'username' => nil)
           expect(subject.to_json).to eq '{"username":null,"meta":null}'
           expect(subject).to_not be_valid
         end
@@ -47,20 +47,20 @@ RSpec.describe FieldStruct do
           expect(subject.errors.full_messages).to eq ['Meta has to have a job_title']
           expect(subject.username).to eq 'george'
           expect(subject.meta).to be_a ActiveSupport::HashWithIndifferentAccess
-          expect(subject.meta).to eq({ 'first_name' => 'John', 'last_name' => 'Smith' })
+          expect(subject.meta).to eq('first_name' => 'John', 'last_name' => 'Smith')
           expect(subject.meta[:first_name]).to eq 'John'
           expect(subject.meta['first_name']).to eq 'John'
           expect(subject.meta[:last_name]).to eq 'Smith'
           expect(subject.meta['last_name']).to eq 'Smith'
           expect(subject.meta[:title]).to be_nil
           expect(subject.meta['title']).to be_nil
-          expect(subject.to_hash).to eq({
-                                          'username' => 'george',
-                                          'meta' => {
-                                            'first_name' => 'John',
-                                            'last_name' => 'Smith'
-                                          }
-                                        })
+          expect(subject.to_hash).to eq(
+            'username' => 'george',
+            'meta' => {
+              'first_name' => 'John',
+              'last_name' => 'Smith'
+            }
+          )
           expect(subject.to_json).to eq '{"username":"george","meta":{"first_name":"John","last_name":"Smith"}}'
         end
       end
@@ -83,13 +83,13 @@ RSpec.describe FieldStruct do
           expect(subject.errors.full_messages).to eq []
           expect(subject.username).to eq 'george'
           expect(subject.meta).to be_a ActiveSupport::HashWithIndifferentAccess
-          expect(subject.meta).to eq({
-                                       'first_name' => 'John',
-                                       'last_name' => 'Smith',
-                                       'job_title' => 'Developer',
-                                       'age' => '45',
-                                       'balance' => '123.45'
-                                     })
+          expect(subject.meta).to eq(
+            'first_name' => 'John',
+            'last_name' => 'Smith',
+            'job_title' => 'Developer',
+            'age' => '45',
+            'balance' => '123.45'
+          )
           expect(subject.meta[:first_name]).to eq 'John'
           expect(subject.meta['first_name']).to eq 'John'
           expect(subject.meta[:last_name]).to eq 'Smith'
@@ -100,16 +100,16 @@ RSpec.describe FieldStruct do
           expect(subject.meta['age']).to eq '45'
           expect(subject.meta[:balance]).to eq '123.45'
           expect(subject.meta['balance']).to eq '123.45'
-          expect(subject.to_hash).to eq({
-                                          'username' => 'george',
-                                          'meta' => {
-                                            'first_name' => 'John',
-                                            'last_name' => 'Smith',
-                                            'job_title' => 'Developer',
-                                            'age' => '45',
-                                            'balance' => '123.45'
-                                          }
-                                        })
+          expect(subject.to_hash).to eq(
+            'username' => 'george',
+            'meta' => {
+              'first_name' => 'John',
+              'last_name' => 'Smith',
+              'job_title' => 'Developer',
+              'age' => '45',
+              'balance' => '123.45'
+            }
+          )
           expect(subject.to_json).to eq '{"username":"george",' \
                                         '"meta":{' \
                                         '"first_name":"John",' \
