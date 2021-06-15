@@ -7,13 +7,21 @@ module FieldStruct
       required :first_name, :string
       required :last_name, :string
 
+      def first_name=(value)
+        _assign_attribute_directly :first_name, value.to_s.capitalize
+      end
+
+      def last_name=(value)
+        _assign_attribute_directly :last_name, value.to_s.capitalize
+      end
+
       def full_name
         format '%s %s', first_name, last_name
       end
 
       def full_name=(value)
         parts = value.to_s.split(/\s+/)
-        assign_attribute 'first_name', parts[0]
+        assign_attribute :first_name, parts[0]
         assign_attribute :last_name, parts[1..-1].join(' ')
       end
     end
@@ -29,7 +37,7 @@ RSpec.describe FieldStruct do
         let(:attrs) do
           {
             username: 'george',
-            full_name: 'George Roberts'
+            full_name: 'george roberts'
           }
         end
         it 'builds a proper instance' do
@@ -51,8 +59,8 @@ RSpec.describe FieldStruct do
         let(:attrs) do
           {
             username: 'george',
-            first_name: 'George',
-            last_name: 'Roberts'
+            first_name: 'george',
+            last_name: 'roberts'
           }
         end
         it 'builds a proper instance' do
