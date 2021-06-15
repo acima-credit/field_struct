@@ -35,6 +35,10 @@ module FieldStruct
       alias []= assign_attribute
       alias set_attr assign_attribute
 
+      def write_attribute(name, value)
+        _assign_attribute_directly name, value
+      end
+
       def attribute?(name)
         get_attribute(name).present?
       end

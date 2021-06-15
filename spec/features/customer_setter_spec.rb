@@ -8,7 +8,7 @@ module FieldStruct
       required :last_name, :string
 
       def first_name=(value)
-        _assign_attribute_directly :first_name, value.to_s.capitalize
+        write_attribute :first_name, value.to_s.capitalize
       end
 
       def last_name=(value)
