@@ -29,6 +29,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'activesupport'
   spec.add_dependency 'activemodel'
+  spec.add_dependency 'digest-crc'
 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'pry'
