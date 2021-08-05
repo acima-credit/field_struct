@@ -135,7 +135,7 @@ module FieldStruct
         @values.each_with_object({}) do |(k, v), hsh|
           next if options && options[:only_keys] && !options[:only_keys].include?(k)
 
-          hsh[k] = k == :default && v.is_a?(Proc) ? '<proc>' : v
+          hsh[k] = to_hash_proc_value(k, v) || to_hash_field_struct_value(v) || v
         end
       end
 
@@ -147,6 +147,18 @@ module FieldStruct
 
       def key(name)
         name.to_sym
+      end
+
+      def to_hash_proc_value(key, value)
+        return false unless key == :default && value.is_a?(Proc)
+
+        '<proc>'
+      end
+
+      def to_hash_field_struct_value(value)
+        return false unless value.field_struct? && value.respond_to?(:metadata)
+
+        value.metadata.to_hash
       end
     end
 
@@ -331,7 +343,7 @@ module FieldStruct
 
     def build_version(options = {})
       json = @attributes.to_hash(options).to_json
-      Zlib.crc32(json, nil).to_s(16)
+      Digest::CRC32.hexdigest(json)
     end
   end
 

@@ -22,7 +22,7 @@ module FieldStruct
       def full_name=(value)
         parts = value.to_s.split(/\s+/)
         assign_attribute :first_name, parts[0]
-        assign_attribute :last_name, parts[1..-1].join(' ')
+        assign_attribute :last_name, parts[1..].join(' ')
       end
     end
   end

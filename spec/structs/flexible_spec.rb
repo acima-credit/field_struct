@@ -61,7 +61,7 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
       it { expect(subject.schema_name).to eq 'field_struct.flexible_examples.user' }
       it { expect(subject.type).to eq :flexible }
       it { expect(subject.version).to eq '245178bc' }
-      it('full hash') do
+      it 'full hash' do
         expect(subject.to_hash).to eq name: 'FieldStruct::FlexibleExamples::User',
                                       schema_name: 'field_struct.flexible_examples.user',
                                       attributes: {
@@ -100,6 +100,26 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
                                                  active: { type: :boolean, default: false }
                                                },
                                                version: '245178bc'
+      end
+      context 'to_hash' do
+        let(:exp_hash) do
+          {
+            name: 'FieldStruct::FlexibleExamples::User',
+            schema_name: 'field_struct.flexible_examples.user',
+            attributes: {
+              username: { type: :string, required: true, format: /\A[a-z]/i, description: 'login' },
+              password: { type: :string },
+              age: { type: :integer, required: true },
+              owed: { type: :float, required: true, description: 'amount owed to the company' },
+              source: { type: :string, required: true, enum: %w[A B C] },
+              level: { type: :integer, required: true, default: '<proc>' },
+              at: { type: :time },
+              active: { type: :boolean, default: false }
+            },
+            version: '245178bc'
+          }
+        end
+        it { expect(subject.to_hash).to eq exp_hash }
       end
     end
     context '.attribute_types' do
@@ -207,6 +227,20 @@ RSpec.describe FieldStruct::FlexibleExamples::Person do
                                       },
                                       version: '75b71433'
       end
+      context 'to_hash' do
+        let(:exp_hash) do
+          {
+            name: 'FieldStruct::FlexibleExamples::Person',
+            schema_name: 'field_struct.flexible_examples.person',
+            attributes: {
+              first_name: { type: :string, required: true, min_length: 3, max_length: 20 },
+              last_name: { type: :string, required: true }
+            },
+            version: '75b71433'
+          }
+        end
+        it { expect(subject.to_hash).to eq exp_hash }
+      end
     end
     context '.attribute_types' do
       subject { described_class.attribute_types }
@@ -265,6 +299,21 @@ RSpec.describe FieldStruct::FlexibleExamples::Employee do
       it { expect(subject[:first_name]).to eq type: :string, required: true, min_length: 3, max_length: 20 }
       it { expect(subject[:last_name]).to eq type: :string, required: true }
       it { expect(subject[:title]).to eq type: :string }
+      context 'to_hash' do
+        let(:exp_hash) do
+          {
+            name: 'FieldStruct::FlexibleExamples::Employee',
+            schema_name: 'field_struct.flexible_examples.employee',
+            attributes: {
+              first_name: { type: :string, required: true, min_length: 3, max_length: 20 },
+              last_name: { type: :string, required: true },
+              title: { type: :string }
+            },
+            version: 'c4c4ab50'
+          }
+        end
+        it { expect(subject.to_hash).to eq exp_hash }
+      end
     end
     context '.attribute_types' do
       subject { described_class.attribute_types }
@@ -330,6 +379,22 @@ RSpec.describe FieldStruct::FlexibleExamples::Developer do
       it { expect(subject[:last_name]).to eq type: :string, required: true }
       it { expect(subject[:title]).to eq type: :string }
       it { expect(subject[:language]).to eq type: :string, required: true }
+      context 'to_hash' do
+        let(:exp_hash) do
+          {
+            name: 'FieldStruct::FlexibleExamples::Developer',
+            schema_name: 'field_struct.flexible_examples.developer',
+            attributes: {
+              first_name: { type: :string, required: true, min_length: 3, max_length: 20 },
+              last_name: { type: :string, required: true },
+              title: { type: :string },
+              language: { type: :string, required: true }
+            },
+            version: 'b061a6fa'
+          }
+        end
+        it { expect(subject.to_hash).to eq exp_hash }
+      end
     end
     context '.attribute_types' do
       subject { described_class.attribute_types }
@@ -395,20 +460,65 @@ RSpec.describe FieldStruct::FlexibleExamples::Team do
       it { expect(subject.name).to eq 'FieldStruct::FlexibleExamples::Team' }
       it { expect(subject.schema_name).to eq 'field_struct.flexible_examples.team' }
       it { expect(subject.type).to eq :flexible }
-      it { expect(subject.version).to eq '5a034ba' }
+      it { expect(subject.version).to eq 'ddb2751a' }
       it { expect(subject.keys).to eq %i[name leader members] }
       it { expect(subject[:name]).to eq type: :string, required: true }
-      it do
-        expect(subject[:leader]).to eq type: FieldStruct::FlexibleExamples::Employee,
-                                       version: 'c4c4ab50',
-                                       required: true
+      context 'leader' do
+        let(:value) { subject[:leader] }
+        it { expect(value).to be_a FieldStruct::Metadata::Attribute }
+        it { expect(value.type).to eq FieldStruct::FlexibleExamples::Employee }
+        it { expect(value.version).to eq 'c4c4ab50' }
+        it { expect(value.required).to eq true }
       end
-      it do
-        expect(subject[:members]).to eq type: :array,
-                                        version: 'c4c4ab50',
-                                        required: true,
-                                        of: FieldStruct::FlexibleExamples::Employee,
-                                        description: 'Team members'
+      context 'members' do
+        let(:value) { subject[:members] }
+        it { expect(value).to be_a FieldStruct::Metadata::Attribute }
+        it { expect(value.required).to eq true }
+        it { expect(value.version).to eq 'c4c4ab50' }
+        it { expect(value.of).to eq FieldStruct::FlexibleExamples::Employee }
+        it { expect(value.description).to eq 'Team members' }
+      end
+      context 'to_hash' do
+        let(:exp_hash) do
+          {
+            name: 'FieldStruct::FlexibleExamples::Team',
+            schema_name: 'field_struct.flexible_examples.team',
+            attributes: {
+              name: { type: :string, required: true },
+              leader: {
+                type: {
+                  name: 'FieldStruct::FlexibleExamples::Employee',
+                  schema_name: 'field_struct.flexible_examples.employee',
+                  attributes: {
+                    first_name: { type: :string, required: true, min_length: 3, max_length: 20 },
+                    last_name: { type: :string, required: true }, title: { type: :string }
+                  },
+                  version: 'c4c4ab50'
+                },
+                version: 'c4c4ab50',
+                required: true
+              },
+              members: {
+                type: :array,
+                version: 'c4c4ab50',
+                required: true,
+                of: {
+                  name: 'FieldStruct::FlexibleExamples::Employee',
+                  schema_name: 'field_struct.flexible_examples.employee',
+                  attributes: {
+                    first_name: { type: :string, required: true, min_length: 3, max_length: 20 },
+                    last_name: { type: :string, required: true },
+                    title: { type: :string }
+                  },
+                  version: 'c4c4ab50'
+                },
+                description: 'Team members'
+              }
+            },
+            version: 'ddb2751a'
+          }
+        end
+        it { expect(subject.to_hash).to eq exp_hash }
       end
     end
     context '.attribute_types' do
@@ -487,11 +597,113 @@ RSpec.describe FieldStruct::FlexibleExamples::Company do
       it { expect(subject.name).to eq 'FieldStruct::FlexibleExamples::Company' }
       it { expect(subject.schema_name).to eq 'field_struct.flexible_examples.company' }
       it { expect(subject.type).to eq :flexible }
-      it { expect(subject.version).to eq '21b9bca5' }
+      it { expect(subject.version).to eq 'fda39fa3' }
       it { expect(subject.keys).to eq %i[legal_name development_team marketing_team] }
       it { expect(subject[:legal_name]).to eq type: :string, required: true }
-      it { expect(subject[:development_team]).to eq type: FieldStruct::FlexibleExamples::Team, version: '5a034ba' }
-      it { expect(subject[:marketing_team]).to eq type: FieldStruct::FlexibleExamples::Team, version: '5a034ba' }
+      context 'development_team' do
+        let(:value) { subject[:development_team] }
+        it { expect(value).to be_a FieldStruct::Metadata::Attribute }
+        it { expect(value.type).to eq FieldStruct::FlexibleExamples::Team }
+        it { expect(value.version).to eq 'ddb2751a' }
+      end
+      context 'marketing_team' do
+        let(:value) { subject[:marketing_team] }
+        it { expect(value).to be_a FieldStruct::Metadata::Attribute }
+        it { expect(value.type).to eq FieldStruct::FlexibleExamples::Team }
+        it { expect(value.version).to eq 'ddb2751a' }
+      end
+      context 'to_hash' do
+        let(:exp_hash) do
+          {
+            name: 'FieldStruct::FlexibleExamples::Company',
+            schema_name: 'field_struct.flexible_examples.company',
+            attributes: {
+              legal_name: { type: :string, required: true },
+              development_team: {
+                type: {
+                  name: 'FieldStruct::FlexibleExamples::Team',
+                  schema_name: 'field_struct.flexible_examples.team',
+                  attributes: {
+                    name: { type: :string, required: true },
+                    leader: {
+                      type: {
+                        name: 'FieldStruct::FlexibleExamples::Employee',
+                        schema_name: 'field_struct.flexible_examples.employee',
+                        attributes: {
+                          first_name: { type: :string, required: true, min_length: 3, max_length: 20 },
+                          last_name: { type: :string, required: true }, title: { type: :string }
+                        },
+                        version: 'c4c4ab50'
+                      },
+                      version: 'c4c4ab50',
+                      required: true
+                    },
+                    members: {
+                      type: :array,
+                      version: 'c4c4ab50',
+                      required: true,
+                      of: {
+                        name: 'FieldStruct::FlexibleExamples::Employee',
+                        schema_name: 'field_struct.flexible_examples.employee',
+                        attributes: {
+                          first_name: { type: :string, required: true, min_length: 3, max_length: 20 },
+                          last_name: { type: :string, required: true },
+                          title: { type: :string }
+                        }, version: 'c4c4ab50'
+                      },
+                      description: 'Team members'
+                    }
+                  },
+                  version: 'ddb2751a'
+                },
+                version: 'ddb2751a'
+              },
+              marketing_team: {
+                type: {
+                  name: 'FieldStruct::FlexibleExamples::Team',
+                  schema_name: 'field_struct.flexible_examples.team',
+                  attributes: {
+                    name: { type: :string, required: true },
+                    leader: {
+                      type: {
+                        name: 'FieldStruct::FlexibleExamples::Employee',
+                        schema_name: 'field_struct.flexible_examples.employee',
+                        attributes: {
+                          first_name: { type: :string, required: true, min_length: 3, max_length: 20 },
+                          last_name: { type: :string, required: true },
+                          title: { type: :string }
+                        }, version: 'c4c4ab50'
+                      },
+                      version: 'c4c4ab50',
+                      required: true
+                    },
+                    members: {
+                      type: :array,
+                      version: 'c4c4ab50',
+                      required: true,
+                      of: {
+                        name: 'FieldStruct::FlexibleExamples::Employee',
+                        schema_name: 'field_struct.flexible_examples.employee',
+                        attributes: {
+                          first_name: { type: :string, required: true, min_length: 3, max_length: 20 },
+                          last_name: { type: :string, required: true },
+                          title: { type: :string }
+                        },
+                        version: 'c4c4ab50'
+                      },
+                      description: 'Team members'
+                    }
+                  },
+                  version: 'ddb2751a'
+                },
+                version: 'ddb2751a'
+              }
+            },
+            version: 'fda39fa3'
+          }
+        end
+        it { expect(subject.to_hash).to eq exp_hash }
+      end
     end
     context '.attribute_types' do
       subject { described_class.attribute_types }
