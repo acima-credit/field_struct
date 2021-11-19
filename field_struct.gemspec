@@ -18,6 +18,7 @@ Gem::Specification.new do |spec|
 
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = spec.homepage
+  spec.metadata['allowed_push_host'] = 'https://rubygems.pkg.github.com/acima-credit'
   # spec.metadata["changelog_uri"] = "#{spec.homepage}/CHANGELOG.md"
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
