@@ -8,6 +8,8 @@
 /tmp/
 
 # rspec failure tracking
+.idea
 .rspec_status
 .tool-versions
 Gemfile.lock
+*.gem
