@@ -47,11 +47,7 @@ module FieldStruct
     def add_meta_required_validation
       return unless meta.required?
 
-      if meta.type == :boolean
-        klass.validates_inclusion_of name, in: [true, false]
-      else
-        klass.validates_presence_of name
-      end
+      klass.validates_presence_of name
     end
 
     def add_meta_format_validation
