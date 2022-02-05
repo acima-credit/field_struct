@@ -6,9 +6,17 @@ require 'field_struct/version'
 
 Gem::Specification.new do |spec|
   spec.name = 'field_struct'
-  spec.version = FieldStruct::VERSION
   spec.authors = ['Adrian Esteban Madrid']
   spec.email = ['adrian.madrid@acimacredit.com']
+  
+  current_branch = `git branch --remote --contains | sed "s|[[:space:]]*origin/||"`.strip
+  branch_commit = `git rev-parse HEAD`.strip[0..6]
+
+  if current_branch == 'master'
+    spec.version = FieldStruct::VERSION
+  else
+    spec.version = "#{FieldStruct::VERSION}-#{branch_commit}"
+  end
 
   spec.summary = 'A simple struct with typed attributes'
   spec.description = 'A simple struct with typed attributes'
