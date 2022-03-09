@@ -64,7 +64,7 @@ module FieldStruct
       include Comparable
 
       ATTRIBUTE_NAMES = %i[
-        type of version required default format enum min_length max_length description array range
+        type of version required default format enum min_length max_length description array range alias
       ].freeze
       ATTRIBUTE_METH_RX = /\A(#{ATTRIBUTE_NAMES.map(&:to_s).join('|')})(\?|=)?\z/.freeze
 
