@@ -55,6 +55,8 @@ module FieldStruct
 
         attribute_metadata name, type, options
 
+        build_attribute_aliases name, options
+
         options = Validations.build_for(self, name)
 
         super name, type, options
@@ -119,6 +121,11 @@ module FieldStruct
         metadata[name].version = type.metadata.version if type.respond_to?(:metadata)
         metadata[name].version = options[:of].metadata.version if options[:of].respond_to?(:metadata)
         metadata.update name, options
+      end
+
+      def build_attribute_aliases(old_name, options)
+        aliases = Array(options[:alias]).flatten
+        aliases.each { |new_name| alias_attribute new_name, old_name }
       end
     end
   end
