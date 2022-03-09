@@ -3,10 +3,6 @@
 module FieldStruct
   class Base
     module AttributeMethods
-      SIMPLE_TYPES = ::ActiveModel::Type.registry.send(
-        :registrations
-      ).map { |type| ::ActiveModel::VERSION::MAJOR > 6 ? type.first : type.send(:name) }.freeze
-
       # Initialize an instance
       #
       # @param [Hash] attrs
@@ -109,10 +105,15 @@ module FieldStruct
       def check_allowed_type(type)
         type = Kernel.const_get(type) if type.is_a?(String) && Kernel.const_defined?(type)
 
-        return type if type.is_a?(Symbol) && SIMPLE_TYPES.include?(type)
-        return type if type.is_a?(::ActiveModel::Type::Value) || type.field_struct?
+        return type if type.is_a?(Symbol) && check_active_model_type(type)
+        return type if type.is_a? ::ActiveModel::Type::Value
+        return type if type.field_struct?
 
         raise "Unknown type [#{type.inspect}] (#{type.class.name})"
+      end
+
+      def check_active_model_type(type)
+        FieldStruct.known_active_model_names.include? type
       end
 
       def attribute_metadata(name, type, options)
