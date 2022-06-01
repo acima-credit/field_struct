@@ -59,7 +59,7 @@ module FieldStruct
 
         options = Validations.build_for(self, name)
 
-        super name, type, options
+        super(name, type, **options)
       end
 
       # Add a required attribute to the class
