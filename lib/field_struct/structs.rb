@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
-require_relative 'structs/ext'
-require_relative 'structs/metadata'
+module FieldStruct
+  def self.types
+    @types ||= {}
+  end
 
-require_relative 'structs/validations'
-require_relative 'structs/base'
+  def self.register_type(klass)
+    types[klass.field_struct_type] = klass
+  end
+end
 
-require_relative 'structs/flexible'
-require_relative 'structs/strict'
-require_relative 'structs/mutable'
+require_relative 'structs/basic'

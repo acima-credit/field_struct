@@ -1,5 +1,5 @@
 AllCops:
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 2.7
   Include:
     - '**/*.rake'
     - '**/Rakefile'
@@ -9,11 +9,12 @@ AllCops:
   Exclude:
     - '**/*.gemspec'
     - '**/Gemfile*'
+  NewCops: enable
 
 Security/Eval:
   Enabled: false
 
-Metrics/LineLength:
+Layout/LineLength:
   Max: 120
 
 Metrics/MethodLength:
