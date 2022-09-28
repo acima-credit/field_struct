@@ -24,7 +24,7 @@ module FieldStruct
         it { expect(described_class).to respond_to :field_ancestor }
         it { expect(described_class.field_ancestor).to eq FieldStruct::Basic }
         it { expect(described_class.name).to eq 'FieldStruct::Examples::DefaultUser' }
-        it { expect(described_class.field_struct?).to eq true }
+        it { expect(described_class.extras).to eq :ignore }
       end
       context '.metadata' do
         subject { described_class.metadata }
@@ -33,20 +33,20 @@ module FieldStruct
         it { expect(subject.schema_name).to eq 'field_struct.examples.default_user' }
         it { expect(subject.type).to eq :basic }
         it { expect(subject.version).to eq 'a3a6bf43' }
-        it { expect(subject.keys).to eq %w[username password email rank] }
+        it { expect(subject.keys).to eq %i[username password email rank] }
         it { expect(subject[:username]).to eq({}) }
         it { expect(subject[:password]).to eq({}) }
         it { expect(subject[:email]).to eq({}) }
-        it { expect(subject[:rank]).to eq({ 'enum' => %w[freshman senior], 'default' => 'freshman' }) }
+        it { expect(subject[:rank]).to eq({ enum: %w[freshman senior], default: 'freshman' }) }
         it do
           expect(subject.to_hash).to eq name: 'FieldStruct::Examples::DefaultUser',
                                         schema_name: 'field_struct.examples.default_user',
                                         version: 'a3a6bf43',
                                         attributes: {
-                                          'username' => {},
-                                          'password' => {},
-                                          'email' => {},
-                                          'rank' => { 'enum' => %w[freshman senior], 'default' => 'freshman' }
+                                          username: {},
+                                          password: {},
+                                          email: {},
+                                          rank: { enum: %w[freshman senior], default: 'freshman' }
                                         }
         end
       end

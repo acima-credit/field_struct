@@ -6,18 +6,18 @@ module FieldStruct
       include Comparable
 
       def initialize(values = {})
-        @values = HashWithIndifferentAccess.new
+        @values = {}
         values.each { |k, v| set k, v }
       end
 
       def get(name)
-        @values[name]
+        @values[key(name)]
       end
 
       alias [] get
 
       def set(name, fields)
-        @values[name] = Attribute.new fields
+        @values[key(name)] = Attribute.new fields
       end
 
       alias []= set
@@ -38,6 +38,12 @@ module FieldStruct
 
       def <=>(other)
         to_hash <=> other.to_hash
+      end
+
+      private
+
+      def key(name)
+        name.to_sym
       end
     end
   end

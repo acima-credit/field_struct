@@ -13,7 +13,7 @@ module FieldStruct
 
       module MetadataMethods
         def default_values
-          attributes.each.with_object(HashWithIndifferentAccess.new) do |(name, attr), hsh|
+          attributes.each.with_object({}) do |(name, attr), hsh|
             next unless attr.has? :default
 
             hsh[name] = attr.get :default

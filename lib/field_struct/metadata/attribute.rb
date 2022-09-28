@@ -6,24 +6,24 @@ module FieldStruct
       include Comparable
 
       def initialize(values = {})
-        @values = HashWithIndifferentAccess.new
+        @values = {}
         values.each { |k, v| set k, v }
       end
 
       def get(name)
-        @values[name]
+        @values[key(name)]
       end
 
       alias [] get
 
       def set(name, properties)
-        @values[name] = properties
+        @values[key(name)] = properties
       end
 
       alias []= set
 
       def predicate(name)
-        @values.key? name
+        @values.key? key(name)
       end
       alias has? predicate
 
@@ -68,6 +68,10 @@ module FieldStruct
       end
 
       private
+
+      def key(name)
+        name.to_sym
+      end
 
       def to_hash_proc_value(_key, value)
         return false unless value.is_a?(Proc)

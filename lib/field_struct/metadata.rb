@@ -8,7 +8,8 @@ module FieldStruct
     class << self
       def default_options
         @default_options ||= {
-          type: :flexible
+          type: :flexible,
+          extras: :ignore
         }
       end
 
@@ -16,6 +17,7 @@ module FieldStruct
         new klass.name.to_s,
             nil,
             build_type(klass),
+            klass.extras,
             build_initial_attributes(klass)
       end
 
@@ -33,12 +35,13 @@ module FieldStruct
     include Comparable
 
     attr_reader :name, :type, :attributes
-    attr_accessor :schema_name, :version
+    attr_accessor :schema_name, :version, :extras
 
-    def initialize(name, schema_name, type, attributes)
+    def initialize(name, schema_name, type, extras, attributes)
       @name = name
       @schema_name = schema_name || build_schema_name(name)
       @type = type || self.class.default_options[:type]
+      @extras = extras || self.class.default_options[:extras]
       @attributes = AttributeSet.new attributes
       reset_version
     end

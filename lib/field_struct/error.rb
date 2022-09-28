@@ -13,4 +13,15 @@ module FieldStruct
       super("unknown attribute '#{attribute}' for #{@record.class}.")
     end
   end
+
+  class InvalidKeyError < Error
+    attr_reader :record, :key, :value
+
+    def initialize(record, key, value)
+      @record = record
+      @key = key
+      @vlue = value
+      super("invalid key '#{key}' for #{@record.class} - key does not respond to 'to_sym'")
+    end
+  end
 end
