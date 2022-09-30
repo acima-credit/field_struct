@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'plugins/cache'
-
 module FieldStruct
   module Plugins
     @plugins ||= Cache.new
@@ -25,3 +23,5 @@ end
 
 require_relative 'plugins/base'
 require_relative 'plugins/default_attribute_values'
+require_relative 'plugins/aliased_attributes'
+require_relative 'plugins/typed_attribute_values'

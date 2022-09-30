@@ -35,21 +35,24 @@ RSpec.describe FieldStruct::Examples::BasicUser, type: :struct do
       it { expect(subject.name).to eq 'FieldStruct::Examples::BasicUser' }
       it { expect(subject.schema_name).to eq 'field_struct.examples.basic_user' }
       it { expect(subject.type).to eq :basic }
-      it { expect(subject.version).to eq 'a3a6bf43' }
+      it { expect(subject.version).to eq '724ad77a' }
       it { expect(subject.keys).to eq %i[username password email rank] }
-      it { expect(subject[:username]).to eq({}) }
-      it { expect(subject[:password]).to eq({}) }
-      it { expect(subject[:email]).to eq({}) }
-      it { expect(subject[:rank]).to eq({ enum: %w[freshman senior], default: 'freshman' }) }
+      it { expect(subject[:username]).to eq({ required: false, name: 'username' }) }
+      it { expect(subject[:password]).to eq({ required: false, name: 'password' }) }
+      it { expect(subject[:email]).to eq({ required: false, name: 'email' }) }
+      it {
+        expect(subject[:rank]).to eq({ required: false, name: 'rank', enum: %w[freshman senior], default: 'freshman' })
+      }
       it do
         expect(subject.to_hash).to eq name: 'FieldStruct::Examples::BasicUser',
                                       schema_name: 'field_struct.examples.basic_user',
-                                      version: 'a3a6bf43',
+                                      version: '724ad77a',
                                       attributes: {
-                                        username: {},
-                                        password: {},
-                                        email: {},
-                                        rank: { enum: %w[freshman senior], default: 'freshman' }
+                                        username: { required: false, name: 'username' },
+                                        password: { required: false, name: 'password' },
+                                        email: { required: false, name: 'email' },
+                                        rank: { required: false, name: 'rank', enum: %w[freshman senior],
+                                                default: 'freshman' }
                                       }
       end
     end
@@ -122,23 +125,30 @@ RSpec.describe FieldStruct::Examples::BasicInheritedUser, type: :struct do
       it { expect(subject.name).to eq 'FieldStruct::Examples::BasicInheritedUser' }
       it { expect(subject.schema_name).to eq 'field_struct.examples.basic_inherited_user' }
       it { expect(subject.type).to eq :basic }
-      it { expect(subject.version).to eq 'e355ae74' }
+      it { expect(subject.version).to eq '085f790e' }
       it { expect(subject.keys).to eq %i[username password email rank level] }
-      it { expect(subject[:username]).to eq({}) }
-      it { expect(subject[:password]).to eq({}) }
-      it { expect(subject[:email]).to eq({}) }
-      it { expect(subject[:rank]).to eq({ enum: %w[freshman senior], default: 'freshman' }) }
-      it { expect(subject[:level]).to eq({ default: 1 }) }
+      it { expect(subject[:username]).to eq({ required: false, name: 'username' }) }
+      it { expect(subject[:password]).to eq({ required: false, name: 'password' }) }
+      it { expect(subject[:email]).to eq({ required: false, name: 'email' }) }
+      it {
+        expect(subject[:rank]).to eq({ required: false, name: 'rank', enum: %w[freshman senior], default: 'freshman' })
+      }
+      it { expect(subject[:level]).to eq({ required: false, name: 'level', default: 1 }) }
       it do
         expect(subject.to_hash).to eq name: 'FieldStruct::Examples::BasicInheritedUser',
                                       schema_name: 'field_struct.examples.basic_inherited_user',
-                                      version: 'e355ae74',
+                                      version: '085f790e',
                                       attributes: {
-                                        username: {},
-                                        password: {},
-                                        email: {},
-                                        rank: { enum: %w[freshman senior], default: 'freshman' },
-                                        level: { default: 1 }
+                                        username: { required: false, name: 'username' },
+                                        password: { required: false, name: 'password' },
+                                        email: { required: false, name: 'email' },
+                                        rank: {
+                                          required: false,
+                                          name: 'rank',
+                                          enum: %w[freshman senior],
+                                          default: 'freshman'
+                                        },
+                                        level: { required: false, name: 'level', default: 1 }
                                       }
       end
     end

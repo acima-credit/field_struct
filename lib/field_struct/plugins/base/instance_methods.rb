@@ -8,6 +8,7 @@ module FieldStruct
           assign_attributes values
         end
 
+        # @param [Hash] values
         def assign_attributes(values)
           unless values.respond_to?(:each_pair)
             raise ArgumentError,

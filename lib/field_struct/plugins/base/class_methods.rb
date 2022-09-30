@@ -57,14 +57,17 @@ module FieldStruct
 
         alias meta metadata
 
+        # @param [Hash] values
         def from(values = {})
           new values
         end
 
+        # @return [String]
         def name
           @metadata ? @metadata.name : super
         end
 
+        # @return [String]
         def short_name
           last, *rest = name.split('::').reverse
           ([last] + rest.map { |x| x.titleize.split.map { |y| y[0, 1] }.join }).reverse.join(':')
@@ -74,8 +77,17 @@ module FieldStruct
           true
         end
 
+        def default_attribute_options
+          {
+            required: false
+          }
+        end
+
+        # @param [Symbol] name
+        # @param [Array] args
+        # @param [Hash] options
         def attribute(name, *args, **options)
-          options = build_options(args, options)
+          options = build_options(name, args, options)
 
           attribute_metadata name, options
           build_accessors name, options
@@ -93,16 +105,16 @@ module FieldStruct
         private
 
         def attribute_metadata(name, options = {})
-          metadata.set name, options
+          metadata.update name, options
         end
 
         def build_accessors(name, _options)
           send :attr_accessor, name
         end
 
-        def build_options(args, options)
+        def build_options(name, args, options)
           arg_options = args.each_with_object({}) { |arg, hsh| hsh[arg.to_sym] = true }
-          arg_options.merge options
+          default_attribute_options.merge(arg_options).merge(options).update(name: name.to_s)
         end
       end
     end

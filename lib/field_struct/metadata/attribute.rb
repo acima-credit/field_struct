@@ -16,6 +16,10 @@ module FieldStruct
 
       alias [] get
 
+      def fetch(name, default = nil)
+        @values.fetch key(name), default
+      end
+
       def set(name, properties)
         @values[key(name)] = properties
       end
@@ -25,15 +29,30 @@ module FieldStruct
       def predicate(name)
         @values.key? key(name)
       end
+
       alias has? predicate
 
       delegate :inspect, :to_s, :keys, :key?, :delete, to: :@values
+
+      # @return [FieldStruct::Types::Base, nil]
+      def full_type
+        return unless type?
+
+        # return type if type.respond_to?(:field_struct?) && type.field_struct?
+
+        found = Types.get type
+        return found.new(self) if found
+
+        nil
+      end
+
+      delegate :coercible?, :coerce, to: :full_type
 
       def <=>(other)
         to_hash <=> other.to_hash
       end
 
-      METH_RX = /^(\w+)(=){0,1}(\?|=)$/i.freeze
+      METH_RX = /\A(\w+)([?=])?\z/i.freeze
 
       def respond_to_missing?(meth, *)
         match = meth.match METH_RX

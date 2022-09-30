@@ -68,9 +68,15 @@ module FieldStruct
     end
 
     def reset_version
-      @version = build_version attributes: {
-        attribute: {
-          only_keys: %i[type of required default format enum min_length max_length]
+      @version = build_version version_attribute_options
+    end
+
+    def version_attribute_options
+      {
+        attributes: {
+          attribute: {
+            only_keys: %i[name type of required default format enum min_length max_length]
+          }
         }
       }
     end
@@ -105,8 +111,8 @@ module FieldStruct
     end
 
     def build_version(options = {})
-      json = @attributes.to_hash(options).to_json
-      Digest::CRC32.hexdigest(json)
+      hash = @attributes.to_hash(options)
+      Digest::CRC32.hexdigest(hash.to_json)
     end
   end
 end

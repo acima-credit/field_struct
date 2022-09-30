@@ -23,7 +23,8 @@ module FieldStruct
       alias []= set
 
       def update(attr_name, prop_name, value)
-        get(attr_name).set prop_name, value
+        attr = get(attr_name) || set(attr_name, {})
+        attr.set prop_name, value
       end
 
       def to_hash(options = {})
