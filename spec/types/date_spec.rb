@@ -2,9 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe FieldStruct::Types::Date, type: :type do
+RSpec.describe FieldedStruct::Types::Date, type: :type do
   describe 'class' do
-    it { expect(described_class.ancestors).to include FieldStruct::Types::Base }
+    it { expect(described_class.ancestors).to include FieldedStruct::Types::Base }
     it { expect(described_class.type).to eq :date }
     it { expect(described_class.base_type).to eq Date }
   end
@@ -81,7 +81,7 @@ RSpec.describe FieldStruct::Types::Date, type: :type do
         it { expect(subject.coerce(0)).to eq nil } # Integer
         it { expect(subject.coerce(3)).to eq nil }
         it { expect(subject.coerce(-3)).to eq nil }
-        it('works', :focus) { expect(subject.coerce('0')).to eq nil } # String
+        it { expect(subject.coerce('0')).to eq nil } # String
         it { expect(subject.coerce('3')).to eq nil }
         it { expect(subject.coerce('-3')).to eq nil }
         it { expect(subject.coerce('wibble')).to eq nil }
@@ -98,13 +98,13 @@ RSpec.describe FieldStruct::Types::Date, type: :type do
         it { expect(subject.coerce(true)).to eq nil } # Boolean
         context 'with custom format' do
           context 'd-m-y' do
-            let(:attr_options) { base_attr_options.update parse_format: [/\A(\d{4})-(\d\d)-(\d\d)\z/, 3, 2, 1] }
+            let(:attr_options) { base_attr_options.update parse_format: [/\A(\d{4})-(d{2})-(d{2})\z/, 3, 2, 1] }
             it { expect(subject.coerce('01-03-2020')).to eq date_value }
           end
         end
         context 'with class date format' do
           context 'd-m-y' do
-            before { described_class.parse_formats[:dmy] = [/\A(\d{4})-(\d\d)-(\d\d)\z/, 3, 2, 1] }
+            before { described_class.parse_formats[:dmy] = [/\A(\d{4})-(d{2})-(d{2})\z/, 3, 2, 1] }
             it { expect(subject.coerce('01-03-2020')).to eq date_value }
             after { described_class.parse_formats.delete :dmy }
           end

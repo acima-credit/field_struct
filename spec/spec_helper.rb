@@ -1,13 +1,16 @@
 # frozen_string_literal: true
 
 require 'bundler/setup'
-require 'field_struct'
+require 'fielded_struct'
 
 require 'rspec/core/shared_context'
 require 'rspec/json_expectations'
 require 'hashdiff'
 
 ROOT_PATH = Pathname.new File.expand_path(File.dirname(File.dirname(__FILE__)))
+
+Time.zone = 'Mountain Time (US & Canada)'
+# Time.zone = 'UTC'
 
 RSpec.configure do |config|
   config.example_status_persistence_file_path = '.rspec_status'

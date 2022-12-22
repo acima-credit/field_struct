@@ -52,12 +52,12 @@ Naming/VariableName:
 Metrics/AbcSize:
   Enabled: true
   Exclude:
-    - 'lib/field_struct/structs/base.rb'
+    - 'lib/fielded_struct/structs/base.rb'
     - 'spec/support/**'
-    - 'lib/field_struct/structs/base/attribute.rb'
+    - 'lib/fielded_struct/structs/base/attribute.rb'
 
 Metrics/CyclomaticComplexity:
   Enabled: true
   Exclude:
-    - 'lib/field_struct/structs/base.rb'
-    - 'lib/field_struct/structs/base/attribute.rb'
+    - 'lib/fielded_struct/structs/base.rb'
+    - 'lib/fielded_struct/structs/base/attribute.rb'

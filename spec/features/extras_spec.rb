@@ -2,21 +2,21 @@
 
 require 'spec_helper'
 
-module FieldStruct
+module FieldedStruct
   module Examples
-    class IgnoreExtrasUser < FieldStruct::Basic
+    class IgnoreExtrasUser < FieldedStruct::Basic
       # extras :ignore # default
       #
       attribute :username
     end
 
-    class AddExtrasUser < FieldStruct::Basic
+    class AddExtrasUser < FieldedStruct::Basic
       extras :add
 
       attribute :username
     end
 
-    class RaiseExtrasUser < FieldStruct::Basic
+    class RaiseExtrasUser < FieldedStruct::Basic
       extras :raise
 
       attribute :username
@@ -25,10 +25,10 @@ module FieldStruct
 end
 
 RSpec.describe 'feature : extras', type: :feature do
-  describe FieldStruct::Examples::IgnoreExtrasUser, type: :struct do
+  describe FieldedStruct::Examples::IgnoreExtrasUser, type: :struct do
     describe 'class' do
       context 'info' do
-        it { expect(described_class.name).to eq 'FieldStruct::Examples::IgnoreExtrasUser' }
+        it { expect(described_class.name).to eq 'FieldedStruct::Examples::IgnoreExtrasUser' }
         it { expect(described_class.extras).to eq :ignore }
       end
       context '.metadata' do
@@ -53,7 +53,7 @@ RSpec.describe 'feature : extras', type: :feature do
           expect(subject.extras).to eq({})
         end
         it('to_s') {
-          expect(subject.to_s).to eq '#<FieldStruct::Examples::IgnoreExtrasUser username="some_user">'
+          expect(subject.to_s).to eq '#<FieldedStruct::Examples::IgnoreExtrasUser username="some_user">'
         }
         context 'assignment' do
           context 'username' do
@@ -80,14 +80,14 @@ RSpec.describe 'feature : extras', type: :feature do
             expect(subject.extras).to eq({})
           end
         end
-        it { expect(subject.to_s).to eq '#<FieldStruct::Examples::IgnoreExtrasUser username="some_user">' }
+        it { expect(subject.to_s).to eq '#<FieldedStruct::Examples::IgnoreExtrasUser username="some_user">' }
       end
     end
   end
-  describe FieldStruct::Examples::AddExtrasUser, type: :struct do
+  describe FieldedStruct::Examples::AddExtrasUser, type: :struct do
     describe 'class' do
       context 'info' do
-        it { expect(described_class.name).to eq 'FieldStruct::Examples::AddExtrasUser' }
+        it { expect(described_class.name).to eq 'FieldedStruct::Examples::AddExtrasUser' }
         it { expect(described_class.extras).to eq :add }
       end
       context '.metadata' do
@@ -114,7 +114,7 @@ RSpec.describe 'feature : extras', type: :feature do
                                        rank: 'senior'
         end
         it('to_s') {
-          expect(subject.to_s).to eq '#<FieldStruct::Examples::AddExtrasUser username="some_user">'
+          expect(subject.to_s).to eq '#<FieldedStruct::Examples::AddExtrasUser username="some_user">'
         }
         context 'assignment' do
           context 'username' do
@@ -141,14 +141,14 @@ RSpec.describe 'feature : extras', type: :feature do
             expect(subject.extras).to eq password: '123'
           end
         end
-        it { expect(subject.to_s).to eq '#<FieldStruct::Examples::AddExtrasUser username="some_user">' }
+        it { expect(subject.to_s).to eq '#<FieldedStruct::Examples::AddExtrasUser username="some_user">' }
       end
     end
   end
-  describe FieldStruct::Examples::RaiseExtrasUser, type: :struct do
+  describe FieldedStruct::Examples::RaiseExtrasUser, type: :struct do
     describe 'class' do
       context 'info' do
-        it { expect(described_class.name).to eq 'FieldStruct::Examples::RaiseExtrasUser' }
+        it { expect(described_class.name).to eq 'FieldedStruct::Examples::RaiseExtrasUser' }
         it { expect(described_class.extras).to eq :raise }
       end
       context '.metadata' do
@@ -167,17 +167,17 @@ RSpec.describe 'feature : extras', type: :feature do
       subject { described_class.new params }
       context 'full' do
         let(:params) { full_params }
-        let(:err_msg) { "unknown attribute 'password' for FieldStruct::Examples::RaiseExtrasUser." }
+        let(:err_msg) { "unknown attribute 'password' for FieldedStruct::Examples::RaiseExtrasUser." }
         it 'works' do
-          expect { subject }.to raise_error FieldStruct::UnknownAttributeError, err_msg
+          expect { subject }.to raise_error FieldedStruct::UnknownAttributeError, err_msg
         end
       end
       context 'partial' do
         let(:params) { full_params.except :email, :rank }
         context 'attributes' do
-          let(:err_msg) { "unknown attribute 'password' for FieldStruct::Examples::RaiseExtrasUser." }
+          let(:err_msg) { "unknown attribute 'password' for FieldedStruct::Examples::RaiseExtrasUser." }
           it 'works' do
-            expect { subject }.to raise_error FieldStruct::UnknownAttributeError, err_msg
+            expect { subject }.to raise_error FieldedStruct::UnknownAttributeError, err_msg
           end
         end
       end

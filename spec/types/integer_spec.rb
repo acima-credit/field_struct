@@ -2,9 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe FieldStruct::Types::Integer, type: :type do
+RSpec.describe FieldedStruct::Types::Integer, type: :type do
   describe 'class' do
-    it { expect(described_class.ancestors).to include FieldStruct::Types::Base }
+    it { expect(described_class.ancestors).to include FieldedStruct::Types::Base }
     it { expect(described_class.type).to eq :integer }
     it { expect(described_class.base_type).to eq Integer }
   end

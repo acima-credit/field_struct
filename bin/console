@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 require 'bundler/setup'
-require 'field_struct'
+require 'fielded_struct'
 
 require 'pry'
 Pry.start

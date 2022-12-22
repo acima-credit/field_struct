@@ -7,9 +7,10 @@
 The most basic usage is for a simple ruby class:
 
 ```ruby
-class BasicFriend < FieldStruct::Basic
+
+class BasicFriend < FieldedStruct::Basic
   attribute :name
-  attribute :age  
+  attribute :age
 end
 
 # Minimal
@@ -29,7 +30,7 @@ john.age = 35
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'field_struct'
+gem 'fielded_struct'
 ```
 
 And then execute:
@@ -38,7 +39,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install field_struct
+    $ gem install fielded_struct
 
 ## Development
 
@@ -48,7 +49,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/acima-credit/field_struct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/acima-credit/fielded_struct.
 
 ## License
 

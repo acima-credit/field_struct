@@ -2,9 +2,9 @@
 
 require 'spec_helper'
 
-module FieldStruct
+module FieldedStruct
   module Examples
-    class AliasedUser < FieldStruct::Basic
+    class AliasedUser < FieldedStruct::Basic
       plugin :aliased_attributes
 
       attribute :UserName, alias: %i[username user_name]
@@ -13,21 +13,21 @@ module FieldStruct
   end
 end
 
-RSpec.describe FieldStruct::Examples::AliasedUser, type: :struct do
+RSpec.describe FieldedStruct::Examples::AliasedUser, type: :struct do
   describe 'class' do
     context 'info' do
-      it { expect(described_class).to respond_to :field_struct? }
-      it { expect(described_class.field_struct?).to eq true }
+      it { expect(described_class).to respond_to :fielded_struct? }
+      it { expect(described_class.fielded_struct?).to eq true }
       it { expect(described_class).to respond_to :field_ancestor }
-      it { expect(described_class.field_ancestor).to eq FieldStruct::Basic }
-      it { expect(described_class.name).to eq 'FieldStruct::Examples::AliasedUser' }
+      it { expect(described_class.field_ancestor).to eq FieldedStruct::Basic }
+      it { expect(described_class.name).to eq 'FieldedStruct::Examples::AliasedUser' }
       it { expect(described_class.extras).to eq :ignore }
     end
     context '.metadata' do
       subject { described_class.metadata }
       it { expect(subject).to be_a described_class::Metadata }
-      it { expect(subject.name).to eq 'FieldStruct::Examples::AliasedUser' }
-      it { expect(subject.schema_name).to eq 'field_struct.examples.aliased_user' }
+      it { expect(subject.name).to eq 'FieldedStruct::Examples::AliasedUser' }
+      it { expect(subject.schema_name).to eq 'fielded_struct.examples.aliased_user' }
       it { expect(subject.type).to eq :basic }
       it { expect(subject.version).to eq '9deba98c' }
       it { expect(subject.keys).to eq %i[UserName Password] }
@@ -36,8 +36,8 @@ RSpec.describe FieldStruct::Examples::AliasedUser, type: :struct do
       }
       it { expect(subject[:Password]).to eq({ required: false, alias: :password, name: 'Password' }) }
       it do
-        expect(subject.to_hash).to eq name: 'FieldStruct::Examples::AliasedUser',
-                                      schema_name: 'field_struct.examples.aliased_user',
+        expect(subject.to_hash).to eq name: 'FieldedStruct::Examples::AliasedUser',
+                                      schema_name: 'fielded_struct.examples.aliased_user',
                                       version: '9deba98c',
                                       attributes: {
                                         UserName: { required: false, alias: %i[username user_name], name: 'UserName' },
@@ -55,14 +55,26 @@ RSpec.describe FieldStruct::Examples::AliasedUser, type: :struct do
     context 'full' do
       let(:params) { full_params }
       context 'attributes' do
+        it do
+          expect(subject.attributes).to eq({
+                                             UserName: 'some_user',
+                                             Password: '123'
+                                           })
+        end
         it { expect(subject.UserName).to eq 'some_user' }
         it { expect(subject.username).to eq 'some_user' }
         it { expect(subject.user_name).to eq 'some_user' }
         it { expect(subject.Password).to eq '123' }
         it { expect(subject.password).to eq '123' }
+        it do
+          expect(subject.to_hash).to eq({
+                                          UserName: 'some_user',
+                                          Password: '123'
+                                        })
+        end
       end
       it('to_s') {
-        expect(subject.to_s).to eq '#<FieldStruct::Examples::AliasedUser UserName="some_user" Password="123">'
+        expect(subject.to_s).to eq '#<FieldedStruct::Examples::AliasedUser UserName="some_user" Password="123">'
       }
       context 'aliases assignment' do
         it do
@@ -90,10 +102,43 @@ RSpec.describe FieldStruct::Examples::AliasedUser, type: :struct do
     context 'partial' do
       let(:params) { full_params.except :password }
       context 'attributes' do
+        it do
+          expect(subject.attributes).to eq({
+                                             UserName: 'some_user',
+                                             Password: nil
+                                           })
+        end
         it { expect(subject.username).to eq 'some_user' }
+        it do
+          expect(subject.to_hash).to eq({
+                                          UserName: 'some_user',
+                                          Password: nil
+                                        })
+        end
       end
       it {
-        expect(subject.to_s).to eq '#<FieldStruct::Examples::AliasedUser UserName="some_user">'
+        expect(subject.to_s).to eq '#<FieldedStruct::Examples::AliasedUser UserName="some_user">'
+      }
+    end
+    context 'empty' do
+      let(:params) { {} }
+      context 'attributes' do
+        it do
+          expect(subject.attributes).to eq({
+                                             UserName: nil,
+                                             Password: nil
+                                           })
+        end
+        it { expect(subject.username).to eq nil }
+        it do
+          expect(subject.to_hash).to eq({
+                                          UserName: nil,
+                                          Password: nil
+                                        })
+        end
+      end
+      it {
+        expect(subject.to_s).to eq '#<FieldedStruct::Examples::AliasedUser>'
       }
     end
   end

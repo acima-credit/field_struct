@@ -2,9 +2,9 @@
 
 require 'spec_helper'
 
-module FieldStruct
+module FieldedStruct
   module Examples
-    class DefaultUser < FieldStruct::Basic
+    class DefaultUser < FieldedStruct::Basic
       plugin :default_attribute_values
 
       RANKS = %w[freshman senior].freeze
@@ -17,21 +17,21 @@ module FieldStruct
   end
 end
 
-RSpec.describe FieldStruct::Examples::DefaultUser, type: :struct do
+RSpec.describe FieldedStruct::Examples::DefaultUser, type: :struct do
   describe 'class' do
     context 'info' do
-      it { expect(described_class).to respond_to :field_struct? }
-      it { expect(described_class.field_struct?).to eq true }
+      it { expect(described_class).to respond_to :fielded_struct? }
+      it { expect(described_class.fielded_struct?).to eq true }
       it { expect(described_class).to respond_to :field_ancestor }
-      it { expect(described_class.field_ancestor).to eq FieldStruct::Basic }
-      it { expect(described_class.name).to eq 'FieldStruct::Examples::DefaultUser' }
+      it { expect(described_class.field_ancestor).to eq FieldedStruct::Basic }
+      it { expect(described_class.name).to eq 'FieldedStruct::Examples::DefaultUser' }
       it { expect(described_class.extras).to eq :ignore }
     end
     context '.metadata' do
       subject { described_class.metadata }
       it { expect(subject).to be_a described_class::Metadata }
-      it { expect(subject.name).to eq 'FieldStruct::Examples::DefaultUser' }
-      it { expect(subject.schema_name).to eq 'field_struct.examples.default_user' }
+      it { expect(subject.name).to eq 'FieldedStruct::Examples::DefaultUser' }
+      it { expect(subject.schema_name).to eq 'fielded_struct.examples.default_user' }
       it { expect(subject.type).to eq :basic }
       it { expect(subject.version).to eq '724ad77a' }
       it { expect(subject.keys).to eq %i[username password email rank] }
@@ -42,8 +42,8 @@ RSpec.describe FieldStruct::Examples::DefaultUser, type: :struct do
         expect(subject[:rank]).to eq({ required: false, name: 'rank', enum: %w[freshman senior], default: 'freshman' })
       }
       it do
-        expect(subject.to_hash).to eq name: 'FieldStruct::Examples::DefaultUser',
-                                      schema_name: 'field_struct.examples.default_user',
+        expect(subject.to_hash).to eq name: 'FieldedStruct::Examples::DefaultUser',
+                                      schema_name: 'fielded_struct.examples.default_user',
                                       version: '724ad77a',
                                       attributes: {
                                         username: { required: false, name: 'username' },
@@ -70,16 +70,32 @@ RSpec.describe FieldStruct::Examples::DefaultUser, type: :struct do
     context 'full' do
       let(:params) { full_params }
       context 'attributes' do
+        it do
+          expect(subject.attributes).to eq({
+                                             username: 'some_user',
+                                             password: '123',
+                                             email: 'some_user@example.com',
+                                             rank: 'senior'
+                                           })
+        end
         it { expect(subject.username).to eq 'some_user' }
         it { expect(subject.password).to eq '123' }
         it { expect(subject.email).to eq 'some_user@example.com' }
         it { expect(subject.rank).to eq 'senior' }
+        it do
+          expect(subject.to_hash).to eq({
+                                          username: 'some_user',
+                                          password: '123',
+                                          email: 'some_user@example.com',
+                                          rank: 'senior'
+                                        })
+        end
       end
       it('to_s') {
-        expect(subject.to_s).to eq '#<FieldStruct::Examples::DefaultUser username="some_user" password="123" ' \
+        expect(subject.to_s).to eq '#<FieldedStruct::Examples::DefaultUser username="some_user" password="123" ' \
                                    'email="some_user@example.com" rank="senior">'
       }
-      context 'immutability' do
+      context 'mutability' do
         it do
           expect { subject.username = 'x' }.to_not raise_error
           expect(subject.username).to eq 'x'
@@ -97,13 +113,42 @@ RSpec.describe FieldStruct::Examples::DefaultUser, type: :struct do
     context 'partial' do
       let(:params) { full_params.except :email, :rank }
       context 'attributes' do
+        it do
+          expect(subject.attributes).to eq({
+                                             username: 'some_user',
+                                             password: '123',
+                                             email: nil,
+                                             rank: 'freshman'
+                                           })
+        end
+        it { expect(subject.username).to eq 'some_user' }
+        it { expect(subject.password).to eq '123' }
+        it { expect(subject.email).to be_nil }
+        it { expect(subject.rank).to eq 'freshman' }
+        it do
+          expect(subject.to_hash).to eq({
+                                          username: 'some_user',
+                                          password: '123',
+                                          email: nil,
+                                          rank: 'freshman'
+                                        })
+        end
+      end
+      it {
+        expect(subject.to_s).to eq '#<FieldedStruct::Examples::DefaultUser username="some_user" password="123" ' \
+                                   'rank="freshman">'
+      }
+    end
+    context 'empty' do
+      let(:params) { full_params.except :email, :rank }
+      context 'attributes' do
         it { expect(subject.username).to eq 'some_user' }
         it { expect(subject.password).to eq '123' }
         it { expect(subject.email).to be_nil }
         it { expect(subject.rank).to eq 'freshman' }
       end
       it {
-        expect(subject.to_s).to eq '#<FieldStruct::Examples::DefaultUser username="some_user" password="123" ' \
+        expect(subject.to_s).to eq '#<FieldedStruct::Examples::DefaultUser username="some_user" password="123" ' \
                                    'rank="freshman">'
       }
     end
