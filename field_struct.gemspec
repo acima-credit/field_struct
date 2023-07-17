@@ -10,11 +10,16 @@ Gem::Specification.new do |spec|
   spec.email = ['adrian.madrid@acimacredit.com']
   
   current_branch = `git branch --remote --contains | sed "s|[[:space:]]*origin/||"`.strip
-  branch_commit = `git rev-parse HEAD`.strip[0..6]
+
+  raise 'Could not determine current branch' if current_branch.empty?
 
   if current_branch == 'master'
     spec.version = FieldStruct::VERSION
   else
+    branch_commit = `git rev-parse HEAD`.strip[0..6]
+
+    raise 'Could not determine current commit SHA' if branch_commit.empty?
+
     spec.version = "#{FieldStruct::VERSION}-#{branch_commit}"
   end
 
