@@ -16,7 +16,7 @@ module FieldStruct
         make_class(metadata, root).tap do |klass|
           metadata.attributes.each do |name, options|
             type = options.delete :type
-            klass.attribute name, type, options
+            klass.attribute name, type, **options
           end
         end
       end
@@ -102,12 +102,6 @@ module FieldStruct
 
       def optional?
         !required?
-      end
-
-      def avro=(value)
-        raise 'Value must be a Hash' unless value.is_a?(Hash)
-
-        set :avro, value
       end
 
       delegate :inspect, :to_s, :keys, :delete, to: :@values
