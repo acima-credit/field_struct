@@ -105,7 +105,8 @@ module FieldStruct
       end
 
       def avro=(value)
-        raise "Value must be a Hash" unless value.is_a?(Hash)
+        raise 'Value must be a Hash' unless value.is_a?(Hash)
+
         set :avro, value
       end
 

@@ -68,7 +68,7 @@ RSpec.describe FieldStruct::MutableExamples::User do
       it { expect(subject[:level]).to eq type: :integer, required: true, default: '<proc>' }
       it { expect(subject[:at]).to eq type: :time }
       it { expect(subject[:active]).to eq type: :boolean, default: false }
-      it { expect(subject[:department]).to eq type: :string, required: true, avro: { field_id: 'user_dept' }}
+      it { expect(subject[:department]).to eq type: :string, required: true, avro: { field_id: 'user_dept' } }
     end
     context '.attribute_types' do
       subject { described_class.attribute_types }

@@ -13,7 +13,7 @@ module FieldStruct
       required :level, :integer, default: -> { 2 }
       optional :at, :time
       optional :active, :boolean, default: false
-      required :department, :string, avro: { field_id: "user_dept" }
+      required :department, :string, avro: { field_id: 'user_dept' }
     end
 
     class Person < FieldStruct.flexible
@@ -83,7 +83,7 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
                                         level: { type: :integer, required: true, default: '<proc>' },
                                         at: { type: :time },
                                         active: { type: :boolean, default: false },
-                                        department: { type: :string, required: true, avro: { field_id: "user_dept" }}
+                                        department: { type: :string, required: true, avro: { field_id: 'user_dept' } }
                                       },
                                       version: 'f8a28d00'
       end
@@ -118,7 +118,7 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
               level: { type: :integer, required: true, default: '<proc>' },
               at: { type: :time },
               active: { type: :boolean, default: false },
-              department: { type: :string, required: true, avro: { field_id: "user_dept" }}
+              department: { type: :string, required: true, avro: { field_id: 'user_dept' } }
             },
             version: 'f8a28d00'
           }
@@ -138,7 +138,7 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
       it { expect(subject['level']).to be_a ActiveModel::Type::Integer }
       it { expect(subject['at']).to be_a ActiveModel::Type::Time }
       it { expect(subject['active']).to be_a ActiveModel::Type::Boolean }
-      it { expect(subject['department']). to be_a ActiveModel::Type::String }
+      it { expect(subject['department']).to be_a ActiveModel::Type::String }
     end
   end
   describe 'instance' do
@@ -188,7 +188,7 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
         it { expect { subject.level = 'x' }.to raise_error FrozenError, error_msg }
         it { expect { subject.at = 'x' }.to raise_error FrozenError, error_msg }
         it { expect { subject.active = 'x' }.to raise_error FrozenError, error_msg }
-        it { expect { subject.department = 'x'}.to raise_error FrozenError, error_msg }
+        it { expect { subject.department = 'x' }.to raise_error FrozenError, error_msg }
       end
     end
     context 'full + extras' do
