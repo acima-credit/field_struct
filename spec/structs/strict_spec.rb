@@ -13,6 +13,7 @@ module FieldStruct
       required :level, :integer, default: -> { 2 }
       optional :at, :time
       optional :active, :boolean, default: false
+      required :department, :string, avro: { field_id: 'user_dept' }
     end
 
     class Person < FieldStruct.strict
@@ -55,8 +56,8 @@ RSpec.describe FieldStruct::StrictExamples::User do
       it { expect(subject.name).to eq 'FieldStruct::StrictExamples::User' }
       it { expect(subject.schema_name).to eq 'field_struct.strict_examples.user' }
       it { expect(subject.type).to eq :strict }
-      it { expect(subject.version).to eq '7d1bd1cb' }
-      it { expect(subject.keys).to eq %i[username password age owed source level at active] }
+      it { expect(subject.version).to eq '8fd7c2bf' }
+      it { expect(subject.keys).to eq %i[username password age owed source level at active department] }
       it { expect(subject[:username]).to eq type: :string, required: true, format: /\A[a-z]/i }
       it { expect(subject[:password]).to eq type: :string }
       it { expect(subject[:age]).to eq type: :integer, required: true }
@@ -65,11 +66,12 @@ RSpec.describe FieldStruct::StrictExamples::User do
       it { expect(subject[:level]).to eq type: :integer, required: true, default: '<proc>' }
       it { expect(subject[:at]).to eq type: :time }
       it { expect(subject[:active]).to eq type: :boolean, default: false }
+      it { expect(subject[:department]).to eq type: :string, required: true, avro: { field_id: 'user_dept' } }
     end
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
-      it { expect(subject.keys).to eq %w[username password age owed source level at active] }
+      it { expect(subject.keys).to eq %w[username password age owed source level at active department] }
       it { expect(subject['username']).to be_a ActiveModel::Type::String }
       it { expect(subject['password']).to be_a ActiveModel::Type::String }
       it { expect(subject['age']).to be_a ActiveModel::Type::Integer }
@@ -78,6 +80,7 @@ RSpec.describe FieldStruct::StrictExamples::User do
       it { expect(subject['level']).to be_a ActiveModel::Type::Integer }
       it { expect(subject['at']).to be_a ActiveModel::Type::Time }
       it { expect(subject['active']).to be_a ActiveModel::Type::Boolean }
+      it { expect(subject['department']).to be_a ActiveModel::Type::String }
     end
   end
   describe 'instance' do
@@ -89,6 +92,7 @@ RSpec.describe FieldStruct::StrictExamples::User do
     let(:level) { 3 }
     let(:at) { Time.parse('2018-03-24') }
     let(:active) { true }
+    let(:department) { 'some_dept' }
     let(:full_params) do
       basic_hash username: username,
                  password: password,
@@ -97,7 +101,8 @@ RSpec.describe FieldStruct::StrictExamples::User do
                  source: source,
                  level: level,
                  at: at,
-                 active: active
+                 active: active,
+                 department: department
     end
     subject { described_class.new params }
     context 'full' do
@@ -112,6 +117,7 @@ RSpec.describe FieldStruct::StrictExamples::User do
         it { expect(subject.level).to eq 3 }
         it { expect(subject.at).to eq Time.parse('2018-03-24') }
         it { expect(subject.active).to eq true }
+        it { expect(subject.department).to eq 'some_dept' }
       end
       context 'immutability' do
         let(:error_msg) { "can't modify frozen attributes" }
@@ -123,6 +129,7 @@ RSpec.describe FieldStruct::StrictExamples::User do
         it { expect { subject.level = 'x' }.to raise_error FrozenError, error_msg }
         it { expect { subject.at = 'x' }.to raise_error FrozenError, error_msg }
         it { expect { subject.active = 'x' }.to raise_error FrozenError, error_msg }
+        it { expect { subject.department = 'x' }.to raise_error FrozenError, error_msg }
       end
     end
     context 'partial' do

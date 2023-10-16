@@ -16,7 +16,7 @@ module FieldStruct
         make_class(metadata, root).tap do |klass|
           metadata.attributes.each do |name, options|
             type = options.delete :type
-            klass.attribute name, type, options
+            klass.attribute name, type, **options
           end
         end
       end
@@ -64,7 +64,7 @@ module FieldStruct
       include Comparable
 
       ATTRIBUTE_NAMES = %i[
-        type of version required default format enum min_length max_length description array range alias
+        type of version required default format enum min_length max_length description array range alias avro
       ].freeze
       ATTRIBUTE_METH_RX = /\A(#{ATTRIBUTE_NAMES.map(&:to_s).join('|')})(\?|=)?\z/.freeze
 
@@ -307,7 +307,7 @@ module FieldStruct
     def reset_version
       @version = build_version attributes: {
         attribute: {
-          only_keys: %i[type of required default format enum min_length max_length]
+          only_keys: %i[type of required default format enum min_length max_length avro]
         }
       }
     end

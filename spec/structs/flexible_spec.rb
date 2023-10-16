@@ -13,6 +13,7 @@ module FieldStruct
       required :level, :integer, default: -> { 2 }
       optional :at, :time
       optional :active, :boolean, default: false
+      required :department, :string, avro: { field_id: 'user_dept' }
     end
 
     class Person < FieldStruct.flexible
@@ -60,7 +61,7 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
       it { expect(subject.name).to eq 'FieldStruct::FlexibleExamples::User' }
       it { expect(subject.schema_name).to eq 'field_struct.flexible_examples.user' }
       it { expect(subject.type).to eq :flexible }
-      it { expect(subject.version).to eq '245178bc' }
+      it { expect(subject.version).to eq 'f8a28d00' }
       it 'full hash' do
         expect(subject.to_hash).to eq name: 'FieldStruct::FlexibleExamples::User',
                                       schema_name: 'field_struct.flexible_examples.user',
@@ -81,9 +82,10 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
                                         source: { type: :string, required: true, enum: %w[A B C] },
                                         level: { type: :integer, required: true, default: '<proc>' },
                                         at: { type: :time },
-                                        active: { type: :boolean, default: false }
+                                        active: { type: :boolean, default: false },
+                                        department: { type: :string, required: true, avro: { field_id: 'user_dept' } }
                                       },
-                                      version: '245178bc'
+                                      version: 'f8a28d00'
       end
       it 'filtered hash' do
         options = { attributes: { attribute: { only_keys: %i[type of required default enum] } } }
@@ -97,9 +99,10 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
                                                  source: { type: :string, required: true, enum: %w[A B C] },
                                                  level: { type: :integer, required: true, default: '<proc>' },
                                                  at: { type: :time },
-                                                 active: { type: :boolean, default: false }
+                                                 active: { type: :boolean, default: false },
+                                                 department: { type: :string, required: true }
                                                },
-                                               version: '245178bc'
+                                               version: 'f8a28d00'
       end
       context 'to_hash' do
         let(:exp_hash) do
@@ -114,9 +117,10 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
               source: { type: :string, required: true, enum: %w[A B C] },
               level: { type: :integer, required: true, default: '<proc>' },
               at: { type: :time },
-              active: { type: :boolean, default: false }
+              active: { type: :boolean, default: false },
+              department: { type: :string, required: true, avro: { field_id: 'user_dept' } }
             },
-            version: '245178bc'
+            version: 'f8a28d00'
           }
         end
         it { expect(subject.to_hash).to eq exp_hash }
@@ -125,7 +129,7 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
     context '.attribute_types' do
       subject { described_class.attribute_types }
       it { expect(subject).to be_a Hash }
-      it { expect(subject.keys).to eq %w[username password age owed source level at active] }
+      it { expect(subject.keys).to eq %w[username password age owed source level at active department] }
       it { expect(subject['username']).to be_a ActiveModel::Type::String }
       it { expect(subject['password']).to be_a ActiveModel::Type::String }
       it { expect(subject['age']).to be_a ActiveModel::Type::Integer }
@@ -134,6 +138,7 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
       it { expect(subject['level']).to be_a ActiveModel::Type::Integer }
       it { expect(subject['at']).to be_a ActiveModel::Type::Time }
       it { expect(subject['active']).to be_a ActiveModel::Type::Boolean }
+      it { expect(subject['department']).to be_a ActiveModel::Type::String }
     end
   end
   describe 'instance' do
@@ -145,6 +150,7 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
     let(:level) { 3 }
     let(:at) { Time.parse('2018-03-24') }
     let(:active) { true }
+    let(:department) { 'some_department' }
     let(:full_params) do
       basic_hash username: username,
                  password: password,
@@ -153,7 +159,8 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
                  source: source,
                  level: level,
                  at: at,
-                 active: active
+                 active: active,
+                 department: department
     end
     subject { described_class.new params }
     context 'full' do
@@ -169,6 +176,7 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
         it { expect(subject.at).to eq Time.parse('2018-03-24') }
         it { expect(subject.active).to eq true }
         it { expect(subject.extras).to eq({}) }
+        it { expect(subject.department).to eq 'some_department' }
       end
       context 'immutability' do
         let(:error_msg) { "can't modify frozen attributes" }
@@ -180,6 +188,7 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
         it { expect { subject.level = 'x' }.to raise_error FrozenError, error_msg }
         it { expect { subject.at = 'x' }.to raise_error FrozenError, error_msg }
         it { expect { subject.active = 'x' }.to raise_error FrozenError, error_msg }
+        it { expect { subject.department = 'x' }.to raise_error FrozenError, error_msg }
       end
     end
     context 'full + extras' do
@@ -201,6 +210,7 @@ RSpec.describe FieldStruct::FlexibleExamples::User do
       it { expect(subject.level).to eq 2 }
       it { expect(subject.at).to eq nil }
       it { expect(subject.active).to eq false }
+      it { expect(subject.department).to eq 'some_department' }
       it { expect(subject.errors).to be_a ActiveModel::Errors }
       it { expect(subject.errors.to_hash).to eq errors }
       it { expect(subject.errors.full_messages).to eq messages }
