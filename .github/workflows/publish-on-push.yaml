@@ -1,17 +1,15 @@
-name: Publish Ruby Gem To GitHub Packages (Pushed)
+name: Publish Ruby Gem (Pushed)
 
 on:
   push
 
 jobs:
-  build-and-push:
-    name: Build And Push Gems
-    uses: upbound-group/ruby-actions/.github/workflows/reusable_push_gems.yml@main  # locking to `main` branch for latest updates for now
-    secrets: inherit
-    permissions:
-      contents: read
-      packages: write
-    with:
-      registry-url: "https://rubygems.pkg.github.com/acima-credit"
-      use-github-token-as-bearer-token: true
-
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and publish gem
+        uses: jstastny/publish-gem-to-github@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          owner: acima-credit
