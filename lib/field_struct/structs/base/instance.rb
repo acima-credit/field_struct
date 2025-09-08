@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ModuleLength
 module FieldStruct
   class Base
     module InstanceMethods
@@ -146,3 +147,4 @@ module FieldStruct
     end
   end
 end
+# rubocop:enable Metrics/ModuleLength
