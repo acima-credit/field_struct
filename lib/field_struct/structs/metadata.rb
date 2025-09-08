@@ -254,7 +254,8 @@ module FieldStruct
       def build_hash(value)
         return false unless value.is_a? Hash
 
-        new(value[:name], value[:schema_name], value[:type], value[:extras], value[:attributes]).tap do |built|
+        new(value[:name], value[:schema_name], value[:type], value[:extras],
+            value[:attributes]).tap do |built|
           built.version = value[:version] if value.key?(:version)
         end
       end
