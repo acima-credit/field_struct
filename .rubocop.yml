@@ -33,7 +33,7 @@ Metrics/BlockLength:
   Exclude:
     - 'spec/**/*'
 
-Metrics/ModuleLength:
+Layout/LineLength:
   Enabled: true
   Max: 110
   Exclude:
