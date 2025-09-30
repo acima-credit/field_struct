@@ -1,0 +1,4 @@
+class FieldStruct::Mutable
+  def initialize: (?Hash[untyped, untyped]) -> void
+                | (?ActiveSupport::HashWithIndifferentAccess) -> void
+end

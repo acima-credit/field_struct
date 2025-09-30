@@ -1,0 +1,5 @@
+module FieldStruct
+  def self.known_active_model_names: () -> Array[untyped]
+
+  def self.known_active_model_types: () -> Hash[untyped, untyped]
+end

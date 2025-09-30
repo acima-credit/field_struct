@@ -1,0 +1,88 @@
+module FieldStruct::Base::InstanceMethods
+  def before_attributes_initialize: (Hash[untyped, untyped]) -> void
+                                  | (ActiveSupport::HashWithIndifferentAccess) -> void
+
+  def initialize: (?Hash[untyped, untyped]) -> void
+                | (?ActiveSupport::HashWithIndifferentAccess) -> void
+
+  def assign_attributes: (Hash[untyped, untyped]) -> nil
+                       | (Hash[untyped, untyped]) -> Hash[untyped, untyped]
+                       | (ActiveSupport::HashWithIndifferentAccess) -> ActiveSupport::HashWithIndifferentAccess
+                       | (ActiveSupport::HashWithIndifferentAccess) -> nil
+
+  def _assign_attributes: (Hash[untyped, untyped]) -> nil
+                        | (Hash[untyped, untyped]) -> Hash[untyped, untyped]
+                        | (ActiveSupport::HashWithIndifferentAccess) -> ActiveSupport::HashWithIndifferentAccess
+                        | (ActiveSupport::HashWithIndifferentAccess) -> nil
+
+  def after_attributes_initialize: (Hash[untyped, untyped]) -> void
+                                 | (ActiveSupport::HashWithIndifferentAccess) -> void
+
+  def to_hash: (?Hash[untyped, untyped]) -> Hash[untyped, untyped]
+
+  def _assign_attribute: (String, String) -> bool
+                       | (String, Array[untyped]) -> bool
+                       | (Symbol, String) -> bool
+                       | (String, bool) -> bool
+                       | (String, Integer) -> bool
+                       | (String, Hash[untyped, untyped]) -> bool
+                       | (String, Float) -> bool
+                       | (String, Time) -> bool
+                       | (String, Integer) -> nil
+                       | (String, ActiveSupport::HashWithIndifferentAccess) -> bool
+                       | (String, FieldStruct::FlexibleExamples::Employee) -> bool
+                       | (String, FieldStruct::FlexibleExamples::Team) -> bool
+                       | (String, BigDecimal) -> bool
+                       | (String, FieldStruct::MutableExamples::Employee) -> bool
+                       | (String, FieldStruct::MutableExamples::Team) -> bool
+                       | (String, FieldStruct::StrictExamples::Employee) -> bool
+                       | (String, FieldStruct::StrictExamples::Team) -> bool
+
+  def _assign_attribute_with_setter: (String, String) -> bool
+                                   | (String, Array[untyped]) -> bool
+                                   | (Symbol, String) -> bool
+                                   | (String, bool) -> bool
+                                   | (String, Integer) -> bool
+                                   | (String, Hash[untyped, untyped]) -> bool
+                                   | (String, Float) -> bool
+                                   | (String, Time) -> bool
+                                   | (String, Integer) -> nil
+                                   | (String, Array[untyped]) -> nil
+                                   | (String, ActiveSupport::HashWithIndifferentAccess) -> bool
+                                   | (String, FieldStruct::FlexibleExamples::Employee) -> bool
+                                   | (String, FieldStruct::FlexibleExamples::Team) -> bool
+                                   | (String, BigDecimal) -> bool
+                                   | (String, FieldStruct::MutableExamples::Employee) -> bool
+                                   | (String, FieldStruct::MutableExamples::Team) -> bool
+                                   | (String, FieldStruct::StrictExamples::Employee) -> bool
+                                   | (String, FieldStruct::StrictExamples::Team) -> bool
+
+  def assign_attribute: (Symbol, String) -> void
+                      | (Symbol, String) -> bool
+
+  def write_attribute: (Symbol, String) -> bool
+
+  def _assign_attribute_directly: (Symbol, String) -> bool
+                                | (String, Integer) -> nil
+                                | (String, Array[untyped]) -> nil
+
+  def attr_name: (Symbol) -> String
+               | (String) -> String
+
+  def extras: () -> Hash[untyped, untyped]
+
+  def _assign_attribute_extra: (String, Integer) -> nil
+                             | (String, Integer) -> bool
+                             | (String, Array[untyped]) -> bool
+
+  def <=>: (FieldStruct::FlexibleExamples::Employee) -> Integer
+         | (FieldStruct::FlexibleExamples::Team) -> Integer
+         | (FieldStruct::FlexibleExamples::Company) -> Integer
+         | (FieldStruct::MutableExamples::Employee) -> Integer
+         | (FieldStruct::MutableExamples::Team) -> Integer
+         | (FieldStruct::MutableExamples::Company) -> Integer
+         | (FieldStruct::StrictExamples::Employee) -> Integer
+         | (FieldStruct::StrictExamples::Team) -> Integer
+
+  def to_s: () -> String
+end

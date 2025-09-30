@@ -1,0 +1,11 @@
+class Object
+  def field_struct?: () -> bool
+end
+
+class Class
+  def field_struct?: () -> bool
+end
+
+class Module
+  def field_struct?: () -> bool
+end

@@ -1,0 +1,4 @@
+class FieldStruct::Type::Array
+  def cast_value: (Array[untyped]) -> Array[untyped]
+                | (String) -> Array[untyped]
+end

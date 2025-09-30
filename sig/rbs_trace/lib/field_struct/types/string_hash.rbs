@@ -1,0 +1,3 @@
+class FieldStruct::Type::StringHash
+  def cast_value: (Hash[untyped, untyped]) -> ActiveSupport::HashWithIndifferentAccess
+end

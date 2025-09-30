@@ -1,0 +1,14 @@
+module FieldStruct
+  def self.flexible: () -> Class
+end
+
+class FieldStruct::Flexible
+  def self.inherited: (Class) -> Class
+
+  def initialize: (?Hash[untyped, untyped]) -> void
+                | (?ActiveSupport::HashWithIndifferentAccess) -> void
+end
+
+module FieldStruct::Flexible::ClassMethods
+  def field_struct_type: () -> Symbol
+end

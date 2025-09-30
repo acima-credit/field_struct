@@ -1,0 +1,3 @@
+class FieldStruct::Strict
+  def initialize: (?ActiveSupport::HashWithIndifferentAccess) -> void
+end

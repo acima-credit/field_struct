@@ -1,0 +1,10 @@
+class FieldStruct::Type::Currency
+  def cast_value: (Float) -> Float
+                | (String) -> Float
+                | (Integer) -> Float
+                | (BigDecimal) -> Float
+                | (String) -> nil
+
+  def cast_string: (String) -> Float
+                 | (String) -> nil
+end
