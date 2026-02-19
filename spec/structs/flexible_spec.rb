@@ -54,7 +54,7 @@ end
 
 RSpec.describe FieldStruct::FlexibleExamples::User do
   describe 'class' do
-    it "responds to .mutable?" do
+    it 'responds to .mutable?' do
       expect(described_class).to respond_to :mutable?
       expect(described_class.mutable?).to be(false)
     end
