@@ -11,6 +11,10 @@ module FieldStruct
       def field_struct_type
         :strict
       end
+
+      def mutable?
+        false
+      end
     end
 
     # @param [Hash] attributes

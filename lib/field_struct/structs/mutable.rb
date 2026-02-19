@@ -11,6 +11,10 @@ module FieldStruct
       def field_struct_type
         :mutable
       end
+
+      def mutable?
+        true
+      end
     end
 
     # @param [Hash] attributes
@@ -19,10 +23,6 @@ module FieldStruct
       super(attributes)
       after_attributes_initialize attributes
       validate
-    end
-
-    def self.mutable?
-      true
     end
   end
 
