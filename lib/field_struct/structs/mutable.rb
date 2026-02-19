@@ -20,6 +20,10 @@ module FieldStruct
       after_attributes_initialize attributes
       validate
     end
+
+    def self.mutable?
+      true
+    end
   end
 
   # @return [Class]
