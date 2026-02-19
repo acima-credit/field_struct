@@ -13,6 +13,10 @@ module FieldStruct
       end
     end
 
+    def self.mutable?
+      false
+    end
+
     # @param [Hash] attributes
     def initialize(attributes = {})
       before_attributes_initialize attributes

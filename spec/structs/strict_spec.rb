@@ -49,6 +49,10 @@ end
 
 RSpec.describe FieldStruct::StrictExamples::User do
   describe 'class' do
+    it 'responds to .mutable?' do
+      expect(described_class).to respond_to :mutable?
+      expect(described_class.mutable?).to be(false)
+    end
     it { expect(described_class.model_name).to be_a ActiveModel::Name }
     it { expect(described_class.extras).to eq :raise }
     context '.metadata' do
