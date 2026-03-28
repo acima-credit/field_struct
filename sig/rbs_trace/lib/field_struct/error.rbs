@@ -1,0 +1,3 @@
+class FieldStruct::BuildError
+  def initialize: (Hash[untyped, untyped]) -> void
+end

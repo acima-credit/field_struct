@@ -1,0 +1,25 @@
+class FieldStruct::Validations
+  def self.build_for: (Class, Symbol) -> Hash[untyped, untyped]
+
+  def initialize: (Class, Symbol) -> void
+
+  def build: () -> Hash[untyped, untyped]
+
+  def add_meta_field_struct_validation: () -> void
+
+  def meta: () -> FieldStruct::Metadata::Attribute
+
+  def add_meta_required_validation: () -> void
+
+  def add_meta_format_validation: () -> void
+
+  def add_meta_enum_validation: () -> void
+
+  def add_meta_length_in_validation: () -> void
+
+  def add_meta_length_min_validation: () -> void
+
+  def add_meta_length_max_validation: () -> void
+
+  def build_final_options: () -> Hash[untyped, untyped]
+end

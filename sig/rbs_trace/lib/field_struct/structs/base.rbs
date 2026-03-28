@@ -1,0 +1,3 @@
+class FieldStruct::Flexible
+  def self.inherited: (Class) -> Class
+end

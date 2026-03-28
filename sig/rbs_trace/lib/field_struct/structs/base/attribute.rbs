@@ -1,0 +1,32 @@
+module FieldStruct::Base::AttributeMethods
+  def from: (?Hash[untyped, untyped]) -> FieldStruct::AliasesExamples::FriendlyUser
+          | (?Hash[untyped, untyped]) -> FieldStruct::ArrayExamples::FriendlyUser
+          | (?Hash[untyped, untyped]) -> FieldStruct::PropertyExamples::FriendlyCustomUser
+          | (?Hash[untyped, untyped]) -> FieldStruct::PropertyExamples::RequiredBooleanUser
+          | (?Hash[untyped, untyped]) -> FieldStruct::ArrayExamples::FriendlyMetaUser
+
+  def name: () -> String
+
+  def extras: (?Symbol) -> Symbol
+
+  def metadata: () -> FieldStruct::Metadata
+
+  def field_ancestor: () -> Class
+                    | () -> nil
+
+  def field_struct?: () -> bool
+
+  def attribute: (Symbol, ?Symbol, *nil, **bool) -> Concurrent::Map
+               | (Symbol, ?Symbol, *nil, **Regexp) -> Concurrent::Map
+               | (Symbol, ?Symbol, *nil, **Integer) -> Concurrent::Map
+               | (Symbol, ?Symbol, *nil, **String | bool) -> Concurrent::Map
+               | (Symbol, ?Symbol, *nil, **nil) -> Concurrent::Map
+
+  def check_allowed_type: (Symbol) -> Symbol
+
+  def check_active_model_type: (Symbol) -> bool
+
+  def attribute_metadata: (Symbol, Symbol, Hash[untyped, untyped]) -> void
+
+  def build_attribute_aliases: (Symbol, Hash[untyped, untyped]) -> void
+end

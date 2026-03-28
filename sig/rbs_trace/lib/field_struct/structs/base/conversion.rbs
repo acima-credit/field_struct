@@ -1,0 +1,30 @@
+module FieldStruct::Base::ConversionMethods
+  def assert_valid_value: (ActiveSupport::HashWithIndifferentAccess) -> void
+                        | (FieldStruct::FlexibleExamples::Employee) -> void
+                        | (Hash[untyped, untyped]) -> void
+                        | (FieldStruct::FlexibleExamples::Team) -> void
+                        | (FieldStruct::MutableExamples::Employee) -> void
+                        | (FieldStruct::MutableExamples::Team) -> void
+                        | (FieldStruct::StrictExamples::Employee) -> void
+                        | (FieldStruct::StrictExamples::Team) -> void
+
+  def cast: (ActiveSupport::HashWithIndifferentAccess) -> FieldStruct::FlexibleExamples::Employee
+          | (FieldStruct::FlexibleExamples::Employee) -> FieldStruct::FlexibleExamples::Employee
+          | (ActiveSupport::HashWithIndifferentAccess) -> FieldStruct::FlexibleExamples::Team
+          | (Hash[untyped, untyped]) -> FieldStruct::FlexibleExamples::Employee
+          | (Hash[untyped, untyped]) -> FieldStruct::FlexibleExamples::Team
+          | (FieldStruct::FlexibleExamples::Team) -> FieldStruct::FlexibleExamples::Team
+          | (ActiveSupport::HashWithIndifferentAccess) -> FieldStruct::MutableExamples::Employee
+          | (FieldStruct::MutableExamples::Employee) -> FieldStruct::MutableExamples::Employee
+          | (ActiveSupport::HashWithIndifferentAccess) -> FieldStruct::MutableExamples::Team
+          | (Hash[untyped, untyped]) -> FieldStruct::MutableExamples::Employee
+          | (Hash[untyped, untyped]) -> FieldStruct::MutableExamples::Team
+          | (FieldStruct::MutableExamples::Team) -> FieldStruct::MutableExamples::Team
+          | (ActiveSupport::HashWithIndifferentAccess) -> FieldStruct::StrictExamples::Employee
+          | (FieldStruct::StrictExamples::Employee) -> FieldStruct::StrictExamples::Employee
+          | (ActiveSupport::HashWithIndifferentAccess) -> FieldStruct::StrictExamples::Team
+          | (FieldStruct::StrictExamples::Team) -> FieldStruct::StrictExamples::Team
+
+  def from_json: (String) -> FieldStruct::FlexibleExamples::Company
+               | (String) -> FieldStruct::MutableExamples::Company
+end

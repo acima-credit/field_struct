@@ -1,0 +1,147 @@
+class FieldStruct::Metadata
+  def initialize: (String, nil, Symbol, Symbol, Hash[untyped, untyped]) -> void
+                | (String, String, nil, nil, Hash[untyped, untyped]) -> void
+
+  def build_schema_name: (String) -> String
+
+  def reset_version: () -> String
+
+  def build_version: (?Hash[untyped, untyped]) -> String
+
+  def self.build: (FieldStruct::Metadata) -> FieldStruct::Metadata
+                | (Hash[untyped, untyped]) -> FieldStruct::Metadata
+
+  def self.build_self: (FieldStruct::Metadata) -> FieldStruct::Metadata
+                     | (Hash[untyped, untyped]) -> bool
+
+  def self.from: (Class) -> FieldStruct::Metadata
+
+  def self.build_type: (Class) -> Symbol
+
+  def self.build_initial_attributes: (Class) -> Hash[untyped, untyped]
+
+  def name=: (String) -> void
+
+  def get: (Symbol) -> FieldStruct::Metadata::Attribute
+
+  def update: (Symbol, Hash[untyped, untyped]) -> Hash[untyped, untyped]
+
+  def self.build_string: (Hash[untyped, untyped]) -> bool
+
+  def self.build_hash: (Hash[untyped, untyped]) -> FieldStruct::Metadata
+
+  def self.default_options: () -> Hash[untyped, untyped]
+
+  def to_hash: (?Hash[untyped, untyped]) -> Hash[untyped, untyped]
+
+  def keys: (*untyped, **untyped) -> Array[untyped]
+end
+
+class FieldStruct::Metadata::Attributes
+  def initialize: (?Hash[untyped, untyped]) -> void
+
+  def set: (Symbol, Hash[untyped, untyped]) -> FieldStruct::Metadata::Attribute
+
+  def key: (Symbol) -> Symbol
+
+  def to_hash: (?Hash[untyped, untyped]) -> Hash[untyped, untyped]
+             | (?nil) -> Hash[untyped, untyped]
+
+  def each: (*untyped, **untyped) -> Hash[untyped, untyped]
+
+  def get: (Symbol) -> FieldStruct::Metadata::Attribute
+
+  def keys: (*untyped, **untyped) -> Array[untyped]
+end
+
+class FieldStruct::Metadata::Attribute
+  def initialize: (?Hash[untyped, untyped]) -> void
+
+  def method_missing: (Symbol, *Symbol) -> Symbol
+                    | (Symbol, *bool) -> bool
+                    | (Symbol, *Regexp) -> Regexp
+                    | (Symbol, *nil) -> Symbol
+                    | (Symbol, *nil) -> bool
+                    | (Symbol, *nil) -> nil
+                    | (Symbol, *nil) -> Regexp
+                    | (Symbol, *Integer) -> Integer
+                    | (Symbol, *nil) -> Integer
+                    | (Symbol, *String) -> String
+                    | (Symbol, *nil) -> Class
+                    | (Symbol, *nil) -> String
+
+  def set: (Symbol, Symbol) -> Symbol
+         | (Symbol, bool) -> bool
+         | (Symbol, Regexp) -> Regexp
+         | (Symbol, Integer) -> Integer
+         | (Symbol, String) -> String
+
+  def key?: (Symbol) -> bool
+
+  def key: (Symbol) -> Symbol
+
+  def length=: (Range[untyped]) -> Integer
+
+  def to_hash: (?nil) -> Hash[untyped, untyped]
+             | (?Hash[untyped, untyped]) -> Hash[untyped, untyped]
+
+  def to_hash_proc_value: (Symbol, Symbol) -> bool
+                        | (Symbol, bool) -> bool
+                        | (Symbol, Regexp) -> bool
+                        | (Symbol, Integer) -> bool
+                        | (Symbol, String) -> bool
+                        | (Symbol, Array[untyped]) -> bool
+                        | (Symbol, Proc) -> String
+                        | (Symbol, Hash[untyped, untyped]) -> bool
+                        | (Symbol, Class) -> bool
+
+  def to_hash_field_struct_value: (Symbol) -> bool
+                                | (bool) -> bool
+                                | (Regexp) -> bool
+                                | (Integer) -> bool
+                                | (String) -> bool
+                                | (Array[untyped]) -> bool
+                                | (Hash[untyped, untyped]) -> bool
+                                | (Class) -> Hash[untyped, untyped]
+
+  def delete: (*untyped, **untyped) -> Symbol
+
+  def get: (Symbol) -> Symbol
+         | (Symbol) -> bool
+         | (Symbol) -> nil
+         | (Symbol) -> Regexp
+         | (Symbol) -> Integer
+         | (Symbol) -> Class
+         | (Symbol) -> String
+
+  def predicate: (Symbol) -> bool
+
+  def <=>: (Hash[untyped, untyped]) -> Integer
+end
+
+module FieldStruct
+  def self.from_metadata: (FieldStruct::Metadata, ?nil) -> Class
+                        | (FieldStruct::Metadata, ?String) -> Class
+                        | (Hash[untyped, untyped], ?nil) -> Class
+                        | (Hash[untyped, untyped], ?String) -> Class
+end
+
+class FieldStruct::Metadata::ClassBuilder
+  def self.build: (FieldStruct::Metadata, ?nil) -> Class
+                | (FieldStruct::Metadata, ?String) -> Class
+                | (Hash[untyped, untyped], ?nil) -> Class
+                | (Hash[untyped, untyped], ?String) -> Class
+
+  def build: (FieldStruct::Metadata, ?nil) -> Class
+           | (FieldStruct::Metadata, ?String) -> Class
+           | (Hash[untyped, untyped], ?nil) -> Class
+           | (Hash[untyped, untyped], ?String) -> Class
+
+  def make_class: (FieldStruct::Metadata, nil) -> Class
+                | (FieldStruct::Metadata, String) -> Class
+
+  def build_constants: (String, ?nil) -> Array[untyped]
+                     | (String, ?String) -> Array[untyped]
+
+  def apply_metadata: (Class, FieldStruct::Metadata, String) -> FieldStruct::Metadata
+end
